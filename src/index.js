@@ -1,0 +1,115 @@
+import path from "path";
+import fs from "fs";
+import prettier from "prettier";
+import babel from "@babel/parser";
+import {
+  createInputFiles,
+  setupFileChangeHandlers,
+  dispatchTokens,
+  dispatchInputFiles,
+  dispatchDictionary,
+  dispatchEnrichedTokens,
+  openAllFolders,
+} from "./file-tree/file-tree-utils.js";
+import runStyleDictionary, {
+  findUsedConfigPath,
+  rerunStyleDictionaryIfSourceChanged,
+} from "./run-style-dictionary.js";
+// side effect: loads the monaco editor
+import { ensureMonacoIsLoaded, editor, monaco } from "./monaco/monaco.js";
+// side effect: loads file-tree CE definition
+import "./file-tree/FileTree.js";
+
+// supported config paths, prioritized in this order
+export const configPaths = [
+  "config.js",
+  "sd.config.js",
+  "config.mjs",
+  "sd.config.mjs",
+  "config.json",
+  "sd.config.json",
+].map((p) => path.resolve(p));
+
+export async function changeLang(lang) {
+  await ensureMonacoIsLoaded();
+  monaco.editor.setModelLanguage(editor.getModel(), lang);
+}
+
+export async function getContents(files) {
+  const contents = {};
+  await Promise.all(
+    files.map(async (file) => {
+      await new Promise((resolve) => {
+        fs.readFile(file, "utf-8", (err, data) => {
+          contents[file] = data;
+          resolve();
+        });
+      });
+    })
+  );
+  return contents;
+}
+
+export async function encodeContents(files) {
+  const contents = await getContents(files);
+  const content = JSON.stringify(contents);
+  return flate.deflate_encode(content);
+}
+
+async function switchToJS(ev) {
+  const configPath = findUsedConfigPath();
+  if (configPath.endsWith(".json")) {
+    ev.target.parentElement.style.display = "none";
+    const contents = fs.readFileSync(configPath, "utf-8");
+    const newPath = `${configPath.split(".json")[0]}.js`;
+    const newContents = prettier.format(`export default ${contents};`, {
+      // explicitly use babel parser, just parser: "babel" will not work,
+      // rollup won't be smart enough to understand to put babel parser in
+      // final bundle like that because prettier will try to find and use it
+      // under the hood (using its own resolution logic??)
+      parser: (text) => babel.parse(text, { sourceType: "module" }),
+    });
+    fs.unlinkSync(configPath);
+    fs.writeFileSync(newPath, newContents, "utf-8");
+    await rerunStyleDictionaryIfSourceChanged(newPath);
+    await document.querySelector("file-tree").switchToFile(newPath);
+  }
+}
+
+function switchClose(ev) {
+  ev.target.parentElement.style.display = "none";
+  ev.target.parentElement.setAttribute("closed-by-user", "");
+}
+
+(async function () {
+  window.addEventListener("message", (ev) => {
+    const { data } = ev;
+    switch (data.type) {
+      case "sd-tokens-request":
+        dispatchTokens(ev);
+        break;
+      case "sd-input-files-request":
+        dispatchInputFiles(ev);
+        break;
+      case "sd-dictionary-request":
+        dispatchDictionary(ev);
+        break;
+      case "sd-enriched-tokens-request":
+        dispatchEnrichedTokens(ev);
+        break;
+    }
+  });
+  await createInputFiles();
+  await runStyleDictionary();
+  await openAllFolders();
+  await document.querySelector("file-tree").switchToFile(findUsedConfigPath());
+  await setupFileChangeHandlers();
+  window.addEventListener("resize", async () => {
+    await ensureMonacoIsLoaded();
+    editor.layout({});
+    editor.layout();
+  });
+  await ensureMonacoIsLoaded();
+  editor.layout({});
+  editor.layout();
+})();

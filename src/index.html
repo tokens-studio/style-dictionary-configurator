@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content=".." />
+    <meta name="author" content="Hyma" />
+    <meta name="keywords" content=".." />
+    <meta name="theme-color" content=".." />
+    <meta name="twitter:title" content=".." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content=".." />
+    <meta name="twitter:creator" content=".." />
+    <meta name="twitter:image" content=".." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en-US" />
+    <meta property="og:site" content=".." />
+    <meta property="og:site_name" content=".." />
+    <meta property="og:title" content=".." />
+    <meta property="og:description" content=".." />
+    <meta property="og:image" content=".." />
+    <meta
+      property="og:image:alt"
+      content="Display picture of Token Configurator"
+    />
+    <title>Token Configurator</title>
+    <link rel="stylesheet" href="./style.css" />
+    <!-- <script src="https://unpkg.com/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script> -->
+    <script src="https://unpkg.com/json5@^2.0.0/dist/index.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="./index.js"></script>
+  </head>
+  <!-- hack to make monaco layout behave -->
+  <body>
+    <div class="playground-container">
+      <file-tree></file-tree>
+      <div style="height: 100%" id="monaco-container"></div>
+    </div>
+  </body>
+</html>
