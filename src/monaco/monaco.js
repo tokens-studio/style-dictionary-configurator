@@ -4,7 +4,9 @@ let loaderPending = false;
 const loaderCallbacks = [];
 
 export let monaco;
+export let monaco2;
 export let editor;
+export let editor2;
 
 function onAmdLoaderLoad() {
   let currentCallback = loaderCallbacks.shift();
@@ -25,8 +27,8 @@ function onAmdLoaderError(err) {
 }
 
 export function ensureMonacoIsLoaded(
-  // srcPath = 'https://unpkg.com/monaco-editor@0.29.1/dev' // <-- for debugging
-  srcPath = "https://unpkg.com/monaco-editor@0.29.1/min"
+  // srcPath = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/dev' // <-- for debugging
+  srcPath = "https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/min"
 ) {
   return new Promise((resolve, reject) => {
     if (monaco) {
@@ -94,5 +96,14 @@ ensureMonacoIsLoaded().then(() => {
       enabled: false,
     },
   });
-  editor.getModel().updateOptions({ tabSize: 2 });
+  editor2 = monaco.editor.create(
+    document.getElementById("monaco-container-2"),
+    {
+      theme: "my-theme",
+      minimap: {
+        enabled: false,
+      },
+    }
+  );
+  editor2.getModel().updateOptions({ tabSize: 2 });
 });

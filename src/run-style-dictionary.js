@@ -134,11 +134,10 @@ async function bundle(inputPath) {
 
 export default async function runStyleDictionary() {
   console.log("Running style-dictionary...");
-  document.querySelector("file-tree").animateCue();
+  document.querySelector("#output-file-tree").animateCue();
   await cleanPlatformOutputDirs();
   let cfgObj;
   const configPath = findUsedConfigPath();
-  console.log(configPath);
   let newStyleDictionary = {};
   try {
     // If .js, we need to parse it as actual JS without resorting to eval/Function

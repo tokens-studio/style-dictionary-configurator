@@ -17,7 +17,7 @@ const extensionMap = {
   js: "javascript",
 };
 const tokensPath = path.resolve("tokens");
-const fileTreeEl = document.querySelector("file-tree");
+const fileTreeEl = document.querySelector("#output-file-tree");
 
 async function currentFileContentChanged() {
   const selectedFileBtn = getSelectedFileBtn();
@@ -281,7 +281,7 @@ function openOrCloseJSSwitch(file) {
   }
 }
 
-export async function switchToFile(file) {
+export async function switchToFile(file, ed) {
   // openOrCloseJSSwitch(file);
   const ext = path.extname(file).slice(1);
   const lang = extensionMap[ext] || ext;
@@ -291,19 +291,22 @@ export async function switchToFile(file) {
     });
   });
   await ensureMonacoIsLoaded();
-  editor.setValue(fileData);
-  await changeLang(lang);
-  editor.setScrollTop(0);
+
+  const _editor = ed || editor;
+  _editor.setValue(fileData);
+  await changeLang(lang, _editor);
+  _editor.setScrollTop(0);
 }
 
-export async function setupFileChangeHandlers() {
+export async function setupFileChangeHandlers(ed) {
   await ensureMonacoIsLoaded();
-  editor.onDidChangeModelContent((ev) => {
+  const _editor = ed || editor;
+  _editor.onDidChangeModelContent((ev) => {
     if (!ev.isFlush) {
       currentFileContentChanged();
     }
   });
-  editor._domElement.addEventListener("keydown", (ev) => {
+  _editor._domElement.addEventListener("keydown", (ev) => {
     if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
       ev.preventDefault();
       saveCurrentFile();

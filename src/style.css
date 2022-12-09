@@ -21,17 +21,29 @@ body {
   overflow-y: hidden;
 }
 
-.playground-container {
-  display: flex;
+main {
   height: 100%;
+  display: flex;
+}
+
+.middle {
+  width: 550px;
+}
+
+.right {
+  flex-grow: 1;
+}
+
+.monaco-wrapper {
+  display: flex;
+  height: 50%;
   border-radius: var(--border-radius-editor);
   box-shadow: 0 5px 6px rgb(0 0 0 / 50%);
-  max-width: 100%;
   margin: 0 auto;
   position: relative;
 }
 
-#monaco-container {
+.monaco-container {
   flex-grow: 1;
   border-top-right-radius: var(--border-radius-editor);
   border-bottom-right-radius: var(--border-radius-editor);

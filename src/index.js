@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import prettier from "prettier";
-import babel from "@babel/parser";
+// import prettier from "prettier";
+// import babel from "@babel/parser";
 import {
   createInputFiles,
   setupFileChangeHandlers,
@@ -10,15 +10,22 @@ import {
   dispatchDictionary,
   dispatchEnrichedTokens,
   openAllFolders,
+  switchToFile,
 } from "./file-tree/file-tree-utils.js";
 import runStyleDictionary, {
   findUsedConfigPath,
-  rerunStyleDictionaryIfSourceChanged,
+  // rerunStyleDictionaryIfSourceChanged,
 } from "./run-style-dictionary.js";
 // side effect: loads the monaco editor
-import { ensureMonacoIsLoaded, editor, monaco } from "./monaco/monaco.js";
+import {
+  ensureMonacoIsLoaded,
+  editor,
+  editor2,
+  monaco,
+} from "./monaco/monaco.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
+import "./components/platforms/token-platforms.js";
 
 // supported config paths, prioritized in this order
 export const configPaths = [
@@ -30,9 +37,12 @@ export const configPaths = [
   "sd.config.json",
 ].map((p) => path.resolve(p));
 
-export async function changeLang(lang) {
+export async function changeLang(lang, ed) {
   await ensureMonacoIsLoaded();
-  monaco.editor.setModelLanguage(editor.getModel(), lang);
+  const _editor = ed || editor;
+
+  console.log(lang);
+  monaco.editor.setModelLanguage(_editor.getModel(), lang);
 }
 
 export async function getContents(files) {
@@ -56,30 +66,30 @@ export async function encodeContents(files) {
   return flate.deflate_encode(content);
 }
 
-async function switchToJS(ev) {
-  const configPath = findUsedConfigPath();
-  if (configPath.endsWith(".json")) {
-    ev.target.parentElement.style.display = "none";
-    const contents = fs.readFileSync(configPath, "utf-8");
-    const newPath = `${configPath.split(".json")[0]}.js`;
-    const newContents = prettier.format(`export default ${contents};`, {
-      // explicitly use babel parser, just parser: "babel" will not work,
-      // rollup won't be smart enough to understand to put babel parser in
-      // final bundle like that because prettier will try to find and use it
-      // under the hood (using its own resolution logic??)
-      parser: (text) => babel.parse(text, { sourceType: "module" }),
-    });
-    fs.unlinkSync(configPath);
-    fs.writeFileSync(newPath, newContents, "utf-8");
-    await rerunStyleDictionaryIfSourceChanged(newPath);
-    await document.querySelector("file-tree").switchToFile(newPath);
-  }
-}
+// async function switchToJS(ev) {
+//   const configPath = findUsedConfigPath();
+//   if (configPath.endsWith(".json")) {
+//     ev.target.parentElement.style.display = "none";
+//     const contents = fs.readFileSync(configPath, "utf-8");
+//     const newPath = `${configPath.split(".json")[0]}.js`;
+//     const newContents = prettier.format(`export default ${contents};`, {
+//       // explicitly use babel parser, just parser: "babel" will not work,
+//       // rollup won't be smart enough to understand to put babel parser in
+//       // final bundle like that because prettier will try to find and use it
+//       // under the hood (using its own resolution logic??)
+//       parser: (text) => babel.parse(text, { sourceType: "module" }),
+//     });
+//     fs.unlinkSync(configPath);
+//     fs.writeFileSync(newPath, newContents, "utf-8");
+//     await rerunStyleDictionaryIfSourceChanged(newPath);
+//     await document.querySelector("file-tree").switchToFile(newPath);
+//   }
+// }
 
-function switchClose(ev) {
-  ev.target.parentElement.style.display = "none";
-  ev.target.parentElement.setAttribute("closed-by-user", "");
-}
+// function switchClose(ev) {
+//   ev.target.parentElement.style.display = "none";
+//   ev.target.parentElement.setAttribute("closed-by-user", "");
+// }
 
 (async function () {
   window.addEventListener("message", (ev) => {
@@ -99,17 +109,25 @@ function switchClose(ev) {
         break;
     }
   });
-  await createInputFiles();
-  await runStyleDictionary();
-  await openAllFolders();
-  await document.querySelector("file-tree").switchToFile(findUsedConfigPath());
-  await setupFileChangeHandlers();
+
   window.addEventListener("resize", async () => {
     await ensureMonacoIsLoaded();
     editor.layout({});
     editor.layout();
+    editor2.layout({});
+    editor2.layout();
   });
+
   await ensureMonacoIsLoaded();
+  await createInputFiles();
+  await runStyleDictionary();
+  await openAllFolders();
+  const fileTreeEl = document.querySelector("#output-file-tree");
+  await switchToFile(fileTreeEl.outputFiles[0], editor);
+  await switchToFile(findUsedConfigPath(), editor2);
+  await setupFileChangeHandlers();
   editor.layout({});
   editor.layout();
+  editor2.layout({});
+  editor2.layout();
 })();

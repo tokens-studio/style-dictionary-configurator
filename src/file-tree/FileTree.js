@@ -20,6 +20,11 @@ class FileTree extends LitElement {
     return {
       inputFiles: { attribute: false },
       outputFiles: { attribute: false },
+      outputOnly: {
+        type: Boolean,
+        reflect: true,
+        attribute: "output-only",
+      },
     };
   }
 
@@ -204,17 +209,22 @@ class FileTree extends LitElement {
         <div class="loading-cue">
           <div class="loading-cue-overlay"></div>
         </div>
-        <div class="input-files">
-          ${this.asDetails(
-            this.filesAsTree(
-              this.inputFiles.filter((file) => file === "config.js")
-            )
-          )}
-        </div>
+        ${!this.outputOnly
+          ? html`
+              <div class="input-files">
+                ${this.asDetails(
+                  this.filesAsTree(
+                    this.inputFiles.filter((file) => file === "config.js")
+                  )
+                )}
+              </div>
+            `
+          : ""}
         <div class="output-files">
           <p>Output files:</p>
           ${this.asDetails(this.filesAsTree(this.outputFiles))}
         </div>
+        ${this.outputOnly ? html`<div class="flex-spacer"></div>` : ""}
         <div class="clear">
           <button
             title="Download all files as ZIP"
@@ -249,7 +259,7 @@ class FileTree extends LitElement {
         ?.name || iconDefinitions.defaultIcon.name;
     return html`<img
       alt="file icon"
-      src="https://unpkg.com/material-icon-theme@3.7.1/icons/${icon}.svg"
+      src="https://cdn.jsdelivr.net/npm/material-icon-theme@3.7.1/icons/${icon}.svg"
     />`;
   }
 

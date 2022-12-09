@@ -196,6 +196,10 @@ export default css`
     border-top: 1px solid #1c2633;
   }
 
+  .flex-spacer {
+    flex-grow: 1;
+  }
+
   .clear {
     width: 100%;
     position: sticky;

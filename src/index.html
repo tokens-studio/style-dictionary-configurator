@@ -26,8 +26,7 @@
     />
     <title>Token Configurator</title>
     <link rel="stylesheet" href="./style.css" />
-    <!-- <script src="https://unpkg.com/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script> -->
-    <script src="https://unpkg.com/json5@^2.0.0/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/json5@^2.0.0/dist/index.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,9 +37,27 @@
   </head>
   <!-- hack to make monaco layout behave -->
   <body>
-    <div class="playground-container">
-      <file-tree></file-tree>
-      <div style="height: 100%" id="monaco-container"></div>
-    </div>
+    <main style="height: 100%">
+      <section class="middle">
+        <token-platforms> </token-platforms>
+      </section>
+      <section style="height: 100%" class="right">
+        <div class="monaco-wrapper">
+          <div
+            id="monaco-container-2"
+            class="monaco-container"
+            style="height: 100%"
+          ></div>
+        </div>
+        <div class="monaco-wrapper">
+          <file-tree id="output-file-tree" output-only></file-tree>
+          <div
+            id="monaco-container"
+            class="monaco-container"
+            style="height: 100%"
+          ></div>
+        </div>
+      </section>
+    </main>
   </body>
 </html>
