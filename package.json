@@ -14,8 +14,7 @@
   },
   "dependencies": {
     "@babel/parser": "^7.17.9",
-    "@lion/core": "^0.18.4",
-    "@lion/overlays": "^0.26.1",
+    "@lion/ui": "^0.0.12",
     "@zip.js/zip.js": "^2.3.19",
     "browser-style-dictionary": "^3.1.1-browser.0",
     "buffer": "^6.0.3",
