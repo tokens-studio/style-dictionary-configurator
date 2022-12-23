@@ -42,7 +42,7 @@ export default css`
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 250px;
+    width: 200px;
     color: #fff;
     overflow-y: auto;
   }

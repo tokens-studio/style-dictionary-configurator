@@ -20,6 +20,7 @@ import {
   monaco,
 } from "./monaco/monaco.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
+import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
@@ -98,10 +99,7 @@ export async function encodeContents(files) {
 
   window.addEventListener("resize", async () => {
     await ensureMonacoIsLoaded();
-    editorOutput.layout({});
-    editorOutput.layout();
-    editorConfig.layout({});
-    editorConfig.layout();
+    resizeMonacoLayout();
   });
 
   await ensureMonacoIsLoaded();
@@ -112,8 +110,5 @@ export async function encodeContents(files) {
   await switchToFile(fileTreeEl.outputFiles[0], editorOutput);
   await switchToFile(findUsedConfigPath(), editorConfig);
   await setupConfigChangeHandler();
-  editorOutput.layout({});
-  editorOutput.layout();
-  editorConfig.layout({});
-  editorConfig.layout();
+  resizeMonacoLayout();
 })();

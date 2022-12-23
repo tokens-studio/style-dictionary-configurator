@@ -27,11 +27,11 @@ main {
 }
 
 .middle {
-  width: 550px;
+  width: 600px;
 }
 
 .right {
-  flex-grow: 1;
+  max-width: 900px;
 }
 
 .monaco-wrapper {
