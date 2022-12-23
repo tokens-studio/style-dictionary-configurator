@@ -26,6 +26,7 @@
     />
     <title>Token Configurator</title>
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/json5@^2.0.0/dist/index.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,7 +45,7 @@
       <section style="height: 100%" class="right">
         <div class="monaco-wrapper">
           <div
-            id="monaco-container-2"
+            id="monaco-container-config"
             class="monaco-container"
             style="height: 100%"
           ></div>
@@ -52,7 +53,7 @@
         <div class="monaco-wrapper">
           <file-tree id="output-file-tree" output-only></file-tree>
           <div
-            id="monaco-container"
+            id="monaco-container-output"
             class="monaco-container"
             style="height: 100%"
           ></div>

@@ -1,10 +1,9 @@
-import path from "path";
 import fs from "fs";
 // import prettier from "prettier";
 // import babel from "@babel/parser";
 import {
   createInputFiles,
-  setupFileChangeHandlers,
+  setupConfigChangeHandler,
   dispatchTokens,
   dispatchInputFiles,
   dispatchDictionary,
@@ -12,36 +11,23 @@ import {
   openAllFolders,
   switchToFile,
 } from "./file-tree/file-tree-utils.js";
-import runStyleDictionary, {
-  findUsedConfigPath,
-  // rerunStyleDictionaryIfSourceChanged,
-} from "./run-style-dictionary.js";
+import { sdState } from "./style-dictionary.js";
 // side effect: loads the monaco editor
 import {
   ensureMonacoIsLoaded,
-  editor,
-  editor2,
+  editorOutput,
+  editorConfig,
   monaco,
 } from "./monaco/monaco.js";
+import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
 
-// supported config paths, prioritized in this order
-export const configPaths = [
-  "config.js",
-  "sd.config.js",
-  "config.mjs",
-  "sd.config.mjs",
-  "config.json",
-  "sd.config.json",
-].map((p) => path.resolve(p));
-
 export async function changeLang(lang, ed) {
   await ensureMonacoIsLoaded();
-  const _editor = ed || editor;
+  const _editor = ed || editorOutput;
 
-  console.log(lang);
   monaco.editor.setModelLanguage(_editor.getModel(), lang);
 }
 
@@ -81,7 +67,7 @@ export async function encodeContents(files) {
 //     });
 //     fs.unlinkSync(configPath);
 //     fs.writeFileSync(newPath, newContents, "utf-8");
-//     await rerunStyleDictionaryIfSourceChanged(newPath);
+//     await rerunStyleDictionary(newPath);
 //     await document.querySelector("file-tree").switchToFile(newPath);
 //   }
 // }
@@ -112,22 +98,22 @@ export async function encodeContents(files) {
 
   window.addEventListener("resize", async () => {
     await ensureMonacoIsLoaded();
-    editor.layout({});
-    editor.layout();
-    editor2.layout({});
-    editor2.layout();
+    editorOutput.layout({});
+    editorOutput.layout();
+    editorConfig.layout({});
+    editorConfig.layout();
   });
 
   await ensureMonacoIsLoaded();
   await createInputFiles();
-  await runStyleDictionary();
+  await sdState.runStyleDictionary();
   await openAllFolders();
   const fileTreeEl = document.querySelector("#output-file-tree");
-  await switchToFile(fileTreeEl.outputFiles[0], editor);
-  await switchToFile(findUsedConfigPath(), editor2);
-  await setupFileChangeHandlers();
-  editor.layout({});
-  editor.layout();
-  editor2.layout({});
-  editor2.layout();
+  await switchToFile(fileTreeEl.outputFiles[0], editorOutput);
+  await switchToFile(findUsedConfigPath(), editorConfig);
+  await setupConfigChangeHandler();
+  editorOutput.layout({});
+  editorOutput.layout();
+  editorConfig.layout({});
+  editorConfig.layout();
 })();

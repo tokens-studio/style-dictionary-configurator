@@ -2,15 +2,16 @@ import fs from "fs";
 import util from "util";
 import path from "path";
 import glob from "glob";
-import { configPaths, changeLang, getContents } from "../index.js";
-import {
-  styleDictionaryInstance,
-  styleDictionaryInstanceSet,
-  rerunStyleDictionaryIfSourceChanged,
-} from "../run-style-dictionary.js";
+import { changeLang, getContents } from "../index.js";
+import { sdState } from "../style-dictionary.js";
 import createDictionary from "browser-style-dictionary/lib/utils/createDictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
-import { ensureMonacoIsLoaded, editor } from "../monaco/monaco.js";
+import {
+  ensureMonacoIsLoaded,
+  editorOutput,
+  editorConfig,
+} from "../monaco/monaco.js";
+import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -19,11 +20,8 @@ const extensionMap = {
 const tokensPath = path.resolve("tokens");
 const fileTreeEl = document.querySelector("#output-file-tree");
 
-async function currentFileContentChanged() {
-  const selectedFileBtn = getSelectedFileBtn();
-  if (selectedFileBtn) {
-    selectedFileBtn.setAttribute("unsaved", "");
-  }
+async function configContentHasChanged() {
+  // TODO: Unsaved marker
 }
 
 function getSelectedFileBtn() {
@@ -56,7 +54,7 @@ export async function createInputFiles() {
 
     fs.writeFileSync(
       // take the .js by default
-      configPaths.find((pa) => pa.endsWith(".js")),
+      "config.js",
       `export default {
   source: ["**/*.tokens.json"],
   platforms: {
@@ -194,7 +192,7 @@ export async function createFolder(foldername) {
 export async function editFileName(filePath, newName, isFolder = false) {
   const newPath = path.join(path.dirname(filePath), newName);
   fs.renameSync(filePath, newPath);
-  await rerunStyleDictionaryIfSourceChanged(newPath, isFolder);
+  await sdState.rerunStyleDictionary(newPath, isFolder);
 }
 
 export async function removeFile(file) {
@@ -249,36 +247,18 @@ export async function clearAll() {
   await repopulateFileTree();
 }
 
-export async function saveCurrentFile() {
-  const selectedFileBtn = getSelectedFileBtn();
-  if (!selectedFileBtn) {
-    return;
-  }
-  const selectedFile = selectedFileBtn.getAttribute("full-path");
-  if (!selectedFile) {
-    return;
-  }
+export async function saveConfig() {
   await new Promise(async (resolve) => {
     await ensureMonacoIsLoaded();
-    fs.writeFile(selectedFile, editor.getValue(), () => {
+    fs.writeFile(findUsedConfigPath(), editorConfig.getValue(), () => {
       resolve();
     });
   });
-  selectedFileBtn.removeAttribute("unsaved");
 
-  await rerunStyleDictionaryIfSourceChanged(`/${selectedFile}`);
-}
+  // TODO: unsaved marker -> remove it
+  // selectedFileBtn.removeAttribute("unsaved");
 
-function openOrCloseJSSwitch(file) {
-  const container = document.getElementById("jsSwitchContainer");
-  if (container.hasAttribute("closed-by-user")) {
-    return;
-  }
-  if (configPaths.includes(`/${file}`) && file.endsWith(".json")) {
-    container.style.display = "flex";
-  } else {
-    container.style.display = "none";
-  }
+  await sdState.rerunStyleDictionary();
 }
 
 export async function switchToFile(file, ed) {
@@ -292,24 +272,23 @@ export async function switchToFile(file, ed) {
   });
   await ensureMonacoIsLoaded();
 
-  const _editor = ed || editor;
+  const _editor = ed || editorOutput;
   _editor.setValue(fileData);
   await changeLang(lang, _editor);
   _editor.setScrollTop(0);
 }
 
-export async function setupFileChangeHandlers(ed) {
+export async function setupConfigChangeHandler() {
   await ensureMonacoIsLoaded();
-  const _editor = ed || editor;
-  _editor.onDidChangeModelContent((ev) => {
+  editorConfig.onDidChangeModelContent((ev) => {
     if (!ev.isFlush) {
-      currentFileContentChanged();
+      configContentHasChanged();
     }
   });
-  _editor._domElement.addEventListener("keydown", (ev) => {
+  editorConfig._domElement.addEventListener("keydown", (ev) => {
     if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
       ev.preventDefault();
-      saveCurrentFile();
+      saveConfig();
     }
   });
 }
@@ -335,7 +314,7 @@ export async function getAllFiles() {
 }
 
 export async function getInputFiles() {
-  await styleDictionaryInstanceSet;
+  await sdState.hasInitialized;
   const allFiles = await asyncGlob("**/*", { nodir: true, fs });
   const outputFiles = await getOutputFiles();
   return allFiles.filter((file) => !outputFiles.includes(file));
@@ -344,8 +323,8 @@ export async function getInputFiles() {
 export async function getOutputFiles() {
   // without a correct SD instance, we can't really know for sure what the output files are
   // therefore, we can't know what the input files are (tokens + other used files via relative imports)
-  await styleDictionaryInstanceSet;
-  const { platforms } = styleDictionaryInstance.options;
+  await sdState.hasInitialized;
+  const { platforms } = sdState.sd.options;
   let outputFiles = [];
   await Promise.all(
     Object.entries(platforms).map(([key, platform]) => {
@@ -363,7 +342,7 @@ export async function getOutputFiles() {
 }
 
 export async function repopulateFileTree() {
-  if (!styleDictionaryInstance) {
+  if (!sdState.sd) {
     console.error(
       "Trying to repopulate file tree without a valid style-dictionary object to check which files are input vs output."
     );
@@ -376,11 +355,11 @@ export async function repopulateFileTree() {
 
 export async function dispatchTokens(ev) {
   const { source } = ev;
-  await styleDictionaryInstanceSet;
+  await sdState.hasInitialized;
   source.postMessage(
     {
       type: "sd-tokens",
-      tokens: styleDictionaryInstance.tokens,
+      tokens: sdState.sd.tokens,
     },
     "*"
   );
@@ -388,10 +367,10 @@ export async function dispatchTokens(ev) {
 
 export async function dispatchDictionary(ev) {
   const { source } = ev;
-  await styleDictionaryInstanceSet;
+  await sdState.hasInitialized;
   // Dictionary can contain methods, for postMessage cloning as a workaround
   // we therefore have to JSON.stringify it and JSON.parse it to clone which removes functions.
-  const dictionary = JSON.parse(JSON.stringify(styleDictionaryInstance));
+  const dictionary = JSON.parse(JSON.stringify(sdState.sd));
   source.postMessage(
     {
       type: "sd-dictionary",
@@ -404,8 +383,8 @@ export async function dispatchDictionary(ev) {
 export async function dispatchEnrichedTokens(ev) {
   const { source, data } = ev;
   const { platform } = data;
-  await styleDictionaryInstanceSet;
-  const enrichedTokens = styleDictionaryInstance.exportPlatform(platform);
+  await sdState.hasInitialized;
+  const enrichedTokens = sdState.sd.exportPlatform(platform);
   const { allTokens, tokens } = createDictionary({
     properties: enrichedTokens,
   });

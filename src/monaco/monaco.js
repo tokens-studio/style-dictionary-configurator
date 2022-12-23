@@ -4,9 +4,8 @@ let loaderPending = false;
 const loaderCallbacks = [];
 
 export let monaco;
-export let monaco2;
-export let editor;
-export let editor2;
+export let editorOutput;
+export let editorConfig;
 
 function onAmdLoaderLoad() {
   let currentCallback = loaderCallbacks.shift();
@@ -90,14 +89,8 @@ export function ensureMonacoIsLoaded(
 ensureMonacoIsLoaded().then(() => {
   monaco = window.monaco;
   monaco.editor.defineTheme("my-theme", themeData);
-  editor = monaco.editor.create(document.getElementById("monaco-container"), {
-    theme: "my-theme",
-    minimap: {
-      enabled: false,
-    },
-  });
-  editor2 = monaco.editor.create(
-    document.getElementById("monaco-container-2"),
+  editorOutput = monaco.editor.create(
+    document.getElementById("monaco-container-output"),
     {
       theme: "my-theme",
       minimap: {
@@ -105,5 +98,14 @@ ensureMonacoIsLoaded().then(() => {
       },
     }
   );
-  editor2.getModel().updateOptions({ tabSize: 2 });
+  editorConfig = monaco.editor.create(
+    document.getElementById("monaco-container-config"),
+    {
+      theme: "my-theme",
+      minimap: {
+        enabled: false,
+      },
+    }
+  );
+  editorConfig.getModel().updateOptions({ tabSize: 2 });
 });

@@ -1,12 +1,12 @@
 import { LitElement, html } from "lit";
 import * as zip from "@zip.js/zip.js";
 import iconDefinitions from "../icons/iconDefinitions.js";
-import { ensureMonacoIsLoaded, editor } from "../monaco/monaco.js";
-import runStyleDictionary from "../run-style-dictionary.js";
+import { ensureMonacoIsLoaded, editorOutput } from "../monaco/monaco.js";
+import { sdState } from "../style-dictionary.js";
 import {
   clearAll,
   switchToFile,
-  saveCurrentFile,
+  saveConfig,
   createFile,
   createFolder,
   removeFile,
@@ -246,8 +246,8 @@ class FileTree extends LitElement {
     // TODO: check if there's a lifecycle hook that we can use instead..
     setTimeout(async () => {
       await ensureMonacoIsLoaded();
-      editor.layout({});
-      editor.layout();
+      editorOutput.layout({});
+      editorOutput.layout();
     }, 10);
   }
 
@@ -297,7 +297,7 @@ class FileTree extends LitElement {
   }
 
   play() {
-    runStyleDictionary();
+    sdState.runStyleDictionary();
   }
 
   uncheckFolders() {
@@ -516,7 +516,7 @@ class FileTree extends LitElement {
   async switchToFile(indexOrName) {
     await this.updateComplete;
     if (this.unsavedFileBtn) {
-      saveCurrentFile();
+      saveConfig();
     }
     const filename = this.switchToFileInTree(indexOrName);
     switchToFile(filename);
