@@ -28,6 +28,7 @@ main {
 
 .middle {
   width: 600px;
+  overflow-y: auto;
 }
 
 .right {
