@@ -113,7 +113,9 @@ class SdState extends EventTarget {
     }
     const foldersToClean = new Set();
     Object.entries(this.sd.platforms).map(([, val]) => {
-      foldersToClean.add(val.buildPath.split("/")[0]);
+      if (val.buildPath) {
+        foldersToClean.add(val.buildPath.split("/")[0]);
+      }
     });
 
     await Promise.all(

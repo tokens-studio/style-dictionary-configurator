@@ -128,7 +128,16 @@ class TokenPlatforms extends LitElement {
       }
 
       .format {
-        padding: 0.5rem;
+        position: relative;
+        padding: 0.75rem;
+      }
+
+      .codicon.delete-format {
+        position: absolute;
+        top: 4px;
+        right: 0;
+        font-size: 0.75rem;
+        margin: 0;
       }
     `;
   }
@@ -304,6 +313,11 @@ class TokenPlatforms extends LitElement {
             ? platform.files.map(
                 (file) => html`
                   <div class="format border">
+                    <button
+                      class="delete-format codicon codicon-close"
+                      @click="${() =>
+                        this.removeFormat(platform.key, file.format)}"
+                    ></button>
                     <p>${file.format}</p>
                     <p>File: ${file.destination}</p>
                   </div>
@@ -334,6 +348,14 @@ class TokenPlatforms extends LitElement {
   removeTransformGroup(platform) {
     const copy = structuredClone(this._platforms);
     delete this._platforms[platform].transformGroup;
+    this.requestUpdate("_platforms", copy);
+  }
+
+  removeFormat(platform, format) {
+    const copy = structuredClone(this._platforms);
+    this._platforms[platform].files = this._platforms[platform].files.filter(
+      (file) => file.format !== format
+    );
     this.requestUpdate("_platforms", copy);
   }
 }
