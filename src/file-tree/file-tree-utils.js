@@ -54,33 +54,37 @@ export async function createInputFiles() {
 
     fs.writeFileSync(
       // take the .js by default
-      "config.js",
-      `export default {
-  source: ["**/*.tokens.json"],
-  platforms: {
-    css: {
-      transformGroup: "css",
-      prefix: "sd",
-      buildPath: "build/css/",
-      files: [
+      "config.json",
+      JSON.stringify(
         {
-          destination: "_variables.css",
-          format: "css/variables",
+          source: ["**/*.tokens.json"],
+          platforms: {
+            css: {
+              transformGroup: "css",
+              prefix: "sd",
+              buildPath: "build/css/",
+              files: [
+                {
+                  destination: "_variables.css",
+                  format: "css/variables",
+                },
+              ],
+            },
+            js: {
+              transformGroup: "js",
+              buildPath: "build/js/",
+              files: [
+                {
+                  destination: "variables.js",
+                  format: "javascript/es6",
+                },
+              ],
+            },
+          },
         },
-      ],
-    },
-    js: {
-      transformGroup: "js",
-      buildPath: "build/js/",
-      files: [
-        {
-          destination: "variables.js",
-          format: "javascript/es6",
-        },
-      ],
-    },
-  },
-};`
+        null,
+        2
+      )
     );
 
     fs.writeFileSync(

@@ -17,9 +17,22 @@ class SdState extends EventTarget {
   constructor() {
     super();
     this._sd = undefined;
+    this.hasInitializedConfig = new Promise((resolve) => {
+      this.hasInitializedConfigResolve = resolve;
+    });
     this.hasInitialized = new Promise((resolve) => {
       this.hasInitializedResolve = resolve;
     });
+  }
+
+  get config() {
+    return this._config;
+  }
+
+  set config(v) {
+    this._config = v;
+    this.hasInitializedConfigResolve();
+    this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
   }
 
   get sd() {
@@ -66,22 +79,23 @@ class SdState extends EventTarget {
       }
 
       // Custom parser for JS files
-      cfgObj.parsers = [
-        ...(cfgObj.parsers || []),
-        {
-          // matches js, mjs
-          pattern: /\.(j|mj)s$/,
-          parse: async ({ filePath }) => {
-            const bundled = await bundle(filePath);
-            const url = URL.createObjectURL(
-              new Blob([bundled], { type: "text/javascript" })
-            );
-            const { default: token } = await import(url);
-            return token;
-          },
-        },
-      ];
+      // cfgObj.parsers = [
+      //   ...(cfgObj.parsers || []),
+      //   {
+      //     // matches js, mjs
+      //     pattern: /\.(j|mj)s$/,
+      //     parse: async ({ filePath }) => {
+      //       const bundled = await bundle(filePath);
+      //       const url = URL.createObjectURL(
+      //         new Blob([bundled], { type: "text/javascript" })
+      //       );
+      //       const { default: token } = await import(url);
+      //       return token;
+      //     },
+      //   },
+      // ];
 
+      this.config = cfgObj;
       newStyleDictionary = await StyleDictionary.extend(cfgObj);
       this.sd = newStyleDictionary;
       await this.sd.buildAllPlatforms();
