@@ -1,5 +1,6 @@
 import fs from "fs";
 import StyleDictionary from "browser-style-dictionary/browser.js";
+import { Required } from "@lion/ui/form-core.js";
 import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
@@ -11,6 +12,9 @@ import "../collapsible/sd-collapsible.js";
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";
 import "../input/sd-input.js";
+import "../combobox/sd-combobox.js";
+import "../combobox/sd-option.js";
+import "../combobox/sd-selection-display.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -30,8 +34,20 @@ class TokenPlatforms extends LitElement {
         content: "\\ea76";
       }
 
+      .codicon-diff-added:before {
+        content: "\\eadc";
+      }
+
+      .platforms-header {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+      }
+
       h2 {
         text-align: center;
+        line-height: 1.1rem;
       }
 
       p {
@@ -43,9 +59,8 @@ class TokenPlatforms extends LitElement {
         border-radius: 8px;
       }
 
-      .dialog {
-        background-color: white;
-        padding: 2rem;
+      .platform-form > sd-input {
+        margin-bottom: 0.5rem;
       }
 
       .platforms-container {
@@ -197,7 +212,62 @@ class TokenPlatforms extends LitElement {
 
   render() {
     return html`
-      <h2>Platforms</h2>
+      <div class="platforms-header">
+        <h2>Platforms</h2>
+        <sd-dialog>
+          <button
+            slot="invoker"
+            class="codicon codicon-diff-added"
+            aria-label="add platform button"
+          ></button>
+          <sd-dialog-frame has-close-button slot="content">
+            <p slot="header">Add a new platform</p>
+            <div slot="content">
+              <form class="platform-form" @submit="${() => {}}">
+                <sd-input
+                  name="title"
+                  label="Platform name"
+                  .validators=${[new Required()]}
+                ></sd-input>
+                <sd-input
+                  name="build-path"
+                  label="Build path"
+                  help-text="Relative to root, without leading '/'"
+                ></sd-input>
+                <sd-combobox
+                  name="transforms"
+                  label="Transforms"
+                  help-text="One transformGroup is allowed, multiple standalone transforms"
+                  show-all-on-empty
+                  multiple-choice
+                >
+                  ${Object.keys(StyleDictionary.transformGroup).map(
+                    (transformGroup) => html`
+                      <sd-option
+                        .checked=${false}
+                        .choiceValue="${transformGroup}"
+                        group
+                        >${transformGroup}</sd-option
+                      >
+                    `
+                  )}
+                  ${Object.keys(StyleDictionary.transform).map(
+                    (transform) => html`
+                      <sd-option .checked=${false} .choiceValue="${transform}"
+                        >${transform}</sd-option
+                      >
+                    `
+                  )}
+                  <sd-selection-display
+                    slot="selection-display"
+                    style="display: contents;"
+                  ></sd-selection-display>
+                </sd-combobox>
+              </form>
+            </div>
+          </sd-dialog-frame>
+        </sd-dialog>
+      </div>
       <div class="platforms-container">${this.platformsTemplate()}</div>
     `;
   }
@@ -226,7 +296,7 @@ class TokenPlatforms extends LitElement {
                 aria-label="edit platform"
                 class="codicon codicon-edit"
               ></button>
-              <sd-dialog-frame slot="content" class="dialog border">
+              <sd-dialog-frame slot="content">
                 <div slot="content">
                   <form
                     data-curr-title="${plat.key}"

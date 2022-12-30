@@ -8,15 +8,18 @@ class SdDialogFrame extends LitElement {
         width: 600px;
         position: relative;
         box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 8px;
       }
 
       .close-btn {
         position: absolute;
-        top: 0.25rem;
-        right: 0.25rem;
-        margin: 0;
-        font-size: 2rem;
-        line-height: 2rem;
+        top: 0.5rem;
+        right: 0.5rem;
+        margin: 0px;
+        font-size: 1rem;
+        line-height: 1.5rem;
       }
 
       ::slotted([slot="header"]) {
@@ -26,6 +29,10 @@ class SdDialogFrame extends LitElement {
         font-weight: bold !important;
         font-size: 1.5rem !important;
         line-height: 1.5rem !important;
+      }
+
+      ::slotted([slot="content"]) {
+        padding: 1rem;
       }
     `;
   }

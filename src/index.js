@@ -1,4 +1,5 @@
 import fs from "fs";
+import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
 // import prettier from "prettier";
 // import babel from "@babel/parser";
 import {
@@ -24,6 +25,8 @@ import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
+
+loadDefaultFeedbackMessages();
 
 export async function changeLang(lang, ed) {
   await ensureMonacoIsLoaded();
