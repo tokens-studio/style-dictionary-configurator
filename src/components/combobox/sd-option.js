@@ -48,6 +48,12 @@ export class SdOption extends LionOption {
   render() {
     return html`
       <div class="choice-field__label">
+        <input
+          type="checkbox"
+          name="visual-state"
+          aria-hidden="true"
+          ?checked=${this.checked}
+        />
         <slot></slot>
         ${this.group ? html` <span class="group">(group)</span> ` : ""}
       </div>
