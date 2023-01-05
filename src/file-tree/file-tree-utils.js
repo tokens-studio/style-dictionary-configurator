@@ -12,6 +12,7 @@ import {
   editorConfig,
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
+import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -280,6 +281,12 @@ export async function switchToFile(file, ed) {
   _editor.setValue(fileData);
   await changeLang(lang, _editor);
   _editor.setScrollTop(0);
+
+  // TODO: find better fix, e.g. an event we can wait for in monaco for set value complete or something..
+  await new Promise((resolve) => {
+    setTimeout(resolve, 10);
+  });
+  resizeMonacoLayout();
 }
 
 export async function setupConfigChangeHandler() {
