@@ -2,6 +2,16 @@ import { css, html } from "lit";
 import { LionCombobox } from "@lion/ui/combobox.js";
 
 class SdCombobox extends LionCombobox {
+  static get properties() {
+    return {
+      selectionDisplayPosition: {
+        type: String,
+        reflect: true,
+        attribute: "selection-display-position",
+      },
+    };
+  }
+
   static get styles() {
     return [
       ...super.styles,
@@ -18,6 +28,11 @@ class SdCombobox extends LionCombobox {
     ];
   }
 
+  constructor() {
+    super();
+    this.selectionDisplayPosition = "before";
+  }
+
   /**
    * @override Lion OverlayMixin
    * Hotfix override of lion, for combobox not opening properly on click/focusin
@@ -30,6 +45,7 @@ class SdCombobox extends LionCombobox {
 
   /**
    * @override Lion FormControlMixin
+   * Remove selection display slot from input
    */
   _inputGroupInputTemplate() {
     return html`
@@ -41,10 +57,13 @@ class SdCombobox extends LionCombobox {
 
   /**
    * @override Lion FormControlMixin
+   * Move selection display slot before or after input-group
    */
   _inputGroupTemplate() {
+    const selectionDisplay = html`<slot name="selection-display"></slot>`;
     return html`
-      <slot name="selection-display"></slot>
+      ${this.selectionDisplayPosition === "before" ? selectionDisplay : ""}
+
       <div class="input-group">
         ${this._inputGroupBeforeTemplate()}
         <div class="input-group__container">
@@ -53,11 +72,15 @@ class SdCombobox extends LionCombobox {
         </div>
         ${this._inputGroupAfterTemplate()}
       </div>
+
+      ${this.selectionDisplayPosition === "after" ? selectionDisplay : ""}
     `;
   }
 
   /**
    * @override LionCombobox
+   * Reposition the overlay, since syncing to textbox adds items to the
+   * selection display element, causing layout shifts when they wrap to new line
    */
   _syncToTextboxMultiple(modelValue, oldModelValue = []) {
     super._syncToTextboxMultiple(modelValue, oldModelValue);

@@ -25,62 +25,64 @@ export class SdSelectionDisplay extends LitElement {
   }
 
   static get styles() {
-    return css`
-      .codicon[class*="codicon-"] {
-        font: normal normal normal 16px/1 codicon;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-      }
-      .codicon-close:before {
-        content: "\\ea76";
-      }
+    return [
+      css`
+        .codicon[class*="codicon-"] {
+          font: normal normal normal 16px/1 codicon;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+        }
+        .codicon-close:before {
+          content: "\\ea76";
+        }
 
-      :host {
-        display: block;
-        font-size: 14px;
-      }
+        :host {
+          display: block;
+          font-size: 14px;
+        }
 
-      .combobox__selection {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.25em;
-      }
+        .combobox__selection {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.25em;
+        }
 
-      .combobox__input {
-        display: block;
-      }
+        .combobox__input {
+          display: block;
+        }
 
-      .codicon-close {
-        padding: 0;
-      }
+        .codicon-close {
+          padding: 0;
+        }
 
-      .selection-chip {
-        border-radius: 4px;
-        background-color: #eee;
-        padding: 6px;
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-      }
+        .selection-chip {
+          border-radius: 4px;
+          background-color: #eee;
+          padding: 6px;
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+        }
 
-      .selection-chip--highlighted {
-        background-color: #ccc;
-      }
+        .selection-chip--highlighted {
+          background-color: #ccc;
+        }
 
-      * > ::slotted([slot="_textbox"]) {
-        outline: none;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        border: none;
-        border-bottom: 1px solid;
-      }
+        * > ::slotted([slot="_textbox"]) {
+          outline: none;
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          border: none;
+          border-bottom: 1px solid;
+        }
 
-      .error {
-        border: 1px solid red;
-      }
-    `;
+        .error {
+          border: 1px solid red;
+        }
+      `,
+    ];
   }
 
   /**

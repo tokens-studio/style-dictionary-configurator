@@ -1,21 +1,15 @@
 import fs from "fs";
 import StyleDictionary from "browser-style-dictionary/browser.js";
-import { Required } from "@lion/ui/form-core.js";
 import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { LitElement, css, html } from "lit";
 import { sdState } from "../../style-dictionary.js";
-import { TransformsValidator } from "../combobox/TransformsValidator.js";
 
 // Custom Element Definitions
+import "./platforms-dialog.js";
 import "../collapsible/sd-collapsible.js";
-import "../dialog/sd-dialog.js";
-import "../dialog/sd-dialog-frame.js";
 import "../input/sd-input.js";
-import "../combobox/sd-combobox.js";
-import "../combobox/sd-option.js";
-import "../combobox/sd-selection-display.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -27,16 +21,8 @@ class TokenPlatforms extends LitElement {
         cursor: pointer;
       }
 
-      .codicon-edit:before {
-        content: "\\ea73";
-      }
-
       .codicon-close:before {
         content: "\\ea76";
-      }
-
-      .codicon-diff-added:before {
-        content: "\\eadc";
       }
 
       .platforms-header {
@@ -58,10 +44,6 @@ class TokenPlatforms extends LitElement {
       .border {
         border: 1px solid black;
         border-radius: 8px;
-      }
-
-      .platform-form > sd-input {
-        margin-bottom: 0.5rem;
       }
 
       .platforms-container {
@@ -202,6 +184,7 @@ class TokenPlatforms extends LitElement {
     this._config = sdState.config;
     sdState.addEventListener("config-changed", (ev) => {
       this._config = ev.detail;
+      this._platforms = this._config.platforms;
     });
 
     await sdState.hasInitialized;
@@ -215,59 +198,9 @@ class TokenPlatforms extends LitElement {
     return html`
       <div class="platforms-header">
         <h2>Platforms</h2>
-        <sd-dialog>
-          <button
-            slot="invoker"
-            class="codicon codicon-diff-added"
-            aria-label="add platform button"
-          ></button>
-          <sd-dialog-frame has-close-button slot="content">
-            <p slot="header">Add a new platform</p>
-            <div slot="content">
-              <form class="platform-form" @submit="${() => {}}">
-                <sd-input
-                  name="title"
-                  label="Platform name"
-                  .validators=${[new Required()]}
-                ></sd-input>
-                <sd-input
-                  name="build-path"
-                  label="Build path"
-                  help-text="Relative to root, without leading '/'"
-                ></sd-input>
-                <sd-combobox
-                  name="transforms"
-                  label="Transforms"
-                  help-text="One transform group is allowed, you can pick multiple standalone transforms"
-                  show-all-on-empty
-                  multiple-choice
-                  .validators=${[new TransformsValidator()]}
-                >
-                  ${Object.keys(StyleDictionary.transformGroup).map(
-                    (transformGroup) => html`
-                      <sd-option
-                        .checked=${false}
-                        .choiceValue="${transformGroup} (group)"
-                        group
-                        >${transformGroup} (group)</sd-option
-                      >
-                    `
-                  )}
-                  ${Object.keys(StyleDictionary.transform).map(
-                    (transform) => html`
-                      <sd-option .checked=${false} .choiceValue="${transform}"
-                        >${transform}</sd-option
-                      >
-                    `
-                  )}
-                  <sd-selection-display
-                    slot="selection-display"
-                  ></sd-selection-display>
-                </sd-combobox>
-              </form>
-            </div>
-          </sd-dialog-frame>
-        </sd-dialog>
+        <platforms-dialog
+          @save-platform=${this.savePlatform}
+        ></platforms-dialog>
       </div>
       <div class="platforms-container">${this.platformsTemplate()}</div>
     `;
@@ -278,54 +211,19 @@ class TokenPlatforms extends LitElement {
       return "";
     }
 
-    return html`${this.platformsToEntries().map(
-      (plat) => html`
-        <div class="platform border">
-          <div class="platform__header">
-            <p class="platform__title">${plat.key}</p>
-            <sd-dialog
-              @opened-changed=${(ev) => {
-                // Autofocuses the input upon opening the dialog
-                if (ev.target.opened) {
-                  const inputEl = ev.target.querySelector("sd-input");
-                  inputEl.focus();
-                }
-              }}
-            >
-              <button
-                slot="invoker"
-                aria-label="edit platform"
-                class="codicon codicon-edit"
-              ></button>
-              <sd-dialog-frame slot="content">
-                <div slot="content">
-                  <form
-                    data-curr-title="${plat.key}"
-                    @submit=${this.applyPlatformName}
-                  >
-                    <sd-input
-                      name="platform-name"
-                      label="Change platform name"
-                    ></sd-input>
-                    <button type="submit">Apply</button>
-                    <button
-                      @click="${(ev) =>
-                        ev.target.dispatchEvent(
-                          new Event("close-overlay", { bubbles: true })
-                        )}"
-                      type="button"
-                    >
-                      Cancel
-                    </button>
-                  </form>
-                </div>
-              </sd-dialog-frame>
-            </sd-dialog>
+    return html`
+      ${this.platformsToEntries().map(
+        (plat) => html`
+          <div class="platform border">
+            <div class="platform__header">
+              <p class="platform__title">${plat.key}</p>
+              <platforms-dialog .platform=${plat.key}></platforms-dialog>
+            </div>
+            ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
           </div>
-          ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
-        </div>
-      `
-    )}`;
+        `
+      )}
+    `;
   }
 
   transformsTemplate(platform) {
@@ -428,6 +326,18 @@ class TokenPlatforms extends LitElement {
       (file) => file.format !== format
     );
     this.requestUpdate("_platforms", copy);
+  }
+
+  savePlatform(ev) {
+    const { detail } = ev;
+
+    sdState.config = {
+      ...sdState.config,
+      platforms: {
+        ...sdState.config.platforms,
+        ...detail,
+      },
+    };
   }
 }
 
