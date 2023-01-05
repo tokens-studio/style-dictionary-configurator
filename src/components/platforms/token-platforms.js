@@ -6,6 +6,7 @@ import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { LitElement, css, html } from "lit";
 import { sdState } from "../../style-dictionary.js";
+import { TransformsValidator } from "../combobox/TransformsValidator.js";
 
 // Custom Element Definitions
 import "../collapsible/sd-collapsible.js";
@@ -237,17 +238,18 @@ class TokenPlatforms extends LitElement {
                 <sd-combobox
                   name="transforms"
                   label="Transforms"
-                  help-text="One transformGroup is allowed, multiple standalone transforms"
+                  help-text="One transform group is allowed, you can pick multiple standalone transforms"
                   show-all-on-empty
                   multiple-choice
+                  .validators=${[new TransformsValidator()]}
                 >
                   ${Object.keys(StyleDictionary.transformGroup).map(
                     (transformGroup) => html`
                       <sd-option
                         .checked=${false}
-                        .choiceValue="${transformGroup}"
+                        .choiceValue="${transformGroup} (group)"
                         group
-                        >${transformGroup}</sd-option
+                        >${transformGroup} (group)</sd-option
                       >
                     `
                   )}
@@ -260,7 +262,6 @@ class TokenPlatforms extends LitElement {
                   )}
                   <sd-selection-display
                     slot="selection-display"
-                    style="display: contents;"
                   ></sd-selection-display>
                 </sd-combobox>
               </form>

@@ -1,5 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { LitElement, html, css, nothing } from "lit";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * Disclaimer: this is just an example component demoing the selection display of LionCombobox
@@ -25,23 +26,42 @@ export class SdSelectionDisplay extends LitElement {
 
   static get styles() {
     return css`
+      .codicon[class*="codicon-"] {
+        font: normal normal normal 16px/1 codicon;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .codicon-close:before {
+        content: "\\ea76";
+      }
+
       :host {
-        display: flex;
+        display: block;
+        font-size: 14px;
       }
 
       .combobox__selection {
-        flex: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25em;
       }
 
       .combobox__input {
         display: block;
       }
 
+      .codicon-close {
+        padding: 0;
+      }
+
       .selection-chip {
         border-radius: 4px;
         background-color: #eee;
-        padding: 4px;
-        font-size: 10px;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
       }
 
       .selection-chip--highlighted {
@@ -55,6 +75,10 @@ export class SdSelectionDisplay extends LitElement {
         box-sizing: border-box;
         border: none;
         border-bottom: 1px solid;
+      }
+
+      .error {
+        border: 1px solid red;
       }
     `;
   }
@@ -100,6 +124,7 @@ export class SdSelectionDisplay extends LitElement {
   onComboboxElementUpdated(changedProperties) {
     if (changedProperties.has("modelValue")) {
       this.selectedElements = this.computeSelectedElements();
+      this.reorderChips();
     }
   }
 
@@ -132,12 +157,41 @@ export class SdSelectionDisplay extends LitElement {
   }
 
   selectedElementTemplate(option, highlight) {
+    const groupsError =
+      this.comboboxElement.validationStates.error
+        ?.OnlyOneTransformGroupAllowed && option.group;
+    const classes = {
+      "selection-chip": true,
+      error: groupsError,
+      "selection-chip--highlighted": highlight,
+    };
+
     return html`
-      <span
-        class="selection-chip ${highlight ? "selection-chip--highlighted" : ""}"
-      >
-        ${option.value}
-      </span>
+      <div class="chip__container">
+        <div class="${classMap(classes)}">
+          <span>${option.value}</span>
+          <button
+            @click=${(ev) => {
+              option.checked = false;
+
+              // reopen combobox, because a mouse-up click
+              // outside of the overlay will close the overlay
+              const handler = () => {
+                if (!this.comboboxElement.opened) {
+                  this.comboboxElement.opened = true;
+                }
+                this.comboboxElement.removeEventListener(
+                  "opened-changed",
+                  handler
+                );
+              };
+              this.comboboxElement.addEventListener("opened-changed", handler);
+            }}
+            aria-label="Remove this transform"
+            class="codicon codicon-close"
+          ></button>
+        </div>
+      </div>
     `;
   }
 

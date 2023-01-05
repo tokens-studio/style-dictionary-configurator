@@ -55,7 +55,6 @@ export class SdOption extends LionOption {
           ?checked=${this.checked}
         />
         <slot></slot>
-        ${this.group ? html` <span class="group">(group)</span> ` : ""}
       </div>
     `;
   }
