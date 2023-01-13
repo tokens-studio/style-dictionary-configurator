@@ -217,7 +217,10 @@ class TokenPlatforms extends LitElement {
           <div class="platform border">
             <div class="platform__header">
               <p class="platform__title">${plat.key}</p>
-              <platforms-dialog .platform=${plat.key}></platforms-dialog>
+              <platforms-dialog
+                @save-platform=${this.savePlatform}
+                .platform=${plat.key}
+              ></platforms-dialog>
             </div>
             ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
           </div>
@@ -267,7 +270,6 @@ class TokenPlatforms extends LitElement {
       ${platform.transforms.map(
         (transform) => html`
           <div class="transform-container">${transform}</div>
-          <!-- TODO: Add delete button for the transform -->
         `
       )}
     `;
@@ -290,7 +292,6 @@ class TokenPlatforms extends LitElement {
                     <p>${file.format}</p>
                     <p>File: ${file.destination}</p>
                   </div>
-                  <!-- TODO: Add delete button for the format -->
                 `
               )
             : ""}

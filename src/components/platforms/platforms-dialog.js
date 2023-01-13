@@ -3,9 +3,11 @@ import StyleDictionary from "browser-style-dictionary/browser.js";
 import { Required } from "@lion/ui/form-core.js";
 import { LionForm } from "@lion/ui/form.js";
 import { repeat } from "lit/directives/repeat.js";
+import { until } from "lit/directives/until.js";
 import { classMap } from "lit/directives/class-map.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
+import { sdState } from "../../style-dictionary.js";
 
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";
@@ -13,13 +15,23 @@ import "../combobox/sd-combobox.js";
 import "../combobox/sd-option.js";
 import "../combobox/sd-selection-display.js";
 import "../input/sd-input.js";
+import { transformGroup } from "browser-style-dictionary";
 
 customElements.define("sd-form", LionForm);
 
 class PlatformsDialog extends LitElement {
   static get properties() {
     return {
+      _files: {
+        state: true,
+      },
       _formats: {
+        state: true,
+      },
+      _transforms: {
+        state: true,
+      },
+      _platformData: {
         state: true,
       },
       platform: {
@@ -98,14 +110,26 @@ class PlatformsDialog extends LitElement {
         .error {
           border: 1px solid red;
         }
+
+        form > * {
+          margin-bottom: 10px;
+        }
       `,
     ];
   }
 
   constructor() {
     super();
+    this._files = [];
     this._formats = [];
+    this._transforms = [];
     this.platform = "";
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has("platform") && this.platform) {
+      this.onPlatformChanged();
+    }
   }
 
   render() {
@@ -114,6 +138,7 @@ class PlatformsDialog extends LitElement {
       "codicon-diff-added": !this.platform,
       "codicon-edit": this.platform,
     };
+
     return html`
       <sd-dialog>
         <button
@@ -122,29 +147,42 @@ class PlatformsDialog extends LitElement {
           aria-label="add platform button"
         ></button>
         <sd-dialog-frame class="dialog-frame" has-close-button slot="content">
-          <p slot="header">Add a new platform</p>
-          <div slot="content">
-            <sd-form class="platform-form" @submit="${this.submitForm}">
-              <form>
-                <sd-input
-                  name="name"
-                  label="Platform name"
-                  .validators=${[new Required()]}
-                ></sd-input>
-                <sd-input
-                  name="buildPath"
-                  label="Build path"
-                  help-text="Relative to root, without leading '/'"
-                ></sd-input>
-                <sd-input name="prefix" label="Prefix (optional)"></sd-input>
-                ${this.transformsSearchTemplate()}
-                ${this.formatsSearchTemplate()}
-                <button class="save-button">Save</button>
-              </form>
-            </sd-form>
-          </div>
+          <p slot="header">
+            ${this.platform ? "Change" : "Add a new"} platform
+          </p>
+          <div slot="content">${this.formTemplate()}</div>
         </sd-dialog-frame>
       </sd-dialog>
+    `;
+  }
+
+  formTemplate() {
+    return html`
+      <sd-form class="platform-form" @submit="${this.submitForm}">
+        <form>
+          <sd-input
+            name="name"
+            label="Platform name"
+            .modelValue=${this.platform ? this.platform : ""}
+            .validators=${[new Required()]}
+          ></sd-input>
+          <sd-input
+            name="buildPath"
+            label="Build path"
+            help-text="Relative to root, without leading '/'"
+            .modelValue=${this._platformData
+              ? this._platformData.buildPath
+              : ""}
+          ></sd-input>
+          <sd-input
+            name="prefix"
+            label="Prefix (optional)"
+            .modelValue=${this._platformData ? this._platformData.prefix : ""}
+          ></sd-input>
+          ${this.transformsSearchTemplate()} ${this.formatsSearchTemplate()}
+          <button class="save-button">Save</button>
+        </form>
+      </sd-form>
     `;
   }
 
@@ -156,6 +194,7 @@ class PlatformsDialog extends LitElement {
         help-text="One transform group is allowed, you can pick multiple standalone transforms"
         show-all-on-empty
         multiple-choice
+        .modelValue=${this._transforms}
         .validators=${[new TransformsValidator()]}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
@@ -188,6 +227,7 @@ class PlatformsDialog extends LitElement {
         help-text="Pick your formats, configure the filepath below in the result"
         show-all-on-empty
         multiple-choice
+        .modelValue=${this._files.map((file) => file.format)}
         @model-value-changed=${async (ev) => {
           const selectionDisplayNode = ev.target._selectionDisplayNode;
           if (selectionDisplayNode) {
@@ -214,10 +254,28 @@ class PlatformsDialog extends LitElement {
             name="format:${format}"
             label="${format} destination"
             help-text="Enter a filename for this format, e.g. 'variables.css'"
+            .modelValue=${this._files.find((file) => file.format === format)
+              .destination}
           ></sd-input>
         `
       )}
     `;
+  }
+
+  async onPlatformChanged() {
+    await sdState.hasInitialized;
+    this._platformData = sdState._sd.platforms[this.platform];
+
+    this._transforms = [
+      ...(this._platformData?.transformGroup
+        ? [`${this._platformData.transformGroup} (group)`]
+        : []),
+      ...(this._platformData?.transforms ? this._platformData.transforms : []),
+    ];
+
+    this._files = [
+      ...(this._platformData?.files ? this._platformData.files : []),
+    ];
   }
 
   submitForm(ev) {
