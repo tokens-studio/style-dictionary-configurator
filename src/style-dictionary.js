@@ -4,6 +4,8 @@ import StyleDictionary from "browser-style-dictionary/browser.js";
 import {
   repopulateFileTree,
   getInputFiles,
+  fileTreeEl,
+  currentFileOutput,
 } from "./file-tree/file-tree-utils.js";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
@@ -54,6 +56,8 @@ class SdState extends EventTarget {
       const encoded = await encodeContents(inputFiles);
       window.location.href = `${window.location.origin}/#project=${encoded}`;
     }
+    // refresh currently selected output file
+    fileTreeEl.switchToFile(currentFileOutput);
   }
 
   async runStyleDictionary() {

@@ -19,7 +19,10 @@ const extensionMap = {
   js: "javascript",
 };
 const tokensPath = path.resolve("tokens");
-const fileTreeEl = document.querySelector("#output-file-tree");
+
+export const fileTreeEl = document.querySelector("#output-file-tree");
+export let currentFileConfig = findUsedConfigPath();
+export let currentFileOutput;
 
 async function configContentHasChanged() {
   // TODO: Unsaved marker
@@ -270,17 +273,33 @@ export async function switchToFile(file, ed) {
   // openOrCloseJSSwitch(file);
   const ext = path.extname(file).slice(1);
   const lang = extensionMap[ext] || ext;
-  const fileData = await new Promise((resolve) => {
-    fs.readFile(file, "utf-8", (err, data) => {
-      resolve(data);
-    });
-  });
-  await ensureMonacoIsLoaded();
-
   const _editor = ed || editorOutput;
-  _editor.setValue(fileData);
-  await changeLang(lang, _editor);
-  _editor.setScrollTop(0);
+
+  try {
+    const fileData = await new Promise((resolve, reject) => {
+      fs.readFile(file, "utf-8", (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      });
+    });
+
+    _editor.setValue(fileData);
+    await changeLang(lang, _editor);
+    _editor.setScrollTop(0);
+  } catch (err) {
+    _editor.setValue("");
+    fileTreeEl.uncheckAll();
+    return;
+  }
+
+  await ensureMonacoIsLoaded();
+  if (_editor === editorOutput) {
+    currentFileOutput = file;
+  } else {
+    currentFileConfig = file;
+  }
 
   // TODO: find better fix, e.g. an event we can wait for in monaco for set value complete or something..
   await new Promise((resolve) => {

@@ -15,12 +15,12 @@ import { classMap } from "lit/directives/class-map.js";
 export class SdSelectionDisplay extends LitElement {
   static get properties() {
     return {
-      comboboxElement: { attribute: false },
+      comboboxElement: { state: true },
       /**
        * Can be used to visually indicate the next
        */
-      removeChipOnNextBackspace: { attribute: false },
-      selectedElements: { attribute: false },
+      _removeChipOnNextBackspace: { state: true },
+      _selectedElements: { state: true },
     };
   }
 
@@ -107,7 +107,7 @@ export class SdSelectionDisplay extends LitElement {
   constructor() {
     super();
 
-    this.selectedElements = [];
+    this._selectedElements = [];
 
     this.textboxOnKeyup = this.textboxOnKeyup.bind(this);
     this.restoreBackspace = this.restoreBackspace.bind(this);
@@ -125,7 +125,7 @@ export class SdSelectionDisplay extends LitElement {
   // Fired on this element (selection-display slottable) by the combobox
   onComboboxElementUpdated(changedProperties) {
     if (changedProperties.has("modelValue")) {
-      this.selectedElements = this.computeSelectedElements();
+      this._selectedElements = this.computeSelectedElements();
       this.reorderChips();
     }
   }
@@ -135,16 +135,16 @@ export class SdSelectionDisplay extends LitElement {
    * are shown latest, and deleted elements respect existing order of chips.
    */
   reorderChips() {
-    const { selectedElements } = this;
+    const { _selectedElements } = this;
     if (this.__prevSelectedEls) {
-      const addedEls = selectedElements.filter(
+      const addedEls = _selectedElements.filter(
         (e) => !this.__prevSelectedEls.includes(e)
       );
       const deletedEls = this.__prevSelectedEls.filter(
-        (e) => !selectedElements.includes(e)
+        (e) => !_selectedElements.includes(e)
       );
       if (addedEls.length) {
-        this.selectedElements = [...this.__prevSelectedEls, ...addedEls];
+        this._selectedElements = [...this.__prevSelectedEls, ...addedEls];
       } else if (deletedEls.length) {
         deletedEls.forEach((delEl) => {
           this.__prevSelectedEls.splice(
@@ -152,10 +152,10 @@ export class SdSelectionDisplay extends LitElement {
             1
           );
         });
-        this.selectedElements = this.__prevSelectedEls;
+        this._selectedElements = this.__prevSelectedEls;
       }
     }
-    this.__prevSelectedEls = this.selectedElements;
+    this.__prevSelectedEls = this._selectedElements;
   }
 
   selectedElementTemplate(option, highlight) {
@@ -189,7 +189,7 @@ export class SdSelectionDisplay extends LitElement {
               };
               this.comboboxElement.addEventListener("opened-changed", handler);
             }}
-            aria-label="Remove this transform"
+            aria-label="Remove this"
             class="codicon codicon-close"
           ></button>
         </div>
@@ -203,10 +203,10 @@ export class SdSelectionDisplay extends LitElement {
     }
     return html`
       <div class="combobox__selection">
-        ${this.selectedElements.map((option, i) => {
+        ${this._selectedElements.map((option, i) => {
           const highlight = Boolean(
-            this.removeChipOnNextBackspace &&
-              i === this.selectedElements.length - 1
+            this._removeChipOnNextBackspace &&
+              i === this._selectedElements.length - 1
           );
           return this.selectedElementTemplate(option, highlight);
         })}
@@ -221,20 +221,20 @@ export class SdSelectionDisplay extends LitElement {
   textboxOnKeyup(ev) {
     if (ev.key === "Backspace") {
       if (!this._inputNode.value) {
-        if (this.removeChipOnNextBackspace && this.selectedElements.length) {
-          this.selectedElements[
-            this.selectedElements.length - 1
+        if (this._removeChipOnNextBackspace && this._selectedElements.length) {
+          this._selectedElements[
+            this._selectedElements.length - 1
           ].checked = false;
         }
-        this.removeChipOnNextBackspace = true;
+        this._removeChipOnNextBackspace = true;
       }
     } else {
-      this.removeChipOnNextBackspace = false;
+      this._removeChipOnNextBackspace = false;
     }
   }
 
   restoreBackspace() {
-    this.removeChipOnNextBackspace = false;
+    this._removeChipOnNextBackspace = false;
   }
 }
 customElements.define("sd-selection-display", SdSelectionDisplay);

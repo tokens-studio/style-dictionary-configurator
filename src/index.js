@@ -11,6 +11,7 @@ import {
   dispatchEnrichedTokens,
   openAllFolders,
   switchToFile,
+  fileTreeEl,
 } from "./file-tree/file-tree-utils.js";
 import { sdState } from "./style-dictionary.js";
 // side effect: loads the monaco editor
@@ -109,8 +110,7 @@ export async function encodeContents(files) {
   await createInputFiles();
   await sdState.runStyleDictionary();
   await openAllFolders();
-  const fileTreeEl = document.querySelector("#output-file-tree");
-  await switchToFile(fileTreeEl.outputFiles[0], editorOutput);
+  await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
   await switchToFile(findUsedConfigPath(), editorConfig);
   await setupConfigChangeHandler();
   resizeMonacoLayout();

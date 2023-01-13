@@ -300,12 +300,24 @@ class FileTree extends LitElement {
     sdState.runStyleDictionary();
   }
 
+  uncheckAll() {
+    this.uncheckFolders();
+    this.uncheckFiles();
+  }
+
   uncheckFolders() {
     const allFolders = Array.from(
       this.shadowRoot.querySelectorAll(".folder-row")
     );
     allFolders.forEach((folder) => {
       folder.removeAttribute("checked");
+    });
+  }
+
+  uncheckFiles() {
+    const allFiles = Array.from(this.shadowRoot.querySelectorAll(".file"));
+    allFiles.forEach((file) => {
+      file.removeAttribute("checked");
     });
   }
 

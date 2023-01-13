@@ -1,9 +1,9 @@
 import fs from "fs";
+import { LitElement, css, html } from "lit";
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
-import { LitElement, css, html } from "lit";
 import { sdState } from "../../style-dictionary.js";
 
 // Custom Element Definitions
@@ -14,17 +14,6 @@ import "../input/sd-input.js";
 class TokenPlatforms extends LitElement {
   static get styles() {
     return css`
-      .codicon[class*="codicon-"] {
-        font: normal normal normal 16px/1 codicon;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-      }
-
-      .codicon-close:before {
-        content: "\\ea76";
-      }
-
       .platforms-header {
         display: flex;
         gap: 1rem;
@@ -114,11 +103,6 @@ class TokenPlatforms extends LitElement {
         content: "-";
       }
 
-      .codicon.codicon-close {
-        font-size: 24px;
-        margin-top: 0.875rem;
-      }
-
       .formats-container {
         display: flex;
         flex-wrap: wrap;
@@ -128,14 +112,6 @@ class TokenPlatforms extends LitElement {
       .format {
         position: relative;
         padding: 0.75rem;
-      }
-
-      .codicon.delete-format {
-        position: absolute;
-        top: 4px;
-        right: 0;
-        font-size: 0.75rem;
-        margin: 0;
       }
     `;
   }
@@ -219,7 +195,7 @@ class TokenPlatforms extends LitElement {
               <p class="platform__title">${plat.key}</p>
               <platforms-dialog
                 @save-platform=${this.savePlatform}
-                .platform=${plat.key}
+                platform="${plat.key}"
               ></platforms-dialog>
             </div>
             ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
@@ -256,11 +232,6 @@ class TokenPlatforms extends LitElement {
             )}
           </ul>
         </sd-collapsible>
-        <button
-          @click="${() => this.removeTransformGroup(platform.key)}"
-          class="codicon codicon-close"
-          aria-label="delete this transform group"
-        ></button>
       </div>
     `;
   }
@@ -284,11 +255,6 @@ class TokenPlatforms extends LitElement {
             ? platform.files.map(
                 (file) => html`
                   <div class="format border">
-                    <button
-                      class="delete-format codicon codicon-close"
-                      @click="${() =>
-                        this.removeFormat(platform.key, file.format)}"
-                    ></button>
                     <p>${file.format}</p>
                     <p>File: ${file.destination}</p>
                   </div>
@@ -300,25 +266,12 @@ class TokenPlatforms extends LitElement {
     `;
   }
 
-  applyPlatformName(ev) {
-    ev.preventDefault();
-    const oldName = ev.target.getAttribute("data-curr-title");
-    const platformInput = ev.target.elements["platform-name"];
-    const newName = platformInput.value;
-    ev.target.reset();
-    if (oldName !== newName) {
-      const copy = structuredClone(this._platforms);
-      this._platforms[newName] = this._platforms[oldName];
-      delete this._platforms[oldName];
-      this.requestUpdate("_platforms", copy);
-    }
-    ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
-  }
-
   removeTransformGroup(platform) {
     const copy = structuredClone(this._platforms);
     delete this._platforms[platform].transformGroup;
     this.requestUpdate("_platforms", copy);
+    const dialogEl = this.shadowRoot.querySelector(`[platform="${platform}"]`);
+    dialogEl.onPlatformChanged();
   }
 
   removeFormat(platform, format) {
@@ -327,6 +280,8 @@ class TokenPlatforms extends LitElement {
       (file) => file.format !== format
     );
     this.requestUpdate("_platforms", copy);
+    const dialogEl = this.shadowRoot.querySelector(`[platform="${platform}"]`);
+    dialogEl.onPlatformChanged();
   }
 
   savePlatform(ev) {
