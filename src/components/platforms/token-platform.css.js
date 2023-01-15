@@ -5,7 +5,7 @@ export default css`
   }
 
   h2 {
-    font-size: var(--fontSizesBase);
+    font-size: var(--fontSizesSmall);
     font-weight: var(--fontWeightsSansMedium);
     color: var(--fgSubtle);
     margin: 0;
@@ -13,14 +13,14 @@ export default css`
   }
 
   h3 {
-    font-size: var(--fontSizesSmall);
+    font-size: var(--fontSizesBasel);
     font-weight: var(--fontWeightsSansMedium);
     color: var(--fgSubtle);
     margin: 0;
   }
 
   h4 {
-    font-size: var(--fontSizesXsmall);
+    font-size: var(--fontSizesSmall);
     font-weight: var(--fontWeightsSansMedium);
     margin: 0;
   }
@@ -55,12 +55,12 @@ export default css`
     padding: var(--space5);
     display: flex;
     flex-direction: column;
-    gap: var(--space5);
+    gap: var(--space6);
   }
 
   .platform__title {
     font-size: var(--fontSizesBase);
-    font-weight: var(--fontWeightsSansMedium);
+    color: var(--fgDefault);
   }
 
   .text-small {
@@ -71,7 +71,7 @@ export default css`
   .config-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space3);
+    gap: var(--space4);
   }
 
   .transform {

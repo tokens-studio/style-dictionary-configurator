@@ -93,14 +93,14 @@ class TokenPlatforms extends LitElement {
         (plat) => html`
           <div class="platform">
             <div class="platform__header">
-              <div class="platform__title">${plat.key}</div>
+              <h3 class="platform__title">${plat.key}</h3>
               <platforms-dialog
                 @save-platform=${this.savePlatform}
                 platform="${plat.key}"
               ></platforms-dialog>
             </div>
             <div class="platform__content">
-            ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
+              ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
             </div>
           </div>
         `
