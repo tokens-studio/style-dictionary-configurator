@@ -8,6 +8,7 @@ import { LionForm } from "@lion/ui/form.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
+import styles from "./platforms-dialog.css.js";
 
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";
@@ -43,77 +44,7 @@ class PlatformsDialog extends LitElement {
   static get styles() {
     return [
       codicon,
-      css`
-        .codicon-edit:before {
-          content: "\\ea73";
-        }
-        .codicon-diff-added:before {
-          content: "\\eadc";
-        }
-
-        .dialog-frame {
-          align-self: flex-start;
-          margin-top: 100px;
-        }
-
-        p {
-          margin: 0;
-        }
-
-        .platform-form > *:not(:last-child) {
-          margin-bottom: 0.5rem;
-        }
-
-        /** selection display lightdom styles */
-        [slot="selection-display"] {
-          display: block;
-          font-size: 14px;
-        }
-
-        .combobox__selection {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.25em;
-        }
-
-        .combobox__input {
-          display: block;
-        }
-
-        .codicon-close {
-          padding: 0;
-        }
-
-        .selection-chip {
-          border-radius: 4px;
-          background-color: #eee;
-          padding: 6px;
-          display: flex;
-          align-items: center;
-          gap: 0.5em;
-        }
-
-        .selection-chip--highlighted {
-          background-color: #ccc;
-        }
-
-        * > ::slotted([slot="_textbox"]) {
-          outline: none;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          border: none;
-          border-bottom: 1px solid;
-        }
-
-        .error {
-          border: 1px solid red;
-        }
-
-        form > * {
-          margin-bottom: 10px;
-        }
-      `,
+      styles
     ];
   }
 
@@ -149,9 +80,10 @@ class PlatformsDialog extends LitElement {
       <sd-dialog ${ref(this.dialogRef)}>
         <button
           slot="invoker"
-          class="${classMap(invokerBtnClasses)}"
-          aria-label="add platform button"
-        ></button>
+          class="trigger ${this.platform ? 'trigger-invisible' : ''}"
+        >
+          <div class="${classMap(invokerBtnClasses)}"></div>${this.platform ? '' : 'Add platform'}
+        </button>
         <sd-dialog-frame class="dialog-frame" has-close-button slot="content">
           <p slot="header">
             ${this.platform ? "Change" : "Add a new"} platform

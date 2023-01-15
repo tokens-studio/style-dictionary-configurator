@@ -18,7 +18,7 @@ class SdCombobox extends LionCombobox {
       css`
         * > ::slotted([slot="listbox"]) {
           max-height: 300px;
-          background-color: var(--bg-color);
+          background-color: var(--bgDefault);
         }
 
         #overlay-content-node-wrapper {

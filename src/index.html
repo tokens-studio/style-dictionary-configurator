@@ -26,6 +26,7 @@
     />
     <title>Token Configurator</title>
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./index.css" />
     <script src="https://cdn.jsdelivr.net/npm/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/json5@^2.0.0/dist/index.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -39,6 +40,10 @@
   <!-- hack to make monaco layout behave -->
   <body>
     <main style="height: 100%">
+      <section class="page-title">
+        <h1>Style Dictionary configurator</h1>
+      </section>
+      <section class="content">
       <section class="middle">
         <token-platforms></token-platforms>
       </section>
@@ -58,6 +63,7 @@
             style="height: 100%"
           ></div>
         </div>
+      </section>
       </section>
     </main>
   </body>

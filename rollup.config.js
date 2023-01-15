@@ -4,6 +4,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import inject from "@rollup/plugin-inject";
 import * as path from "path";
+import css from "rollup-plugin-import-css";
 
 const filesToCopy = [
   path.resolve("src", "index.html"),
@@ -49,6 +50,7 @@ const plugins = [
   inject({
     process: "process",
   }),
+  css(),
   nodeResolve,
   json(),
   {

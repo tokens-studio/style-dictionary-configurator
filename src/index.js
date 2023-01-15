@@ -26,6 +26,8 @@ import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
+import "@tokens-studio/tokens/dist/css/dark.css";
+import "@tokens-studio/tokens/dist/css/core.css";
 
 loadDefaultFeedbackMessages();
 
