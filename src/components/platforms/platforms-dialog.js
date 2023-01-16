@@ -1,9 +1,10 @@
-import { css, html, LitElement } from "lit";
 import StyleDictionary from "browser-style-dictionary/browser.js";
+import { css, html, LitElement } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+import { ref, createRef } from "lit/directives/ref.js";
+import { classMap } from "lit/directives/class-map.js";
 import { Required } from "@lion/ui/form-core.js";
 import { LionForm } from "@lion/ui/form.js";
-import { repeat } from "lit/directives/repeat.js";
-import { classMap } from "lit/directives/class-map.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
@@ -122,6 +123,13 @@ class PlatformsDialog extends LitElement {
     this._formats = [];
     this._transforms = [];
     this.platform = "";
+    this.dialogRef = createRef();
+    this.comboTransformsRef = createRef();
+    this.comboFormatsRef = createRef();
+  }
+
+  firstUpdated() {
+    this.preventDialogCloseOnComboClose();
   }
 
   updated(changedProperties) {
@@ -138,7 +146,7 @@ class PlatformsDialog extends LitElement {
     };
 
     return html`
-      <sd-dialog>
+      <sd-dialog ${ref(this.dialogRef)}>
         <button
           slot="invoker"
           class="${classMap(invokerBtnClasses)}"
@@ -187,6 +195,7 @@ class PlatformsDialog extends LitElement {
   transformsSearchTemplate() {
     return html`
       <sd-combobox
+        ref=${ref(this.comboTransformsRef)}
         name="transforms"
         label="Transforms"
         help-text="One transform group is allowed, you can pick multiple standalone transforms"
@@ -221,6 +230,7 @@ class PlatformsDialog extends LitElement {
   formatsSearchTemplate() {
     return html`
       <sd-combobox
+        ref=${ref(this.comboFormatsRef)}
         name="formats"
         label="Formats*"
         help-text="Pick your formats, configure the filepath below in the result"
@@ -253,6 +263,33 @@ class PlatformsDialog extends LitElement {
         `
       )}
     `;
+  }
+
+  /**
+   * When pressing ESC while inside a combobox, this closes the combobox.
+   * However, that ESC keyup event also fires a "cancel" event on native <dialog> element
+   * as well as bubbles up to the dialog contentNode.
+   * Both of those things will lead to closing the dialog prematurely, so this
+   * method prevents this from happening by intercepting those events.
+   */
+  async preventDialogCloseOnComboClose() {
+    const dialogEl = this.dialogRef.value;
+    await dialogEl.updateComplete;
+    const comboTransformsEl = this.comboTransformsRef.value;
+    const comboFormatsEl = this.comboFormatsRef.value;
+    if (dialogEl._overlayCtrl?.content) {
+      dialogEl._overlayCtrl.content.addEventListener("cancel", (ev) => {
+        ev.preventDefault();
+      });
+      comboTransformsEl.addEventListener("keyup", this.comboCloseHandler);
+      comboFormatsEl.addEventListener("keyup", this.comboCloseHandler);
+    }
+  }
+
+  comboCloseHandler(ev) {
+    if (ev.key === "Escape") {
+      ev.stopPropagation();
+    }
   }
 
   async onPlatformChanged() {
