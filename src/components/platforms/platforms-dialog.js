@@ -84,10 +84,7 @@ class PlatformsDialog extends LitElement {
         >
           <div class="${classMap(invokerBtnClasses)}"></div>${this.platform ? '' : 'Add platform'}
         </button>
-        <sd-dialog-frame class="dialog-frame" has-close-button slot="content">
-          <p slot="header">
-            ${this.platform ? "Change" : "Add a new"} platform
-          </p>
+        <sd-dialog-frame title=${this.platform ? "Change platform" : "Add a new platform"} has-close-button slot="content">
           <div slot="content">${this.formTemplate()}</div>
         </sd-dialog-frame>
       </sd-dialog>

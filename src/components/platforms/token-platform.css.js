@@ -82,7 +82,7 @@ export default css`
 
   .formats-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: var(--space5);
   }
 

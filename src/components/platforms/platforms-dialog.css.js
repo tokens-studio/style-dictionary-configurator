@@ -7,9 +7,10 @@ export default css`
     content: "\\eadc";
   }
 
-  .dialog-frame {
-    align-self: flex-start;
-    margin-top: 100px;
+  form {
+    display: flex;
+    flex-direction: column;
+    gap; var(--space3);
   }
 
   p {
@@ -93,5 +94,13 @@ export default css`
     aspect-ratio: 1 / 1;
     padding: 0;
     height: 32px;
+  }
+
+  .form-control .input {
+    background: red;
+  }
+
+  .input-group__input: {
+    background: blue;
   }
 `;
