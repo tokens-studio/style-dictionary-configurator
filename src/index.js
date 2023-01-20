@@ -107,7 +107,8 @@ export async function encodeContents(files) {
   });
 
   await ensureMonacoIsLoaded();
-  await createInputFiles();
+  // true means use Tokens Studio tokens.json instead of a more basic sd-compatible set of tokens
+  await createInputFiles(true);
   await sdState.runStyleDictionary();
   await openAllFolders();
   await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
