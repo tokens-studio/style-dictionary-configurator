@@ -206,23 +206,37 @@ class PlatformsDialog extends LitElement {
         .validators=${[new TransformsValidator()]}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
-        ${Object.keys(StyleDictionary.transformGroup).map(
-          (transformGroup) => html`
-            <sd-option
-              .checked=${false}
-              .choiceValue="${transformGroup} (group)"
-              group
-              >${transformGroup} (group)</sd-option
-            >
-          `
-        )}
-        ${Object.keys(StyleDictionary.transform).map(
-          (transform) => html`
-            <sd-option .checked=${false} .choiceValue="${transform}"
-              >${transform}</sd-option
-            >
-          `
-        )}
+        ${Object.keys(StyleDictionary.transformGroup)
+          // put tokens-studio transform group ordered first
+          .sort((a, b) => {
+            if (a === "tokens-studio") return -1;
+            if (b === "tokens-studio") return 1;
+            return 0;
+          })
+          .map(
+            (transformGroup) => html`
+              <sd-option
+                .checked=${false}
+                .choiceValue="${transformGroup} (group)"
+                group
+                >${transformGroup} (group)</sd-option
+              >
+            `
+          )}
+        ${Object.keys(StyleDictionary.transform)
+          // put tokens-studio transforms first
+          .sort((a, b) => {
+            if (a.startsWith("ts/")) return -1;
+            if (b.startsWith("ts/")) return 1;
+            return 0;
+          })
+          .map(
+            (transform) => html`
+              <sd-option .checked=${false} .choiceValue="${transform}"
+                >${transform}</sd-option
+              >
+            `
+          )}
       </sd-combobox>
     `;
   }

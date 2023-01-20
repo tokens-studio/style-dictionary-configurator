@@ -1,5 +1,4 @@
 import fs from "fs";
-
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import {
   repopulateFileTree,
@@ -7,9 +6,12 @@ import {
   fileTreeEl,
   currentFileOutput,
 } from "./file-tree/file-tree-utils.js";
+import { registerTransforms } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { encodeContents } from "./index.js";
+
+registerTransforms(StyleDictionary);
 
 /**
  * Small State object for getting/setting the current style-dictionary object.
