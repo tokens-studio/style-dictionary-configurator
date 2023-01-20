@@ -9,7 +9,7 @@ class SdDialogFrame extends LitElement {
         position: relative;
         box-shadow: var(--shadowDefault);
         background-color: var(--bgDefault);
-        border: 1px solid var(--borderDefault);
+        border: 1px solid var(--borderMuted);
         border-radius: var(--radiiMedium);
       }
 
