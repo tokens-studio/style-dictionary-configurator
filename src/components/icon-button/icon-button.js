@@ -1,34 +1,7 @@
 import { LitElement, html, css } from "lit";
-
+import styles from "./icon-button.css.js";
 class IconButton extends LitElement {
-  static styles = css`
-    button {
-      border: 0;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radiiSmall);
-      background-color: transparent;
-      cursor: pointer;
-      color: var(--fgDefault);
-    }
-
-    :host([size="small"]) button {
-      width: 28px;
-      height: 28px;
-    }
-
-    button:hover {
-      background-color: var(--bgSubtle);
-    }
-
-    button:focus {
-      box-shadow: var(--shadowsFocus);
-      outline: 0;
-    }
-  `;
+  static styles = styles;
 
   static get properties() {
     return {
