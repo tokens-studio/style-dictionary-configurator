@@ -59,15 +59,13 @@ class Button extends LitElement {
       size: {
         type: "small" | "medium" | "large",
         reflect: true,
-      },
+      }
     };
   }
 
   render() {
     return html`
-      <button
-        type="button"
-      >
+      <button type="button">
         <slot name="icon"></slot>
         <slot></slot>
       </button>

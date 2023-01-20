@@ -56,7 +56,8 @@ class SdCombobox extends LionCombobox {
 
         * > ::slotted([slot="help-text"]) {
           font-size: var(--fontSizesXsmall);
-          color: var(--fgMuted);
+          color: var(--fgSubtle);
+          margin-bottom: var(--space2);
         }
 
         * > ::slotted([slot="listbox"]) {
@@ -64,7 +65,7 @@ class SdCombobox extends LionCombobox {
           margin-top: var(--space2);
           background-color: var(--bgDefault);
           box-shadow: var(--shadowsSmall);
-          border: 1px solid var(--borderSubtle);
+          border: 1px solid var(--borderMuted);
           border-radius: var(--radiiMedium);
           padding: var(--space3);
         }
