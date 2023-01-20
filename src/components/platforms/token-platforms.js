@@ -12,6 +12,7 @@ import "./platforms-dialog.js";
 import "../collapsible/sd-collapsible.js";
 import "../input/sd-input.js";
 import "../icon-button/icon-button.js";
+import "../button/button.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {

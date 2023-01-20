@@ -5,6 +5,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import inject from "@rollup/plugin-inject";
 import * as path from "path";
 import css from "rollup-plugin-import-css";
+import InlineSvg from 'rollup-plugin-inline-svg';
 
 const filesToCopy = [
   path.resolve("src", "index.html"),
@@ -51,6 +52,9 @@ const plugins = [
     process: "process",
   }),
   css(),
+  InlineSvg({
+    include: ['src/assets/icons/**/*.svg'],
+  }),
   nodeResolve,
   json(),
   {

@@ -48,4 +48,4 @@ class IconButton extends LitElement {
   }
 }
 
-customElements.define("icon-button", IconButton);
+customElements.define("ts-icon-button", IconButton);

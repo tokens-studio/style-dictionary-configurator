@@ -172,26 +172,28 @@ export class SdSelectionDisplay extends LitElement {
       <div class="chip__container">
         <div class="${classMap(classes)}">
           <span>${option.value}</span>
-          <button
-            @click=${(ev) => {
-              option.checked = false;
+          <ts-icon-button
+            variant="invisible"
+              @click=${(ev) => {
+                option.checked = false;
 
-              // reopen combobox, because a mouse-up click
-              // outside of the overlay will close the overlay
-              const handler = () => {
-                if (!this.comboboxElement.opened) {
-                  this.comboboxElement.opened = true;
-                }
-                this.comboboxElement.removeEventListener(
-                  "opened-changed",
-                  handler
-                );
-              };
-              this.comboboxElement.addEventListener("opened-changed", handler);
-            }}
-            aria-label="Remove this"
-            class="codicon codicon-close"
-          ></button>
+                // reopen combobox, because a mouse-up click
+                // outside of the overlay will close the overlay
+                const handler = () => {
+                  if (!this.comboboxElement.opened) {
+                    this.comboboxElement.opened = true;
+                  }
+                  this.comboboxElement.removeEventListener(
+                    "opened-changed",
+                    handler
+                  );
+                };
+                this.comboboxElement.addEventListener("opened-changed", handler);
+              }}
+              title="Remove this"
+          >
+          
+          </ts-icon-button>
         </div>
       </div>
     `;

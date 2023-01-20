@@ -9,6 +9,8 @@ import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
 import styles from "./platforms-dialog.css.js";
+import PencilIcon from "../../assets/icons/pencil.svg";
+import PlusIcon from "../../assets/icons/plus.svg";
 
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";
@@ -42,10 +44,7 @@ class PlatformsDialog extends LitElement {
   }
 
   static get styles() {
-    return [
-      codicon,
-      styles
-    ];
+    return [codicon, styles];
   }
 
   constructor() {
@@ -70,21 +69,20 @@ class PlatformsDialog extends LitElement {
   }
 
   render() {
-    const invokerBtnClasses = {
-      codicon: true,
-      "codicon-diff-added": !this.platform,
-      "codicon-edit": this.platform,
-    };
-
     return html`
       <sd-dialog ${ref(this.dialogRef)}>
-        <button
-          slot="invoker"
-          class="trigger ${this.platform ? 'trigger-invisible' : ''}"
+        ${this.platform
+          ? html`<ts-icon-button slot="invoker" variant="invisible">
+              ${PencilIcon}
+            </ts-icon-button>`
+          : html`<ts-button slot="invoker" variant="secondary">
+              ${PlusIcon} Add platform
+            </ts-button>`}
+        <sd-dialog-frame
+          title=${this.platform ? "Change platform" : "Add a new platform"}
+          has-close-button
+          slot="content"
         >
-          <div class="${classMap(invokerBtnClasses)}"></div>${this.platform ? '' : 'Add platform'}
-        </button>
-        <sd-dialog-frame title=${this.platform ? "Change platform" : "Add a new platform"} has-close-button slot="content">
           <div slot="content">${this.formTemplate()}</div>
         </sd-dialog-frame>
       </sd-dialog>
@@ -115,7 +113,7 @@ class PlatformsDialog extends LitElement {
             .modelValue=${this._platformData ? this._platformData.prefix : ""}
           ></sd-input>
           ${this.transformsSearchTemplate()} ${this.formatsSearchTemplate()}
-          <button class="save-button">Save</button>
+          <ts-button>Save</ts-button>
         </form>
       </sd-form>
     `;
