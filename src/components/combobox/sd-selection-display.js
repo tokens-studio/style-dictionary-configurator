@@ -89,7 +89,6 @@ export class SdSelectionDisplay extends LitElement {
 
         .error {
           border: 2px solid var(--dangerBorder);
-          background-color: var(--dangerBg);
           color: var(--dangerFg);
         }
       `,
