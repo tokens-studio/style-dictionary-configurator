@@ -7,8 +7,10 @@ class Button extends LitElement {
       border-style: solid;
       border-color: transparent;
       display: inline-flex;
+      align-items: center;
+      gap: var(--space2);
       border-radius: var(--radiiMedium);
-      line-height: 1;
+      line-height: 20px;
       font-weight: var(--fontWeightsSansMedium);
       position: relative;
       box-shadow: var(--shadowsSmall);
@@ -39,8 +41,8 @@ class Button extends LitElement {
     }
 
     button:focus {
-      outline: 0;
       box-shadow: var(--shadowsFocus);
+      outline: 0;
     }
   `;
 
@@ -52,10 +54,11 @@ class Button extends LitElement {
       },
       variant: {
         type: "primary" | "secondary" | "tertiary",
-        reflect: true
+        reflect: true,
       },
       size: {
         type: "small" | "medium" | "large",
+        reflect: true,
       },
     };
   }
@@ -64,9 +67,6 @@ class Button extends LitElement {
     return html`
       <button
         type="button"
-        @click=${(e) => {
-          this.dispatchEvent(e);
-        }}
       >
         <slot name="icon"></slot>
         <slot></slot>

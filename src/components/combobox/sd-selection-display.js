@@ -45,7 +45,8 @@ export class SdSelectionDisplay extends LitElement {
         .combobox__selection {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.25em;
+          gap: var(--space1);
+          padding: var(--space2);
         }
 
         .combobox__input {
@@ -57,16 +58,19 @@ export class SdSelectionDisplay extends LitElement {
         }
 
         .selection-chip {
-          border-radius: 4px;
-          background-color: #eee;
-          padding: 6px;
+          border-radius: 100px;
+          background-color: var(--bgSubtle);
+          padding: 0 var(--space3);
           display: flex;
           align-items: center;
-          gap: 0.5em;
+          gap: var(--space1);
+          border: 1px solid var(--borderMuted);
+          font-size: var(--fontSizesXsmall);
+          color: var(--fgDefault);
         }
 
         .selection-chip--highlighted {
-          background-color: #ccc;
+          background-color: var(--bgSubtle);
         }
 
         * > ::slotted([slot="_textbox"]) {
@@ -78,8 +82,15 @@ export class SdSelectionDisplay extends LitElement {
           border-bottom: 1px solid;
         }
 
+        /* not sure how to target this one */
+        * > lion-validation-feedback {
+          color: var(--dangerFg);
+        }
+
         .error {
-          border: 1px solid red;
+          border: 2px solid var(--dangerBorder);
+          background-color: var(--dangerBg);
+          color: var(--dangerFg);
         }
       `,
     ];
@@ -174,6 +185,7 @@ export class SdSelectionDisplay extends LitElement {
           <span>${option.value}</span>
           <ts-icon-button
             variant="invisible"
+            size="small"
               @click=${(ev) => {
                 option.checked = false;
 
@@ -192,7 +204,7 @@ export class SdSelectionDisplay extends LitElement {
               }}
               title="Remove this"
           >
-          
+            <span class="codicon codicon-close"></span>
           </ts-icon-button>
         </div>
       </div>

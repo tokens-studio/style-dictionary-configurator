@@ -16,7 +16,7 @@ class SdDialogFrame extends LitElement {
       .header {
         display: flex;
         justify-content: space-between;
-        padding: var(--space2);
+        padding: var(--space3);
       }
 
       .header-text {
@@ -27,7 +27,7 @@ class SdDialogFrame extends LitElement {
       }
 
       ::slotted([slot="content"]) {
-        padding: var(--space4);
+        padding: var(--space5);
       }
     `;
   }
@@ -61,7 +61,7 @@ class SdDialogFrame extends LitElement {
                   );
                 }}
               >
-                ${XIcon}
+                ${XIcon()}
               </ts-icon-button>
             `
           : ""}

@@ -73,10 +73,10 @@ class PlatformsDialog extends LitElement {
       <sd-dialog ${ref(this.dialogRef)}>
         ${this.platform
           ? html`<ts-icon-button slot="invoker" variant="invisible">
-              ${PencilIcon}
+              ${PencilIcon()}
             </ts-icon-button>`
           : html`<ts-button slot="invoker" variant="secondary">
-              ${PlusIcon} Add platform
+              ${PlusIcon()} Add platform
             </ts-button>`}
         <sd-dialog-frame
           title=${this.platform ? "Change platform" : "Add a new platform"}
@@ -96,12 +96,14 @@ class PlatformsDialog extends LitElement {
           <sd-input
             name="name"
             label="Platform name*"
+            placeholder="e.g. Android"
             .modelValue=${this.platform ? this.platform : ""}
             .validators=${[new Required()]}
           ></sd-input>
           <sd-input
             name="buildPath"
             label="Build path"
+            placeholder="e.g. build/"
             help-text="Relative to root"
             .modelValue=${this._platformData
               ? this._platformData.buildPath
@@ -110,10 +112,11 @@ class PlatformsDialog extends LitElement {
           <sd-input
             name="prefix"
             label="Prefix"
+            placeholder="e.g. sd"
             .modelValue=${this._platformData ? this._platformData.prefix : ""}
           ></sd-input>
           ${this.transformsSearchTemplate()} ${this.formatsSearchTemplate()}
-          <ts-button>Save</ts-button>
+          <ts-button variant="primary">Save</ts-button>
         </form>
       </sd-form>
     `;
@@ -125,6 +128,7 @@ class PlatformsDialog extends LitElement {
         ref=${ref(this.comboTransformsRef)}
         name="transforms"
         label="Transforms"
+        placeholder="Type to search"
         help-text="One transform group is allowed, you can pick multiple standalone transforms"
         show-all-on-empty
         multiple-choice
@@ -174,6 +178,7 @@ class PlatformsDialog extends LitElement {
         ref=${ref(this.comboFormatsRef)}
         name="formats"
         label="Formats*"
+        placeholder="Type to search"
         help-text="Pick your formats, configure the filepath below in the result"
         show-all-on-empty
         multiple-choice

@@ -6,9 +6,29 @@ export class SdOption extends LionOption {
     return [
       ...super.styles,
       css`
+        :host {
+          background-color: var(--bgDefault);
+          padding: var(--space2);
+          border-radius: var(--radiiSmall);
+          font-size: var(--fontSizesXsmall);
+          color: var(--fgDefault);
+        }
+
+        :host(:hover) {
+          background-color: var(--bgSubtle);
+        }
+
+        :host([checked]) {
+          background-color: var(--accentBg);
+        }
+
+        :host([active]) {
+          background-color: var(--bgSubtle);
+        }
+
         ::slotted(.match-highlight),
         .match-highlight {
-          font-weight: bold;
+          font-weight: var(--fontWeightsSansMedium);
         }
       `,
     ];

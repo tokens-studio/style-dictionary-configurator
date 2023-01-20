@@ -5,7 +5,7 @@ export default css`
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    background-color: var(--bgDefault);
+    background-color: #050608;
     position: relative;
   }
 
@@ -43,7 +43,7 @@ export default css`
     flex-direction: column;
     height: 100%;
     width: 200px;
-    color: var(--fgDefault);
+    color: #fff;
     overflow-y: auto;
   }
 
@@ -125,9 +125,9 @@ export default css`
     justify-content: flex-end;
     position: sticky;
     top: 0;
-    margin-bottom: var(--space1);
-    background-color: var(--bgSubtle);
-    border-top-left-radius: var(--radiiMedium);
+    margin-bottom: 2px;
+    background-color: #050608;
+    border-top-left-radius: var(--border-radius-editor);
   }
 
   .new > .codicon,

@@ -8,12 +8,12 @@ class SdInput extends LitElement {
       color: var(--fgDefault);
       width: 100%;
       gap: var(--space2);
-      font-weight: var(--sansBold);
+      font-weight: var(--fontWeightsSansMedium);
       font-size: var(--fontSizesSmall);
     }
 
     input {
-      font-weight: var(--sansRegular);
+      font-weight: var(--fontWeightsSansRegular);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -28,7 +28,7 @@ class SdInput extends LitElement {
     }
 
     input:focus-visible {
-      border: 1px solid var(--inputBorderFocus);
+      box-shadow: var(--shadowsFocus);
       outline: none;
     }
   `;

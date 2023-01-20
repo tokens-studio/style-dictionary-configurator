@@ -49,6 +49,7 @@ export default css`
     align-items: center;
     border-bottom: 1px solid var(--borderMuted);
     padding: var(--space1) var(--space5);
+    padding-right: var(--space1);
   }
 
   .platform__content {

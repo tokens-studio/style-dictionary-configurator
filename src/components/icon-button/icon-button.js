@@ -15,8 +15,18 @@ class IconButton extends LitElement {
       color: var(--fgDefault);
     }
 
+    :host([size="small"]) button {
+      width: 28px;
+      height: 28px;
+    }
+
     button:hover {
       background-color: var(--bgSubtle);
+    }
+
+    button:focus {
+      box-shadow: var(--shadowsFocus);
+      outline: 0;
     }
   `;
 
@@ -30,6 +40,10 @@ class IconButton extends LitElement {
         type: String,
         reflect: true,
       },
+      size: {
+        type: "small" | "medium" | "large",
+        reflect: true,
+      }
     };
   }
 
@@ -37,9 +51,6 @@ class IconButton extends LitElement {
     return html`
       <button
         type="button"
-        @click=${(e) => {
-          this.dispatchEvent(new CustomEvent("click"));
-        }}
         aria-label=${this.title}
       >
         <slot></slot>
