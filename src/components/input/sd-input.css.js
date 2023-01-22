@@ -1,16 +1,20 @@
 import { css } from "lit-element";
 export default css`
-  label {
+  ::slotted([slot="help-text"]),
+  ::slotted([slot="label"]) {
+    color: var(--fgDefault);
+  }
+
+  ::slotted([slot="label"]) {
     display: flex;
     flex-direction: column;
-    color: var(--fgDefault);
     width: 100%;
     gap: var(--space2);
     font-weight: var(--fontWeightsSansMedium);
     font-size: var(--fontSizesSmall);
   }
 
-  input {
+  ::slotted([slot="input"]) {
     font-weight: var(--fontWeightsSansRegular);
     display: inline-flex;
     align-items: center;
@@ -25,7 +29,7 @@ export default css`
     border: 1px solid var(--inputBorderRest);
   }
 
-  input:focus-visible {
+  ::slotted([slot="input"]:focus-visible) {
     box-shadow: var(--shadowsFocus);
     outline: none;
   }

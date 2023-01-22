@@ -18,6 +18,8 @@ import "../combobox/sd-combobox.js";
 import "../combobox/sd-option.js";
 import "../combobox/sd-selection-display.js";
 import "../input/sd-input.js";
+import "../button/ts-button.js";
+import "../button/ts-button-submit.js";
 
 customElements.define("sd-form", LionForm);
 
@@ -72,11 +74,16 @@ class PlatformsDialog extends LitElement {
     return html`
       <sd-dialog ${ref(this.dialogRef)}>
         ${this.platform
-          ? html`<ts-icon-button slot="invoker" variant="invisible">
+          ? html`<ts-button
+              aria-label="Edit platform button"
+              slot="invoker"
+              variant="tertiary"
+            >
               ${PencilIcon()}
-            </ts-icon-button>`
+            </ts-button>`
           : html`<ts-button slot="invoker" variant="secondary">
-              ${PlusIcon()} Add platform
+              <div slot="prefix">${PlusIcon()}</div>
+              Add platform
             </ts-button>`}
         <sd-dialog-frame
           title=${this.platform ? "Change platform" : "Add a new platform"}
@@ -116,7 +123,7 @@ class PlatformsDialog extends LitElement {
             .modelValue=${this._platformData ? this._platformData.prefix : ""}
           ></sd-input>
           ${this.transformsSearchTemplate()} ${this.formatsSearchTemplate()}
-          <ts-button variant="primary">Save</ts-button>
+          <ts-button-submit variant="primary">Save</ts-button-submit>
         </form>
       </sd-form>
     `;
@@ -299,6 +306,8 @@ class PlatformsDialog extends LitElement {
   submitForm(ev) {
     ev.preventDefault();
 
+    console.log("submitForm");
+
     // prevent form submission if there are validation errors
     if (ev.target.hasFeedbackFor.includes("error")) {
       return;
@@ -306,6 +315,8 @@ class PlatformsDialog extends LitElement {
 
     const formResult = ev.target.modelValue;
     const { buildPath, prefix, name, transforms } = formResult;
+
+    console.log(buildPath, prefix, name, transforms);
 
     let transformGroup;
     let standaloneTransforms = [];

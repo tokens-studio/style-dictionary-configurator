@@ -1,48 +1,9 @@
-import { LitElement, html, css } from "lit";
+import { LionInput } from "@lion/ui/input.js";
 import styles from "./sd-input.css.js";
 
-class SdInput extends LitElement {
-  static styles = styles;
-
-  static get properties() {
-    return {
-      label: {
-        type: String,
-        reflect: true,
-      },
-      value: {
-        type: String,
-        reflect: true,
-      },
-      placeholder: {
-        type: String,
-        reflect: true,
-      },
-    };
-  }
-
-  render() {
-    return html`
-      <label>
-        ${this.label}
-        <input
-          type="text"
-          placeholder=${this.placeholder}
-          @input=${(e) => {
-            this.value = e.target.value;
-            // emit value change event
-            this.dispatchEvent(
-              new CustomEvent("alue-vchanged", {
-                detail: {
-                  value: this.value,
-                },
-              })
-            );
-          }}
-          value=${this.value}
-        />
-      </label>
-    `;
+class SdInput extends LionInput {
+  static get styles() {
+    return [...super.styles, styles];
   }
 }
 

@@ -1,6 +1,12 @@
 import { css } from "lit-element";
 export default css`
-  button {
+  :host {
+    display: inline-block;
+    width: max-content;
+    color: var(--fgDefault);
+  }
+
+  .button-content {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
@@ -16,30 +22,38 @@ export default css`
 
     /* Move to size later on */
     padding: var(--space3) var(--space4);
-    fontsize: var(--fontSizesSmall);
+    font-size: var(--fontSizesSmall);
   }
 
-  :host([variant="primary"]) button {
+  :host([variant="primary"]) .button-content {
     background: var(--buttonPrimaryBgRest);
     color: var(--buttonPrimaryFg);
   }
 
-  :host([variant="primary"]) button:hover {
+  :host([variant="primary"]:hover) .button-content {
     background-color: var(--buttonPrimaryBgHover);
   }
 
-  :host([variant="secondary"]) button {
+  :host([variant="secondary"]) .button-content {
     background: var(--buttonSecondaryBgRest);
     color: var(--buttonSecondaryFg);
     border-color: var(--buttonSecondaryBorderRest);
   }
 
-  :host([variant="secondary"]) button:hover {
+  :host([variant="secondary"]:hover) .button-content {
     background-color: var(--buttonSecondaryBgHover);
   }
 
-  button:focus {
+  :host([variant="tertiary"]) .button-content {
+    box-shadow: none;
+  }
+
+  :host(:focus) {
     box-shadow: var(--shadowsFocus);
     outline: 0;
+  }
+
+  :host([no-padding]) .button-content {
+    padding: 0;
   }
 `;

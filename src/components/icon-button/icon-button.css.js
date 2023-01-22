@@ -1,6 +1,6 @@
 import { css } from "lit-element";
 export default css`
-  button {
+  ::slotted(button) {
     border: 0;
     width: 36px;
     height: 36px;
@@ -13,16 +13,16 @@ export default css`
     color: var(--fgDefault);
   }
 
-  :host([size="small"]) button {
+  :host([size="small"]) ::slotted(button) {
     width: 28px;
     height: 28px;
   }
 
-  button:hover {
+  ::slotted(button):hover {
     background-color: var(--bgSubtle);
   }
 
-  button:focus {
+  ::slotted(button):focus {
     box-shadow: var(--shadowsFocus);
     outline: 0;
   }

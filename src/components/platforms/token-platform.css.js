@@ -35,12 +35,12 @@ export default css`
     display: flex;
     flex-direction: column;
     gap: var(--space3);
-    background: var(--bgDefault);
   }
 
   .platform {
     border: 1px solid var(--borderMuted);
     border-radius: var(--radiiMedium);
+    background: var(--bgDefault);
   }
 
   .platform__header {

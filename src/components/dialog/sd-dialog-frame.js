@@ -1,5 +1,8 @@
 import { LitElement, html, css } from "lit";
 import XIcon from "../../assets/icons/x.svg";
+
+import "../button/ts-button.js";
+
 class SdDialogFrame extends LitElement {
   static get styles() {
     return css`
@@ -27,7 +30,7 @@ class SdDialogFrame extends LitElement {
       }
 
       ::slotted([slot="content"]) {
-        padding: var(--space5);
+        padding: 0 var(--space5);
       }
     `;
   }
@@ -41,9 +44,6 @@ class SdDialogFrame extends LitElement {
       title: {
         type: String,
       },
-      variant: {
-        type: 'primary' | 'secondary' | 'invisible',
-      }
     };
   }
 
@@ -53,8 +53,9 @@ class SdDialogFrame extends LitElement {
         <div class="header-text">${this.title}</div>
         ${this.hasCloseButton
           ? html`
-              <ts-icon-button
-                title="Close"
+              <ts-button
+                variant="tertiary"
+                aria-label="Close"
                 @click=${() => {
                   this.dispatchEvent(
                     new Event("close-overlay", { bubbles: true })
@@ -62,7 +63,7 @@ class SdDialogFrame extends LitElement {
                 }}
               >
                 ${XIcon()}
-              </ts-icon-button>
+              </ts-button>
             `
           : ""}
       </div>

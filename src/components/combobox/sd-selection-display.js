@@ -2,6 +2,8 @@
 import { LitElement, html, css, nothing } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 
+import "../button/ts-button.js";
+
 /**
  * Disclaimer: this is just an example component demoing the selection display of LionCombobox
  * It needs an 'a11y plan' and tests before it could be released
@@ -46,7 +48,7 @@ export class SdSelectionDisplay extends LitElement {
           display: flex;
           flex-wrap: wrap;
           gap: var(--space1);
-          padding: var(--space2);
+          padding: var(--space2) var(--space2) 0 var(--space2);
         }
 
         .combobox__input {
@@ -80,11 +82,6 @@ export class SdSelectionDisplay extends LitElement {
           box-sizing: border-box;
           border: none;
           border-bottom: 1px solid;
-        }
-
-        /* not sure how to target this one */
-        * > lion-validation-feedback {
-          color: var(--dangerFg);
         }
 
         .error {
@@ -182,29 +179,30 @@ export class SdSelectionDisplay extends LitElement {
       <div class="chip__container">
         <div class="${classMap(classes)}">
           <span>${option.value}</span>
-          <ts-icon-button
-            variant="invisible"
+          <ts-button
+            no-padding
+            variant="tertiary"
             size="small"
-              @click=${(ev) => {
-                option.checked = false;
+            @click=${(ev) => {
+              option.checked = false;
 
-                // reopen combobox, because a mouse-up click
-                // outside of the overlay will close the overlay
-                const handler = () => {
-                  if (!this.comboboxElement.opened) {
-                    this.comboboxElement.opened = true;
-                  }
-                  this.comboboxElement.removeEventListener(
-                    "opened-changed",
-                    handler
-                  );
-                };
-                this.comboboxElement.addEventListener("opened-changed", handler);
-              }}
-              title="Remove this"
+              // reopen combobox, because a mouse-up click
+              // outside of the overlay will close the overlay
+              const handler = () => {
+                if (!this.comboboxElement.opened) {
+                  this.comboboxElement.opened = true;
+                }
+                this.comboboxElement.removeEventListener(
+                  "opened-changed",
+                  handler
+                );
+              };
+              this.comboboxElement.addEventListener("opened-changed", handler);
+            }}
+            aria-label="Remove this"
           >
             <span class="codicon codicon-close"></span>
-          </ts-icon-button>
+          </ts-button>
         </div>
       </div>
     `;

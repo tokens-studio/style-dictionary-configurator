@@ -16,31 +16,27 @@ class SdCombobox extends LionCombobox {
     return [
       ...super.styles,
       css`
-        :host .input-group__container {
+        .input-group__container {
           border-bottom: none;
           height: 100%;
         }
 
-        :host .input-group {
+        .input-group {
           flex-grow: 1;
           min-width: 90px;
         }
 
-        :host > .form-field__group-two {
+        .form-field__group-two {
           font-weight: var(--fontWeightsSansRegular);
-          display: flex;
-          justify-content: flex-start;
-          flex-wrap: wrap;
           border-radius: var(--radiiSmall);
-          font-size: var(--fontSizesSmall) !important; // have to override due to some css inside doing weird stuff
+          font-size: var(--fontSizesSmall);
           color: var(--fgDefault);
           line-height: 1;
           background-color: var(--inputBg);
           border: 1px solid var(--inputBorderRest);
-          min-height: 32px;
         }
 
-        * > ::slotted([slot="label"]) {
+        ::slotted([slot="label"]) {
           display: flex;
           flex-direction: column;
           color: var(--fgDefault);
@@ -49,19 +45,21 @@ class SdCombobox extends LionCombobox {
           font-weight: var(--fontWeightsSansMedium);
           font-size: var(--fontSizesSmall);
         }
-        * > ::slotted([slot="input"]) {
+
+        ::slotted([slot="input"]) {
           background: var(--inputBg);
           color: var(--fgDefault);
+          padding: var(--space2) var(--space3) var(--space2) var(--space3);
         }
 
-        * > ::slotted([slot="help-text"]) {
+        ::slotted([slot="help-text"]) {
           font-size: var(--fontSizesXsmall);
           color: var(--fgSubtle);
           margin-bottom: var(--space2);
         }
 
-        * > ::slotted([slot="listbox"]) {
-          max-height: 300px;
+        ::slotted([slot="listbox"]) {
+          max-height: 275px;
           margin-top: var(--space2);
           background-color: var(--bgDefault);
           box-shadow: var(--shadowsSmall);
@@ -74,16 +72,18 @@ class SdCombobox extends LionCombobox {
           max-width: 300px;
         }
 
-        * > ::slotted([slot="input"]) {
-          
-        }
-        * > ::slotted([slot="input"]):focus-visible {
+        ::slotted([slot="input"]):focus-visible {
           box-shadow: var(--shadowsFocus);
           outline: none;
         }
 
-        * > :slotted > .input-group__container {
+        :slotted > .input-group__container {
           border-bottom: none;
+        }
+
+        ::slotted([slot="feedback"][type="error"]) {
+          font-size: var(--fontSizesSmall);
+          color: var(--dangerFg);
         }
       `,
     ];
@@ -102,6 +102,27 @@ class SdCombobox extends LionCombobox {
     if (ev && ev.key) {
       this.opened = true;
     }
+  }
+
+  /**
+   * @override Lion FormControlMixin
+   * Move feedback template under group two
+   */
+  render() {
+    return html`
+      <div class="form-field__group-one">${this._groupOneTemplate()}</div>
+      <div class="form-field__group-two">${this._groupTwoTemplate()}</div>
+
+      ${this._feedbackTemplate()}
+    `;
+  }
+
+  /**
+   * @override Lion FormControlMixin & Combobox
+   * Move feedback template out
+   */
+  _groupTwoTemplate() {
+    return html` ${this._inputGroupTemplate()} ${this._overlayListboxTemplate()}`;
   }
 
   /**

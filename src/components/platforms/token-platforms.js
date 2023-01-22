@@ -9,10 +9,6 @@ import styles from "./token-platform.css.js";
 
 // Custom Element Definitions
 import "./platforms-dialog.js";
-import "../collapsible/sd-collapsible.js";
-import "../input/sd-input.js";
-import "../icon-button/icon-button.js";
-import "../button/button.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -161,8 +157,19 @@ class TokenPlatforms extends LitElement {
                   <div class="format">
                     <h4>${file.format}</h4>
                     <div class="format-file">
-                      <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 2.5C3.22386 2.5 3 2.72386 3 3V13C3 13.2761 3.22386 13.5 3.5 13.5H11.5C11.7761 13.5 12 13.2761 12 13V6.5H8.5C8.22386 6.5 8 6.27614 8 6V2.5H3.5ZM9 3.20711L11.2929 5.5H9V3.20711ZM2 3C2 2.17157 2.67157 1.5 3.5 1.5H8.5C8.63261 1.5 8.75979 1.55268 8.85355 1.64645L12.8536 5.64645C12.9473 5.74021 13 5.86739 13 6V13C13 13.8284 12.3284 14.5 11.5 14.5H3.5C2.67157 14.5 2 13.8284 2 13V3Z" fill="currentColor"/>
+                      <svg
+                        width="15"
+                        height="16"
+                        viewBox="0 0 15 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M3.5 2.5C3.22386 2.5 3 2.72386 3 3V13C3 13.2761 3.22386 13.5 3.5 13.5H11.5C11.7761 13.5 12 13.2761 12 13V6.5H8.5C8.22386 6.5 8 6.27614 8 6V2.5H3.5ZM9 3.20711L11.2929 5.5H9V3.20711ZM2 3C2 2.17157 2.67157 1.5 3.5 1.5H8.5C8.63261 1.5 8.75979 1.55268 8.85355 1.64645L12.8536 5.64645C12.9473 5.74021 13 5.86739 13 6V13C13 13.8284 12.3284 14.5 11.5 14.5H3.5C2.67157 14.5 2 13.8284 2 13V3Z"
+                          fill="currentColor"
+                        />
                       </svg>
                       ${file.destination}
                     </div>
