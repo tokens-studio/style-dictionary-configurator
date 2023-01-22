@@ -4,6 +4,8 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import inject from "@rollup/plugin-inject";
 import * as path from "path";
+import css from "rollup-plugin-import-css";
+import svg from 'rollup-plugin-svg-import';
 
 const filesToCopy = [
   path.resolve("src", "index.html"),
@@ -48,6 +50,11 @@ const plugins = [
   },
   inject({
     process: "process",
+  }),
+  css(),
+  svg({
+    // process SVG to DOM Node or String. Default: false
+    stringify: false
   }),
   nodeResolve,
   json(),

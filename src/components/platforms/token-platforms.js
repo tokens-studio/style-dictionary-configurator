@@ -5,115 +5,14 @@ import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { sdState } from "../../style-dictionary.js";
+import styles from "./token-platform.css.js";
 
 // Custom Element Definitions
 import "./platforms-dialog.js";
-import "../collapsible/sd-collapsible.js";
-import "../input/sd-input.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
-    return css`
-      .platforms-header {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        align-items: center;
-      }
-
-      h2 {
-        text-align: center;
-        line-height: 1.1rem;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      .border {
-        border: 1px solid black;
-        border-radius: 8px;
-      }
-
-      .platforms-container {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        margin: 0 2rem;
-      }
-
-      .platform {
-        padding: 2rem;
-      }
-
-      .platform__header {
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .platform__title {
-        font-size: 1.25rem;
-        font-weight: bold;
-      }
-
-      .transforms {
-        margin: 1rem 0;
-      }
-
-      .transforms,
-      .formats {
-        padding: 1rem;
-      }
-
-      .transform-group-container {
-        display: flex;
-        align-items: flex-start;
-      }
-
-      .transform-group__btn {
-        font-size: 1rem;
-        position: relative;
-        padding: 15px 25px;
-        width: 100%;
-      }
-
-      .transform-group__btn::before {
-        content: "group";
-        font-size: 0.75rem;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-      }
-
-      .transform-group__btn::after {
-        content: "+";
-        font-size: 1.75rem;
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        display: inline-block;
-        transform: translateY(-50%);
-      }
-
-      .transform__collapsible {
-        flex-grow: 1;
-      }
-
-      .transform__collapsible[opened] .transform-group__btn::after {
-        content: "-";
-      }
-
-      .formats-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
-      .format {
-        position: relative;
-        padding: 0.75rem;
-      }
-    `;
+    return styles;
   }
 
   static get properties() {
@@ -172,13 +71,13 @@ class TokenPlatforms extends LitElement {
 
   render() {
     return html`
-      <div class="platforms-header">
+      <div class="platforms">
         <h2>Platforms</h2>
+        <div class="platforms-container">${this.platformsTemplate()}</div>
         <platforms-dialog
           @save-platform=${this.savePlatform}
         ></platforms-dialog>
       </div>
-      <div class="platforms-container">${this.platformsTemplate()}</div>
     `;
   }
 
@@ -190,15 +89,17 @@ class TokenPlatforms extends LitElement {
     return html`
       ${this.platformsToEntries().map(
         (plat) => html`
-          <div class="platform border">
+          <div class="platform">
             <div class="platform__header">
-              <p class="platform__title">${plat.key}</p>
+              <h3 class="platform__title">${plat.key}</h3>
               <platforms-dialog
                 @save-platform=${this.savePlatform}
                 platform="${plat.key}"
               ></platforms-dialog>
             </div>
-            ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
+            <div class="platform__content">
+              ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
+            </div>
           </div>
         `
       )}
@@ -207,8 +108,8 @@ class TokenPlatforms extends LitElement {
 
   transformsTemplate(platform) {
     return html`
-      <div class="border transforms">
-        <p>Transforms</p>
+      <div class="config-group">
+        <h3>Transforms</h3>
         <!-- Transform Groups -->
         ${platform.transformGroup ? this.transformGroupTemplate(platform) : ""}
         <!-- Transforms standalone -->
@@ -221,17 +122,11 @@ class TokenPlatforms extends LitElement {
 
   transformGroupTemplate(platform) {
     return html`
-      <div class="transform-group-container">
-        <sd-collapsible class="transform__collapsible">
-          <button slot="invoker" class="transform-group__btn">
-            ${platform.transformGroup}
-          </button>
-          <ul slot="content">
-            ${StyleDictionary.transformGroup[platform.transformGroup].map(
-              (transform) => html` <li>${transform}</li> `
-            )}
-          </ul>
-        </sd-collapsible>
+      <div class="transform">
+        <h4>${platform.transformGroup}</h4>
+        <div class="text-small">
+          ${StyleDictionary.transformGroup[platform.transformGroup].join(", ")}
+        </div>
       </div>
     `;
   }
@@ -240,7 +135,12 @@ class TokenPlatforms extends LitElement {
     return html`
       ${platform.transforms.map(
         (transform) => html`
-          <div class="transform-container">${transform}</div>
+          <div class="transform">
+            <h4>${transform}</h4>
+            <div class="text-small">
+              A description for the transform to help explain it.
+            </div>
+          </div>
         `
       )}
     `;
@@ -248,15 +148,31 @@ class TokenPlatforms extends LitElement {
 
   formatsTemplate(platform) {
     return html`
-      <div class="border formats">
-        <p>Formats</p>
+      <div class="config-group">
+        <h3>Formats</h3>
         <div class="formats-container">
           ${platform.files
             ? platform.files.map(
                 (file) => html`
-                  <div class="format border">
-                    <p>${file.format}</p>
-                    <p>File: ${file.destination}</p>
+                  <div class="format">
+                    <h4>${file.format}</h4>
+                    <div class="format-file">
+                      <svg
+                        width="15"
+                        height="16"
+                        viewBox="0 0 15 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M3.5 2.5C3.22386 2.5 3 2.72386 3 3V13C3 13.2761 3.22386 13.5 3.5 13.5H11.5C11.7761 13.5 12 13.2761 12 13V6.5H8.5C8.22386 6.5 8 6.27614 8 6V2.5H3.5ZM9 3.20711L11.2929 5.5H9V3.20711ZM2 3C2 2.17157 2.67157 1.5 3.5 1.5H8.5C8.63261 1.5 8.75979 1.55268 8.85355 1.64645L12.8536 5.64645C12.9473 5.74021 13 5.86739 13 6V13C13 13.8284 12.3284 14.5 11.5 14.5H3.5C2.67157 14.5 2 13.8284 2 13V3Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      ${file.destination}
+                    </div>
                   </div>
                 `
               )

@@ -1,9 +1,9 @@
-import { css } from "lit";
 import { LionInput } from "@lion/ui/input.js";
+import styles from "./sd-input.css.js";
 
 class SdInput extends LionInput {
   static get styles() {
-    return [...super.styles, css``];
+    return [...super.styles, styles];
   }
 }
 

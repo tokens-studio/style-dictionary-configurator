@@ -1,4 +1,7 @@
 import { LitElement, html, css } from "lit";
+import XIcon from "../../assets/icons/x.svg";
+
+import "../button/ts-button.js";
 
 class SdDialogFrame extends LitElement {
   static get styles() {
@@ -7,32 +10,27 @@ class SdDialogFrame extends LitElement {
         display: block;
         width: 600px;
         position: relative;
-        box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.4);
-        background-color: white;
-        border: 1px solid black;
-        border-radius: 8px;
+        box-shadow: var(--shadowDefault);
+        background-color: var(--bgDefault);
+        border: 1px solid var(--borderMuted);
+        border-radius: var(--radiiMedium);
       }
 
-      .close-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        margin: 0px;
-        font-size: 1rem;
-        line-height: 1.5rem;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space3);
       }
 
-      ::slotted([slot="header"]) {
-        text-align: center !important;
-        padding: 0.75rem !important;
-        border-bottom: 1px solid black !important;
-        font-weight: bold !important;
-        font-size: 1.5rem !important;
-        line-height: 1.5rem !important;
+      .header-text {
+        padding: var(--space3);
+        font-size: var(--fontSizesLarge);
+        font-weight: var(--sansMedium);
+        color: var(--fgDefault);
       }
 
       ::slotted([slot="content"]) {
-        padding: 1rem;
+        padding: 0 var(--space5);
       }
     `;
   }
@@ -41,30 +39,34 @@ class SdDialogFrame extends LitElement {
     return {
       hasCloseButton: {
         type: Boolean,
-        reflect: true,
         attribute: "has-close-button",
+      },
+      title: {
+        type: String,
       },
     };
   }
 
   render() {
     return html`
-      ${this.hasCloseButton
-        ? html`
-            <button
-              variation="text"
-              class="close-btn"
-              @click=${() => {
-                this.dispatchEvent(
-                  new Event("close-overlay", { bubbles: true })
-                );
-              }}
-            >
-              ✖
-            </button>
-          `
-        : ""}
-      <slot name="header"></slot>
+      <div class="header">
+        <div class="header-text">${this.title}</div>
+        ${this.hasCloseButton
+          ? html`
+              <ts-button
+                variant="tertiary"
+                aria-label="Close"
+                @click=${() => {
+                  this.dispatchEvent(
+                    new Event("close-overlay", { bubbles: true })
+                  );
+                }}
+              >
+                ${XIcon()}
+              </ts-button>
+            `
+          : ""}
+      </div>
       <div class="content-container">
         <slot name="content"></slot>
         <slot name="footer"></slot>

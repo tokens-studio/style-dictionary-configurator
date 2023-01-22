@@ -8,6 +8,9 @@ import { LionForm } from "@lion/ui/form.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
+import styles from "./platforms-dialog.css.js";
+import PencilIcon from "../../assets/icons/pencil.svg";
+import PlusIcon from "../../assets/icons/plus.svg";
 
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";
@@ -15,6 +18,8 @@ import "../combobox/sd-combobox.js";
 import "../combobox/sd-option.js";
 import "../combobox/sd-selection-display.js";
 import "../input/sd-input.js";
+import "../button/ts-button.js";
+import "../button/ts-button-submit.js";
 
 customElements.define("sd-form", LionForm);
 
@@ -41,80 +46,7 @@ class PlatformsDialog extends LitElement {
   }
 
   static get styles() {
-    return [
-      codicon,
-      css`
-        .codicon-edit:before {
-          content: "\\ea73";
-        }
-        .codicon-diff-added:before {
-          content: "\\eadc";
-        }
-
-        .dialog-frame {
-          align-self: flex-start;
-          margin-top: 100px;
-        }
-
-        p {
-          margin: 0;
-        }
-
-        .platform-form > *:not(:last-child) {
-          margin-bottom: 0.5rem;
-        }
-
-        /** selection display lightdom styles */
-        [slot="selection-display"] {
-          display: block;
-          font-size: 14px;
-        }
-
-        .combobox__selection {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.25em;
-        }
-
-        .combobox__input {
-          display: block;
-        }
-
-        .codicon-close {
-          padding: 0;
-        }
-
-        .selection-chip {
-          border-radius: 4px;
-          background-color: #eee;
-          padding: 6px;
-          display: flex;
-          align-items: center;
-          gap: 0.5em;
-        }
-
-        .selection-chip--highlighted {
-          background-color: #ccc;
-        }
-
-        * > ::slotted([slot="_textbox"]) {
-          outline: none;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          border: none;
-          border-bottom: 1px solid;
-        }
-
-        .error {
-          border: 1px solid red;
-        }
-
-        form > * {
-          margin-bottom: 10px;
-        }
-      `,
-    ];
+    return [codicon, styles];
   }
 
   constructor() {
@@ -139,23 +71,25 @@ class PlatformsDialog extends LitElement {
   }
 
   render() {
-    const invokerBtnClasses = {
-      codicon: true,
-      "codicon-diff-added": !this.platform,
-      "codicon-edit": this.platform,
-    };
-
     return html`
       <sd-dialog ${ref(this.dialogRef)}>
-        <button
-          slot="invoker"
-          class="${classMap(invokerBtnClasses)}"
-          aria-label="add platform button"
-        ></button>
-        <sd-dialog-frame class="dialog-frame" has-close-button slot="content">
-          <p slot="header">
-            ${this.platform ? "Change" : "Add a new"} platform
-          </p>
+        ${this.platform
+          ? html`<ts-button
+              aria-label="Edit platform button"
+              slot="invoker"
+              variant="tertiary"
+            >
+              ${PencilIcon()}
+            </ts-button>`
+          : html`<ts-button slot="invoker" variant="secondary">
+              <div slot="prefix">${PlusIcon()}</div>
+              Add platform
+            </ts-button>`}
+        <sd-dialog-frame
+          title=${this.platform ? "Change platform" : "Add a new platform"}
+          has-close-button
+          slot="content"
+        >
           <div slot="content">${this.formTemplate()}</div>
         </sd-dialog-frame>
       </sd-dialog>
@@ -169,12 +103,14 @@ class PlatformsDialog extends LitElement {
           <sd-input
             name="name"
             label="Platform name*"
+            placeholder="e.g. Android"
             .modelValue=${this.platform ? this.platform : ""}
             .validators=${[new Required()]}
           ></sd-input>
           <sd-input
             name="buildPath"
             label="Build path"
+            placeholder="e.g. build/"
             help-text="Relative to root"
             .modelValue=${this._platformData
               ? this._platformData.buildPath
@@ -183,10 +119,11 @@ class PlatformsDialog extends LitElement {
           <sd-input
             name="prefix"
             label="Prefix"
+            placeholder="e.g. sd"
             .modelValue=${this._platformData ? this._platformData.prefix : ""}
           ></sd-input>
           ${this.transformsSearchTemplate()} ${this.formatsSearchTemplate()}
-          <button class="save-button">Save</button>
+          <ts-button-submit variant="primary">Save</ts-button-submit>
         </form>
       </sd-form>
     `;
@@ -198,6 +135,7 @@ class PlatformsDialog extends LitElement {
         ref=${ref(this.comboTransformsRef)}
         name="transforms"
         label="Transforms"
+        placeholder="Type to search"
         help-text="One transform group is allowed, you can pick multiple standalone transforms"
         show-all-on-empty
         multiple-choice
@@ -247,6 +185,7 @@ class PlatformsDialog extends LitElement {
         ref=${ref(this.comboFormatsRef)}
         name="formats"
         label="Formats*"
+        placeholder="Type to search"
         help-text="Pick your formats, configure the filepath below in the result"
         show-all-on-empty
         multiple-choice
@@ -367,6 +306,8 @@ class PlatformsDialog extends LitElement {
   submitForm(ev) {
     ev.preventDefault();
 
+    console.log("submitForm");
+
     // prevent form submission if there are validation errors
     if (ev.target.hasFeedbackFor.includes("error")) {
       return;
@@ -374,6 +315,8 @@ class PlatformsDialog extends LitElement {
 
     const formResult = ev.target.modelValue;
     const { buildPath, prefix, name, transforms } = formResult;
+
+    console.log(buildPath, prefix, name, transforms);
 
     let transformGroup;
     let standaloneTransforms = [];

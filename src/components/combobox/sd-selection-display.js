@@ -2,6 +2,8 @@
 import { LitElement, html, css, nothing } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 
+import "../button/ts-button.js";
+
 /**
  * Disclaimer: this is just an example component demoing the selection display of LionCombobox
  * It needs an 'a11y plan' and tests before it could be released
@@ -45,7 +47,8 @@ export class SdSelectionDisplay extends LitElement {
         .combobox__selection {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.25em;
+          gap: var(--space1);
+          padding: var(--space2) var(--space2) 0 var(--space2);
         }
 
         .combobox__input {
@@ -57,16 +60,19 @@ export class SdSelectionDisplay extends LitElement {
         }
 
         .selection-chip {
-          border-radius: 4px;
-          background-color: #eee;
-          padding: 6px;
+          border-radius: 100px;
+          background-color: var(--bgSubtle);
+          padding: 0 var(--space3);
           display: flex;
           align-items: center;
-          gap: 0.5em;
+          gap: var(--space1);
+          border: 1px solid var(--borderMuted);
+          font-size: var(--fontSizesXsmall);
+          color: var(--fgDefault);
         }
 
         .selection-chip--highlighted {
-          background-color: #ccc;
+          background-color: var(--bgSubtle);
         }
 
         * > ::slotted([slot="_textbox"]) {
@@ -79,7 +85,8 @@ export class SdSelectionDisplay extends LitElement {
         }
 
         .error {
-          border: 1px solid red;
+          border: 2px solid var(--dangerBorder);
+          color: var(--dangerFg);
         }
       `,
     ];
@@ -172,7 +179,10 @@ export class SdSelectionDisplay extends LitElement {
       <div class="chip__container">
         <div class="${classMap(classes)}">
           <span>${option.value}</span>
-          <button
+          <ts-button
+            no-padding
+            variant="tertiary"
+            size="small"
             @click=${(ev) => {
               option.checked = false;
 
@@ -190,8 +200,9 @@ export class SdSelectionDisplay extends LitElement {
               this.comboboxElement.addEventListener("opened-changed", handler);
             }}
             aria-label="Remove this"
-            class="codicon codicon-close"
-          ></button>
+          >
+            <span class="codicon codicon-close"></span>
+          </ts-button>
         </div>
       </div>
     `;
