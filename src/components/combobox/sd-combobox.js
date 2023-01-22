@@ -72,11 +72,6 @@ class SdCombobox extends LionCombobox {
           max-width: 300px;
         }
 
-        ::slotted([slot="input"]):focus-visible {
-          box-shadow: var(--shadowsFocus);
-          outline: none;
-        }
-
         :slotted > .input-group__container {
           border-bottom: none;
         }
@@ -84,6 +79,10 @@ class SdCombobox extends LionCombobox {
         ::slotted([slot="feedback"][type="error"]) {
           font-size: var(--fontSizesSmall);
           color: var(--dangerFg);
+        }
+
+        :host(:focus-within) .form-field__group-two {
+          box-shadow: var(--shadowsFocus);
         }
       `,
     ];
