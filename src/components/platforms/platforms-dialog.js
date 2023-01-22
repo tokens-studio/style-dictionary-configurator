@@ -306,8 +306,6 @@ class PlatformsDialog extends LitElement {
   submitForm(ev) {
     ev.preventDefault();
 
-    console.log("submitForm");
-
     // prevent form submission if there are validation errors
     if (ev.target.hasFeedbackFor.includes("error")) {
       return;
@@ -315,8 +313,6 @@ class PlatformsDialog extends LitElement {
 
     const formResult = ev.target.modelValue;
     const { buildPath, prefix, name, transforms } = formResult;
-
-    console.log(buildPath, prefix, name, transforms);
 
     let transformGroup;
     let standaloneTransforms = [];
