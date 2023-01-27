@@ -339,7 +339,6 @@ class FileTree extends LitElement {
 
   rowClick(ev) {
     let { target, key } = ev;
-
     // ignore this one, as it's just the file edit "apply" action
     if (
       target.classList.contains("edit-file-input") ||
