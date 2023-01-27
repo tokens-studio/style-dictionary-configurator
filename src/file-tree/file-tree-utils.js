@@ -2,7 +2,7 @@ import fs, { promises } from "fs";
 import util from "util";
 import path from "path";
 import glob from "glob";
-import tokens from "./tokens.json";
+import tokens from "./core.tokens.json";
 import { changeLang, getContents } from "../index.js";
 import { sdState } from "../style-dictionary.js";
 import createDictionary from "browser-style-dictionary/lib/utils/createDictionary.js";
@@ -149,7 +149,7 @@ export function createStandardTokens() {
   );
 }
 
-export function createConfig() {
+export function createConfig(studioTokens = false) {
   fs.writeFileSync(
     // take the .js by default
     "config.json",
@@ -158,7 +158,7 @@ export function createConfig() {
         source: ["**/*.tokens.json"],
         platforms: {
           css: {
-            transformGroup: "css",
+            transformGroup: studioTokens ? "tokens-studio" : "css",
             prefix: "sd",
             buildPath: "build/css/",
             files: [
@@ -169,7 +169,7 @@ export function createConfig() {
             ],
           },
           js: {
-            transformGroup: "js",
+            transformGroup: studioTokens ? "tokens-studio" : "js",
             buildPath: "build/js/",
             files: [
               {
@@ -206,7 +206,7 @@ export async function createInputFiles(studioTokens = false) {
   if (urlSplit.length > 1) {
     await createFilesFromURL(urlSplit[1]);
   } else {
-    createConfig();
+    createConfig(studioTokens);
     if (studioTokens) {
       createStudioTokens();
     } else {

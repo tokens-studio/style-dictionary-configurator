@@ -140,7 +140,7 @@ function setupUploadBtnHandler() {
 
   await ensureMonacoIsLoaded();
   // true means use Tokens Studio tokens.json instead of a more basic sd-compatible set of tokens
-  await createInputFiles();
+  await createInputFiles(true);
   await sdState.runStyleDictionary();
   await openAllFolders();
   await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
