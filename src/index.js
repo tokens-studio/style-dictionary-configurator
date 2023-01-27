@@ -12,6 +12,7 @@ import {
   openAllFolders,
   switchToFile,
   fileTreeEl,
+  replaceSource,
 } from "./file-tree/file-tree-utils.js";
 import { sdState } from "./style-dictionary.js";
 // side effect: loads the monaco editor
@@ -26,8 +27,10 @@ import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
+import "./components/button/ts-button.js";
 import "@tokens-studio/tokens/dist/css/dark.css";
 import "@tokens-studio/tokens/dist/css/core.css";
+import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
 
 loadDefaultFeedbackMessages();
 
@@ -57,6 +60,31 @@ export async function encodeContents(files) {
   const contents = await getContents(files);
   const content = JSON.stringify(contents);
   return flate.deflate_encode(content);
+}
+
+function setupUploadBtnHandler() {
+  const btn = document.getElementById("upload-tokens-btn");
+  const fileInput = document.getElementById("upload-tokens-input");
+  btn.addEventListener("click", () => {
+    fileInput.dispatchEvent(new MouseEvent("click"));
+  });
+  fileInput.addEventListener("change", async (ev) => {
+    const blob = ev.target.files[0];
+    const zipReader = new ZipReader(new BlobReader(blob));
+    const entries = await zipReader.getEntries({ filenameEncoding: "utf-8" });
+    const files = Object.fromEntries(
+      await Promise.all(
+        entries.map((entry) => {
+          return new Promise(async (resolve) => {
+            const fileContents = await entry.getData(new TextWriter("utf-8"));
+            resolve([entry.filename, fileContents]);
+          });
+        })
+      )
+    );
+    ev.target.value = "";
+    replaceSource(files);
+  });
 }
 
 // async function switchToJS(ev) {
@@ -103,6 +131,8 @@ export async function encodeContents(files) {
     }
   });
 
+  setupUploadBtnHandler();
+
   window.addEventListener("resize", async () => {
     await ensureMonacoIsLoaded();
     resizeMonacoLayout();
@@ -110,7 +140,7 @@ export async function encodeContents(files) {
 
   await ensureMonacoIsLoaded();
   // true means use Tokens Studio tokens.json instead of a more basic sd-compatible set of tokens
-  await createInputFiles(true);
+  await createInputFiles();
   await sdState.runStyleDictionary();
   await openAllFolders();
   await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);

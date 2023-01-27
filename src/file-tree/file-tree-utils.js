@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { promises } from "fs";
 import util from "util";
 import path from "path";
 import glob from "glob";
@@ -19,7 +19,6 @@ const asyncGlob = util.promisify(glob);
 const extensionMap = {
   js: "javascript",
 };
-const tokensPath = path.resolve("tokens");
 
 export const fileTreeEl = document.querySelector("#output-file-tree");
 export let currentFileConfig = findUsedConfigPath();
@@ -34,6 +33,8 @@ function getSelectedFileBtn() {
 }
 
 async function createFilesFromURL(project) {
+  // TODO: cycle a loop, every 50ms check if flate has become defined
+  // stop after 1 second and throw
   await new Promise((resolve) => setTimeout(resolve, 200));
   const parsedContents = JSON.parse(flate.deflate_decode(project));
   await Promise.all(
@@ -185,6 +186,21 @@ export function createConfig() {
   );
 }
 
+export async function replaceSource(files) {
+  await clearAll();
+  await Promise.all(
+    Object.entries(files).map(
+      ([filename, contents]) =>
+        new Promise(async (resolve) => {
+          fs.writeFile(filename, contents, "utf-8", () => {
+            resolve();
+          });
+        })
+    )
+  );
+  await sdState.rerunStyleDictionary();
+}
+
 export async function createInputFiles(studioTokens = false) {
   const urlSplit = window.location.href.split("#project=");
   if (urlSplit.length > 1) {
@@ -249,7 +265,8 @@ export async function openAllFolders() {
 
 export async function clearAll() {
   const files = await asyncGlob("**/*", { fs, mark: true });
-  const filtered = files.filter((file) => file !== "sd.config.json");
+  // Keep config, only remove source tokens and output files
+  const filtered = files.filter((file) => file !== "config.json");
   await Promise.all(
     filtered.map((file) => {
       return new Promise(async (resolve) => {
@@ -270,6 +287,7 @@ export async function clearAll() {
       });
     })
   );
+  editorOutput.setValue("");
   await repopulateFileTree();
 }
 

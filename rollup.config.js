@@ -5,12 +5,13 @@ import commonjs from "@rollup/plugin-commonjs";
 import inject from "@rollup/plugin-inject";
 import * as path from "path";
 import css from "rollup-plugin-import-css";
-import svg from 'rollup-plugin-svg-import';
+import svg from "rollup-plugin-svg-import";
 
 const filesToCopy = [
   path.resolve("src", "index.html"),
   path.resolve("src", "favicon.ico"),
   path.resolve("src", "style.css"),
+  path.resolve("src", "fonts.css"),
   path.resolve("src", "assets"),
 ];
 
@@ -54,7 +55,7 @@ const plugins = [
   css(),
   svg({
     // process SVG to DOM Node or String. Default: false
-    stringify: false
+    stringify: false,
   }),
   nodeResolve,
   json(),

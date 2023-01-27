@@ -18,14 +18,14 @@ export function resizeMonacoLayout() {
       minimumMonacoWidth - fileTreeWidth,
       viewportWidth - sectionMiddleWidth - fileTreeWidth - borderLeftWidth
     ),
-    height: sectionRightHeight / 2 + 1,
+    height: sectionRightHeight / 2,
   });
 
   editorConfig.layout({
     width: Math.max(
       minimumMonacoWidth,
-      viewportWidth - platformsUIWidth - borderLeftWidth
+      viewportWidth - sectionMiddleWidth - borderLeftWidth
     ),
-    height: sectionRightHeight / 2 + 1,
+    height: sectionRightHeight / 2,
   });
 }

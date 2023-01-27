@@ -5,6 +5,7 @@ import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { sdState } from "../../style-dictionary.js";
+import { codicon } from "../../icons/codicon-style.css.js";
 import styles from "./token-platform.css.js";
 
 // Custom Element Definitions
@@ -12,7 +13,7 @@ import "./platforms-dialog.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
-    return styles;
+    return [codicon, styles];
   }
 
   static get properties() {
@@ -92,10 +93,18 @@ class TokenPlatforms extends LitElement {
           <div class="platform">
             <div class="platform__header">
               <h3 class="platform__title">${plat.key}</h3>
-              <platforms-dialog
-                @save-platform=${this.savePlatform}
-                platform="${plat.key}"
-              ></platforms-dialog>
+              <div>
+                <platforms-dialog
+                  @save-platform=${this.savePlatform}
+                  platform="${plat.key}"
+                ></platforms-dialog>
+                <ts-button
+                  @click=${() => this.removePlatform(plat.key)}
+                  variant="tertiary"
+                >
+                  <span class="codicon codicon-trash"></span>
+                </ts-button>
+              </div>
             </div>
             <div class="platform__content">
               ${this.transformsTemplate(plat)} ${this.formatsTemplate(plat)}
@@ -198,6 +207,12 @@ class TokenPlatforms extends LitElement {
     this.requestUpdate("_platforms", copy);
     const dialogEl = this.shadowRoot.querySelector(`[platform="${platform}"]`);
     dialogEl.onPlatformChanged();
+  }
+
+  removePlatform(platform) {
+    const copy = structuredClone(this._platforms);
+    delete this._platforms[platform];
+    this.requestUpdate("_platforms", copy);
   }
 
   savePlatform(ev) {

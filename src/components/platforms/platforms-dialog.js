@@ -82,8 +82,7 @@ class PlatformsDialog extends LitElement {
               ${PencilIcon()}
             </ts-button>`
           : html`<ts-button slot="invoker" variant="secondary">
-              <div slot="prefix">${PlusIcon()}</div>
-              Add platform
+              ${PlusIcon()} Add platform
             </ts-button>`}
         <sd-dialog-frame
           title=${this.platform ? "Change platform" : "Add a new platform"}

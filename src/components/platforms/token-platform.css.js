@@ -1,5 +1,9 @@
 import { css } from "lit-element";
 export default css`
+  .codicon-trash:before {
+    content: "\\ea81";
+  }
+
   p {
     margin: 0;
   }

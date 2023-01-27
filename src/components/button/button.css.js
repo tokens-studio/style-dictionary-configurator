@@ -12,7 +12,7 @@ export default css`
     border-color: transparent;
     display: inline-flex;
     align-items: center;
-    gap: var(--space2);
+    gap: var(--space3);
     border-radius: var(--radiiMedium);
     line-height: 20px;
     font-weight: var(--fontWeightsSansMedium);
@@ -40,7 +40,8 @@ export default css`
     border-color: var(--buttonSecondaryBorderRest);
   }
 
-  :host([variant="secondary"]:hover) .button-content {
+  :host([variant="secondary"]:hover) .button-content,
+  :host([variant="tertiary"]:hover) .button-content {
     background-color: var(--buttonSecondaryBgHover);
   }
 

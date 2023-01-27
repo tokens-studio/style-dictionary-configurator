@@ -24,5 +24,10 @@ export const ButtonMixin = dedupeMixin(
           },
         };
       }
+
+      constructor() {
+        super();
+        this.variant = "primary";
+      }
     }
 );
