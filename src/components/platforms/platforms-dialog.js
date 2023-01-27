@@ -246,7 +246,7 @@ class PlatformsDialog extends LitElement {
 
   async onPlatformChanged() {
     await sdState.hasInitialized;
-    this._platformData = sdState._sd.platforms[this.platform];
+    this._platformData = sdState.config.platforms[this.platform];
 
     this._transforms = [
       ...(this._platformData?.transformGroup
