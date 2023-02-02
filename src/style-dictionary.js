@@ -22,6 +22,7 @@ class SdState extends EventTarget {
     super();
     this._sd = [];
     this.themes = {};
+    this.themedConfigs = [];
     this.hasInitializedConfig = new Promise((resolve) => {
       this.hasInitializedConfigResolve = resolve;
     });
@@ -72,6 +73,9 @@ class SdState extends EventTarget {
           "Missing or invalid $themes.json in the root of the tokens folder. Try uploading a ZIP that contains this $themes.json file."
         );
       }
+    } else {
+      this.themes = {};
+      this.themedConfigs = [];
     }
     return config;
   }
@@ -142,7 +146,7 @@ class SdState extends EventTarget {
                   theme,
                   tokensets
                 );
-                console.log(themedCfg);
+                this.themedConfigs.push(themedCfg);
                 const sd = await StyleDictionary.extend(themedCfg);
                 await sd.buildAllPlatforms();
                 resolve(sd);

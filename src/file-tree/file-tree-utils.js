@@ -390,10 +390,24 @@ export async function getOutputFiles() {
   // without a correct SD instance, we can't really know for sure what the output files are
   // therefore, we can't know what the input files are (tokens + other used files via relative imports)
   await sdState.hasInitialized;
-  const { platforms } = sdState.config;
+  let platforms;
+
+  // Themes
+  if (sdState.themedConfigs.length > 0) {
+    platforms = [];
+    sdState.themedConfigs.forEach((themedCfg) => {
+      Object.entries(themedCfg.platforms).forEach(([key, platform]) => {
+        platforms.push([key, platform]);
+      });
+    });
+  } else {
+    // No themes
+    platforms = Object.entries(sdState.config.platforms);
+  }
+
   let outputFiles = [];
   await Promise.all(
-    Object.entries(platforms).map(([key, platform]) => {
+    platforms.map(([, platform]) => {
       return new Promise(async (resolve) => {
         const outFiles = await asyncGlob(`${platform.buildPath}**`, {
           nodir: true,
