@@ -28,9 +28,6 @@ class PlatformsDialog extends LitElement {
       _files: {
         state: true,
       },
-      _formats: {
-        state: true,
-      },
       _transforms: {
         state: true,
       },
@@ -51,7 +48,6 @@ class PlatformsDialog extends LitElement {
   constructor() {
     super();
     this._files = [];
-    this._formats = [];
     this._transforms = [];
     this.platform = "";
     this.dialogRef = createRef();
@@ -179,7 +175,6 @@ class PlatformsDialog extends LitElement {
 
   formatsSearchTemplate() {
     const formats = this._files.map((file) => file.format);
-    console.log("rendering w formats", formats);
     return html`
       <sd-combobox
         ref=${ref(this.comboFormatsRef)}
@@ -281,7 +276,6 @@ class PlatformsDialog extends LitElement {
           destination: "",
         }));
       this._files = [...oldRemainingFiles, ...newFiles];
-      console.log("new files", this._files);
     }
   }
 

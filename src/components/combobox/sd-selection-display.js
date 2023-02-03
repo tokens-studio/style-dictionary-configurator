@@ -133,7 +133,6 @@ export class SdSelectionDisplay extends LitElement {
   // Fired on this element (selection-display slottable) by the combobox
   onComboboxElementUpdated(changedProperties) {
     if (changedProperties.has("modelValue")) {
-      console.log("combobox element updated");
       this._selectedElements = this.computeSelectedElements();
       this.reorderChips();
     }
@@ -146,7 +145,6 @@ export class SdSelectionDisplay extends LitElement {
   reorderChips() {
     const { _selectedElements } = this;
 
-    console.log("REORDER", this.__prevSelectedEls);
     if (this.__prevSelectedEls) {
       const addedEls = _selectedElements.filter(
         (e) => !this.__prevSelectedEls.includes(e)
@@ -155,7 +153,6 @@ export class SdSelectionDisplay extends LitElement {
         (e) => !_selectedElements.includes(e)
       );
       if (addedEls.length) {
-        console.log("added");
         this._selectedElements = [...this.__prevSelectedEls, ...addedEls];
       } else if (deletedEls.length) {
         deletedEls.forEach((delEl) => {
@@ -164,14 +161,11 @@ export class SdSelectionDisplay extends LitElement {
             1
           );
         });
-        console.log("deleted");
         this._selectedElements = this.__prevSelectedEls;
       } else {
         this._selectedElements = this.__prevSelectedEls;
       }
     }
-    console.log("reorder chips to");
-    console.log(this._selectedElements);
     this.__prevSelectedEls = this._selectedElements;
   }
 
