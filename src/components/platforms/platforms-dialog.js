@@ -1,8 +1,7 @@
 import StyleDictionary from "browser-style-dictionary/browser.js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { ref, createRef } from "lit/directives/ref.js";
-import { classMap } from "lit/directives/class-map.js";
 import { Required } from "@lion/ui/form-core.js";
 import { LionForm } from "@lion/ui/form.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
@@ -85,6 +84,7 @@ class PlatformsDialog extends LitElement {
               ${PlusIcon()} Add platform
             </ts-button>`}
         <sd-dialog-frame
+          class="dialog__frame"
           title=${this.platform ? "Change platform" : "Add a new platform"}
           has-close-button
           slot="content"
@@ -139,7 +139,6 @@ class PlatformsDialog extends LitElement {
         show-all-on-empty
         multiple-choice
         .modelValue=${this._transforms}
-        @model-value-changed=${this.onComboModelValueChanged}
         .validators=${[new TransformsValidator()]}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
@@ -179,6 +178,8 @@ class PlatformsDialog extends LitElement {
   }
 
   formatsSearchTemplate() {
+    const formats = this._files.map((file) => file.format);
+    console.log("rendering w formats", formats);
     return html`
       <sd-combobox
         ref=${ref(this.comboFormatsRef)}
@@ -190,7 +191,7 @@ class PlatformsDialog extends LitElement {
         multiple-choice
         .validators=${[new Required()]}
         .modelValue=${this._files.map((file) => file.format)}
-        @model-value-changed=${this.onComboModelValueChanged}
+        @model-value-changed=${this.onFormatsComboModelValueChanged}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
         ${Object.keys(StyleDictionary.format).map(
@@ -260,45 +261,27 @@ class PlatformsDialog extends LitElement {
     ];
   }
 
-  async onComboModelValueChanged(ev) {
-    /** @type {'formats'|'transforms'} */
-    const type = ev.target.getAttribute("name");
-    const filesOrTransforms = type === "formats" ? "_files" : "_transforms";
+  async onFormatsComboModelValueChanged(ev) {
+    if (!this.dialogRef.value.opened) {
+      return;
+    }
 
-    // When the selected options change, we need to sync it to
-    // this._files or this._transforms respectively.
     const selectionDisplayNode = ev.target._selectionDisplayNode;
     if (selectionDisplayNode) {
       await selectionDisplayNode.updateComplete;
       const { _selectedElements } = selectionDisplayNode;
-      const selectedChoices = _selectedElements.map((el) => el.choiceValue);
-
-      // Any selected choice that's not currently
-      // in filesOrTransforms means it's a new file/transform
-      const newVals = selectedChoices
-        .filter(
-          (choice) =>
-            !this[filesOrTransforms].find((file) => file.format === choice)
-        )
-        .map((newFormatOrTransform) => {
-          if (type === "formats") {
-            return { format: newFormatOrTransform, destination: "" }; // <- for _files
-          } else {
-            return newFormatOrTransform; // <- for _transforms
-          }
-        });
-
-      // old values, but filter out the ones that
-      // are not among the selected options anymore (deleted)
-      const oldVals = this[filesOrTransforms].filter((fileOrTransform) =>
-        selectedChoices.find((choice) => {
-          const oldFormatOrTransform =
-            type === "formats" ? fileOrTransform.format : fileOrTransform;
-          return oldFormatOrTransform === choice;
-        })
+      const selectedFormats = _selectedElements.map((el) => el.choiceValue);
+      const oldRemainingFiles = this._files.filter((file) =>
+        selectedFormats.find((format) => format === file.format)
       );
-
-      this[filesOrTransforms] = [...oldVals, ...newVals];
+      const newFiles = selectedFormats
+        .filter((format) => !this._files.find((file) => format === file.format))
+        .map((format) => ({
+          format,
+          destination: "",
+        }));
+      this._files = [...oldRemainingFiles, ...newFiles];
+      console.log("new files", this._files);
     }
   }
 
@@ -332,7 +315,6 @@ class PlatformsDialog extends LitElement {
 
     // TODO: consider not normalizing buildPath, as it means that users might face errors
     // with their buildPath once they eject from this configurator and run it locally.
-
     // remove trailing and leading slashes, add 1 final trailing slash
     let normalizedBuildPath = `${buildPath.replace(/^\/+|\/+$/g, "")}/`;
     // if path is only "/", remove it

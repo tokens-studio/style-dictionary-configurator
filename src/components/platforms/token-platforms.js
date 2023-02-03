@@ -96,7 +96,7 @@ class TokenPlatforms extends LitElement {
               <div>
                 <platforms-dialog
                   @save-platform=${this.savePlatform}
-                  platform="${plat.key}"
+                  .platform="${plat.key}"
                 ></platforms-dialog>
                 <ts-button
                   @click=${() => this.removePlatform(plat.key)}
