@@ -214,7 +214,7 @@ class FileTree extends LitElement {
               <div class="input-files">
                 ${this.asDetails(
                   this.filesAsTree(
-                    this.inputFiles.filter((file) => file === "config.js")
+                    this.inputFiles.filter((file) => file !== "config.json")
                   )
                 )}
               </div>
