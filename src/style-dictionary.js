@@ -80,6 +80,28 @@ class SdState extends EventTarget {
     return config;
   }
 
+  get JSFileParser() {
+    return {
+      // matches js, mjs
+      pattern: /\.(j|mj)s$/,
+      parse: async ({ filePath }) => {
+        const bundled = await bundle(filePath);
+        const url = URL.createObjectURL(
+          new Blob([bundled], { type: "text/javascript" })
+        );
+        const { default: token } = await import(url);
+        return token;
+      },
+    };
+  }
+
+  mergeWithJSFileParser(cfg) {
+    return {
+      ...cfg,
+      parsers: [...(cfg.parsers || []), this.JSFileParser],
+    };
+  }
+
   async rerunStyleDictionary() {
     await this.runStyleDictionary();
 
@@ -115,25 +137,6 @@ class SdState extends EventTarget {
         cfgObj = JSON.parse(cfgAsString);
       }
 
-      // TODO: uncomment once this bug is fixed where parsers is
-      // synced back into the json config but not functioning.
-      // Custom parser for JS token files
-      // cfgObj.parsers = [
-      //   ...(cfgObj.parsers || []),
-      //   {
-      //     // matches js, mjs
-      //     pattern: /\.(j|mj)s$/,
-      //     parse: async ({ filePath }) => {
-      //       const bundled = await bundle(filePath);
-      //       const url = URL.createObjectURL(
-      //         new Blob([bundled], { type: "text/javascript" })
-      //       );
-      //       const { default: token } = await import(url);
-      //       return token;
-      //     },
-      //   },
-      // ];
-
       this.config = await this.processConfig(cfgObj);
       const themeEntries = Object.entries(this.themes);
       if (themeEntries.length > 0) {
@@ -147,14 +150,18 @@ class SdState extends EventTarget {
                   tokensets
                 );
                 this.themedConfigs.push(themedCfg);
-                const sd = await StyleDictionary.extend(themedCfg);
+                const sd = await StyleDictionary.extend(
+                  this.mergeWithJSFileParser(themedCfg)
+                );
                 await sd.buildAllPlatforms();
                 resolve(sd);
               })
           )
         );
       } else {
-        const sd = await StyleDictionary.extend(cfgObj);
+        const sd = await StyleDictionary.extend(
+          this.mergeWithJSFileParser(cfgObj)
+        );
         this.sd = [sd];
         await this.sd[0].buildAllPlatforms();
       }
