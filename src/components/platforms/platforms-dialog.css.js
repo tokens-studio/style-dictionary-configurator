@@ -20,4 +20,10 @@ export default css`
   .platform-form > *:not(:last-child) {
     margin-bottom: 0.5rem;
   }
+
+  .dialog__frame {
+    overflow-y: auto;
+    max-height: 75vh;
+    top: -5%;
+  }
 `;

@@ -74,12 +74,13 @@ function setupUploadBtnHandler() {
     const entries = await zipReader.getEntries({ filenameEncoding: "utf-8" });
     const files = Object.fromEntries(
       await Promise.all(
-        entries.map((entry) => {
-          return new Promise(async (resolve) => {
-            const fileContents = await entry.getData(new TextWriter("utf-8"));
-            resolve([entry.filename, fileContents]);
-          });
-        })
+        entries.map(
+          (entry) =>
+            new Promise(async (resolve) => {
+              const fileContents = await entry.getData(new TextWriter("utf-8"));
+              resolve([entry.filename, fileContents]);
+            })
+        )
       )
     );
     ev.target.value = "";

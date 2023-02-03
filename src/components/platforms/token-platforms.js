@@ -58,15 +58,15 @@ class TokenPlatforms extends LitElement {
   async setupSdListeners() {
     await sdState.hasInitializedConfig;
     this._config = sdState.config;
+    this._platforms = sdState.config.platforms;
     sdState.addEventListener("config-changed", (ev) => {
       this._config = ev.detail;
       this._platforms = this._config.platforms;
-    });
-
-    await sdState.hasInitialized;
-    this._platforms = sdState.sd.platforms;
-    sdState.addEventListener("sd-changed", (ev) => {
-      this._platforms = ev.detail.platforms;
+      Array.from(this.shadowRoot.querySelectorAll("platforms-dialog")).forEach(
+        (el) => {
+          el.onPlatformChanged();
+        }
+      );
     });
   }
 
@@ -96,7 +96,7 @@ class TokenPlatforms extends LitElement {
               <div>
                 <platforms-dialog
                   @save-platform=${this.savePlatform}
-                  platform="${plat.key}"
+                  .platform="${plat.key}"
                 ></platforms-dialog>
                 <ts-button
                   @click=${() => this.removePlatform(plat.key)}

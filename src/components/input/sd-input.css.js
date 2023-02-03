@@ -33,4 +33,9 @@ export default css`
     box-shadow: var(--shadowsFocus);
     outline: none;
   }
+
+  ::slotted([slot="feedback"][type="error"]) {
+    font-size: var(--fontSizesSmall);
+    color: var(--dangerFg);
+  }
 `;

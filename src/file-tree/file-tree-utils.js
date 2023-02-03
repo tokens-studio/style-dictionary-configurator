@@ -390,10 +390,24 @@ export async function getOutputFiles() {
   // without a correct SD instance, we can't really know for sure what the output files are
   // therefore, we can't know what the input files are (tokens + other used files via relative imports)
   await sdState.hasInitialized;
-  const { platforms } = sdState.sd.options;
+  let platforms;
+
+  // Themes
+  if (sdState.themedConfigs.length > 0) {
+    platforms = [];
+    sdState.themedConfigs.forEach((themedCfg) => {
+      Object.entries(themedCfg.platforms).forEach(([key, platform]) => {
+        platforms.push([key, platform]);
+      });
+    });
+  } else {
+    // No themes
+    platforms = Object.entries(sdState.config.platforms);
+  }
+
   let outputFiles = [];
   await Promise.all(
-    Object.entries(platforms).map(([key, platform]) => {
+    platforms.map(([, platform]) => {
       return new Promise(async (resolve) => {
         const outFiles = await asyncGlob(`${platform.buildPath}**`, {
           nodir: true,
@@ -425,7 +439,7 @@ export async function dispatchTokens(ev) {
   source.postMessage(
     {
       type: "sd-tokens",
-      tokens: sdState.sd.tokens,
+      tokens: sdState.sd.map((_sd) => _sd.tokens),
     },
     "*"
   );
@@ -436,11 +450,10 @@ export async function dispatchDictionary(ev) {
   await sdState.hasInitialized;
   // Dictionary can contain methods, for postMessage cloning as a workaround
   // we therefore have to JSON.stringify it and JSON.parse it to clone which removes functions.
-  const dictionary = JSON.parse(JSON.stringify(sdState.sd));
   source.postMessage(
     {
       type: "sd-dictionary",
-      dictionary,
+      dictionaries: sdState.sd.map((_sd) => JSON.parse(JSON.stringify(_sd))),
     },
     "*"
   );
@@ -450,11 +463,16 @@ export async function dispatchEnrichedTokens(ev) {
   const { source, data } = ev;
   const { platform } = data;
   await sdState.hasInitialized;
-  const enrichedTokens = sdState.sd.exportPlatform(platform);
-  const { allTokens, tokens } = createDictionary({
-    properties: enrichedTokens,
+
+  const dictionaries = sdState.sd.map((_sd) => {
+    const enrichedTokens = _sd.exportPlatform(platform);
+    const { allTokens, tokens } = createDictionary({
+      properties: enrichedTokens,
+    });
+    return { allTokens, tokens };
   });
-  source.postMessage({ type: "sd-enriched-tokens", tokens, allTokens }, "*");
+
+  source.postMessage({ type: "sd-enriched-tokens", dictionaries }, "*");
 }
 
 export async function dispatchInputFiles(ev) {
