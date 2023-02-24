@@ -14,6 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
+import { THEME_SETS, THEME_STRING } from "../constants.js";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -198,7 +199,7 @@ export async function replaceSource(files) {
         })
     )
   );
-  await sdState.rerunStyleDictionary();
+  await sdState.runStyleDictionary();
 }
 
 export async function createInputFiles(studioTokens = false) {
@@ -234,7 +235,7 @@ export async function createFolder(foldername) {
 export async function editFileName(filePath, newName, isFolder = false) {
   const newPath = path.join(path.dirname(filePath), newName);
   fs.renameSync(filePath, newPath);
-  await sdState.rerunStyleDictionary(newPath, isFolder);
+  await sdState.runStyleDictionary();
 }
 
 export async function removeFile(file) {
@@ -302,7 +303,7 @@ export async function saveConfig() {
   // TODO: unsaved marker -> remove it
   // selectedFileBtn.removeAttribute("unsaved");
 
-  await sdState.rerunStyleDictionary();
+  await sdState.runStyleDictionary();
 }
 
 export async function switchToFile(file, ed) {
@@ -480,4 +481,13 @@ export async function dispatchInputFiles(ev) {
   const inputFiles = await getInputFiles();
   const contents = await getContents(inputFiles);
   source.postMessage({ type: "sd-input-files", files: contents }, "*");
+}
+
+export async function encodeContentsToURL() {
+  const inputFiles = await getInputFiles();
+  // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
+  if (inputFiles.length > 0) {
+    const encoded = await encodeContents(inputFiles);
+    window.location.href = `${window.location.origin}/#project=${encoded}`;
+  }
 }

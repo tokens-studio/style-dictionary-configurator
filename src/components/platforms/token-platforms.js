@@ -44,7 +44,7 @@ class TokenPlatforms extends LitElement {
       const cfgPath = findUsedConfigPath();
       fs.writeFileSync(cfgPath, JSON.stringify(this._config, null, 2));
       switchToFile(cfgPath, editorConfig);
-      sdState.rerunStyleDictionary();
+      sdState.runStyleDictionary();
     }
   }
 

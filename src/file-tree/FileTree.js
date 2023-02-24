@@ -525,12 +525,14 @@ class FileTree extends LitElement {
   }
 
   async switchToFile(indexOrName) {
-    await this.updateComplete;
-    if (this.unsavedFileBtn) {
-      saveConfig();
+    if (indexOrName != null) {
+      await this.updateComplete;
+      if (this.unsavedFileBtn) {
+        saveConfig();
+      }
+      const filename = this.switchToFileInTree(indexOrName);
+      switchToFile(filename);
     }
-    const filename = this.switchToFileInTree(indexOrName);
-    switchToFile(filename);
   }
 
   switchToFileInTree(indexOrName) {

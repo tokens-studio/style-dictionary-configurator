@@ -9,6 +9,7 @@ import {
 import { registerTransforms } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
+import { THEME_SETS, THEME_STRING } from "./constants.js";
 import { encodeContents } from "./index.js";
 
 registerTransforms(StyleDictionary);
@@ -51,17 +52,14 @@ class SdState extends EventTarget {
     this.dispatchEvent(new CustomEvent("sd-changed", { detail: v }));
   }
 
-  async processConfig(_config) {
+  async processConfigForThemes(_config) {
     let config = _config;
     const configAsString = JSON.stringify(config);
 
     // Detection of tokens studio using themes
     // This means we will run Style-Dictionary for each theme
     // and inject the required variables into the JSON config
-    if (
-      configAsString.includes("%theme%") ||
-      config.source === "%themeTokenSets%"
-    ) {
+    if (configAsString.includes(THEME_STRING) || config.source === THEME_SETS) {
       try {
         const themes = JSON.parse(await promises.readFile("$themes.json"));
         this.themes = {};
@@ -102,42 +100,38 @@ class SdState extends EventTarget {
     };
   }
 
-  async rerunStyleDictionary() {
-    await this.runStyleDictionary();
-
-    const inputFiles = await getInputFiles();
-    // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
-    if (inputFiles.length > 0) {
-      const encoded = await encodeContents(inputFiles);
-      window.location.href = `${window.location.origin}/#project=${encoded}`;
+  async loadAndProcessConfig() {
+    let cfgObj;
+    const configPath = findUsedConfigPath();
+    // If .js, we need to parse it as actual JS without resorting to eval/Function
+    // Instead, we put it in a blob and create a URL from it that we can import
+    // That way, malicious code would be scoped only to the blob, which is safer.
+    if (configPath.match(/\.(j|mj)s$/)) {
+      const bundled = await bundle(configPath);
+      const url = URL.createObjectURL(
+        new Blob([bundled], { type: "text/javascript" })
+      );
+      const { default: cfg } = await import(url);
+      cfgObj = cfg;
+    } else {
+      const cfgAsString = await promises.readFile(configPath, "utf-8");
+      cfgObj = JSON.parse(cfgAsString);
     }
-    // refresh currently selected output file
-    fileTreeEl.switchToFile(currentFileOutput);
+
+    this.config = await this.processConfigForThemes(cfgObj);
   }
 
   async runStyleDictionary() {
+    await this.loadAndProcessConfig();
+    await this.themeDetection();
+    await this._runStyleDictionary();
+  }
+
+  async _runStyleDictionary() {
     console.log("Running style-dictionary...");
     document.querySelector("#output-file-tree").animateCue();
     await this.cleanPlatformOutputDirs();
-    let cfgObj;
-    const configPath = findUsedConfigPath();
     try {
-      // If .js, we need to parse it as actual JS without resorting to eval/Function
-      // Instead, we put it in a blob and create a URL from it that we can import
-      // That way, malicious code would be scoped only to the blob, which is safer.
-      if (configPath.match(/\.(j|mj)s$/)) {
-        const bundled = await bundle(configPath);
-        const url = URL.createObjectURL(
-          new Blob([bundled], { type: "text/javascript" })
-        );
-        const { default: cfg } = await import(url);
-        cfgObj = cfg;
-      } else {
-        const cfgAsString = await promises.readFile(configPath, "utf-8");
-        cfgObj = JSON.parse(cfgAsString);
-      }
-
-      this.config = await this.processConfig(cfgObj);
       const themeEntries = Object.entries(this.themes);
       if (themeEntries.length > 0) {
         this.sd = await Promise.all(
@@ -145,7 +139,7 @@ class SdState extends EventTarget {
             ([theme, tokensets]) =>
               new Promise(async (resolve) => {
                 const themedCfg = this.injectThemeVariables(
-                  cfgObj,
+                  this.config,
                   theme,
                   tokensets
                 );
@@ -160,7 +154,7 @@ class SdState extends EventTarget {
         );
       } else {
         const sd = await StyleDictionary.extend(
-          this.mergeWithJSFileParser(cfgObj)
+          this.mergeWithJSFileParser(this.config)
         );
         this.sd = [sd];
         await this.sd[0].buildAllPlatforms();
@@ -169,12 +163,53 @@ class SdState extends EventTarget {
       console.error(`Style Dictionary error: ${e.stack}`);
     } finally {
       await repopulateFileTree();
+      // refresh currently selected output file
+      fileTreeEl.switchToFile(currentFileOutput);
       return this.sd;
     }
   }
 
+  async themeDetection() {
+    const addThemeToFilePath = (file) => {
+      const fileParts = file.split(".");
+      const index = fileParts.length - 2;
+      if (index >= 0 && !file.match(THEME_STRING)) {
+        fileParts[index] = `${fileParts[index]}-${THEME_STRING}`;
+      }
+      return fileParts.join(".");
+    };
+
+    promises
+      .readFile("$themes.json")
+      .then((themesFile) => {
+        const themes = JSON.parse(themesFile);
+        if (themes.length > 0) {
+          // 1) adjust config source and platform files names to themed
+          this.config = {
+            ...this.config,
+            source: THEME_SETS,
+            platforms: Object.fromEntries(
+              Object.entries(this.config.platforms).map(([key, plat]) => [
+                key,
+                {
+                  ...plat,
+                  files: plat.files.map((file) => ({
+                    ...file,
+                    destination: addThemeToFilePath(file.destination),
+                  })),
+                },
+              ])
+            ),
+          };
+          // 2) turn on themes switch UI
+        }
+      })
+      .catch(() => {});
+  }
+
   injectThemeVariables(cfg, theme, tokensets) {
-    const newCfg = JSON.parse(JSON.stringify(cfg).replace(/%theme%/g, theme));
+    const reg = new RegExp(THEME_STRING, "g");
+    const newCfg = JSON.parse(JSON.stringify(cfg).replace(reg, theme));
     newCfg.source = tokensets.map((set) => `${set}.json`);
     return newCfg;
   }
