@@ -2,15 +2,14 @@ import fs, { promises } from "fs";
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import {
   repopulateFileTree,
-  getInputFiles,
   fileTreeEl,
   currentFileOutput,
+  encodeContentsToURL,
 } from "./file-tree/file-tree-utils.js";
 import { registerTransforms } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_SETS, THEME_STRING } from "./constants.js";
-import { encodeContents } from "./index.js";
 
 registerTransforms(StyleDictionary);
 
@@ -40,6 +39,7 @@ class SdState extends EventTarget {
     this._config = v;
     this.hasInitializedConfigResolve();
     this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
+    encodeContentsToURL();
   }
 
   get sd() {
@@ -179,6 +179,8 @@ class SdState extends EventTarget {
       return fileParts.join(".");
     };
 
+    const themeSwitch = document.getElementById("theme-switch-main");
+
     promises
       .readFile("$themes.json")
       .then((themesFile) => {
@@ -201,7 +203,16 @@ class SdState extends EventTarget {
               ])
             ),
           };
-          // 2) turn on themes switch UI
+
+          if (themeSwitch) {
+            themeSwitch.removeAttribute("disabled");
+            themeSwitch.checked = true;
+          }
+        } else {
+          if (themeSwitch) {
+            themeSwitch.setAttribute("disabled", "");
+            themeSwitch.checked = false;
+          }
         }
       })
       .catch(() => {});

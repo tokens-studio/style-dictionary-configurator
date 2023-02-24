@@ -1,4 +1,3 @@
-import fs from "fs";
 import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
 
 // import prettier from "prettier";
@@ -29,6 +28,7 @@ import { setupUploadBtnHandler } from "./file-upload.js";
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
 import "./components/button/ts-button.js";
+import "./components/switch/ts-switch.js";
 import "@tokens-studio/tokens/dist/css/dark.css";
 import "@tokens-studio/tokens/dist/css/core.css";
 
@@ -39,27 +39,6 @@ export async function changeLang(lang, ed) {
   const _editor = ed || editorOutput;
 
   monaco.editor.setModelLanguage(_editor.getModel(), lang);
-}
-
-export async function getContents(files) {
-  const contents = {};
-  await Promise.all(
-    files.map(async (file) => {
-      await new Promise((resolve) => {
-        fs.readFile(file, "utf-8", (err, data) => {
-          contents[file] = data;
-          resolve();
-        });
-      });
-    })
-  );
-  return contents;
-}
-
-export async function encodeContents(files) {
-  const contents = await getContents(files);
-  const content = JSON.stringify(contents);
-  return flate.deflate_encode(content);
 }
 
 // async function switchToJS(ev) {

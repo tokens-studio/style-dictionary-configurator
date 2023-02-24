@@ -1,9 +1,9 @@
-import fs, { promises } from "fs";
+import fs from "fs";
 import util from "util";
 import path from "path";
 import glob from "glob";
 import tokens from "./core.tokens.json";
-import { changeLang, getContents } from "../index.js";
+import { changeLang } from "../index.js";
 import { sdState } from "../style-dictionary.js";
 import createDictionary from "browser-style-dictionary/lib/utils/createDictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
@@ -14,7 +14,6 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { THEME_SETS, THEME_STRING } from "../constants.js";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -199,6 +198,7 @@ export async function replaceSource(files) {
         })
     )
   );
+  await encodeContentsToURL();
   await sdState.runStyleDictionary();
 }
 
@@ -490,4 +490,25 @@ export async function encodeContentsToURL() {
     const encoded = await encodeContents(inputFiles);
     window.location.href = `${window.location.origin}/#project=${encoded}`;
   }
+}
+
+export async function encodeContents(files) {
+  const contents = await getContents(files);
+  const content = JSON.stringify(contents);
+  return flate.deflate_encode(content);
+}
+
+export async function getContents(files) {
+  const contents = {};
+  await Promise.all(
+    files.map(async (file) => {
+      await new Promise((resolve) => {
+        fs.readFile(file, "utf-8", (err, data) => {
+          contents[file] = data;
+          resolve();
+        });
+      });
+    })
+  );
+  return contents;
 }
