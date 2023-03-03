@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { promises } from "fs";
 import util from "util";
 import path from "path";
 import glob from "glob";
@@ -192,6 +192,10 @@ export async function replaceSource(files) {
     Object.entries(files).map(
       ([filename, contents]) =>
         new Promise(async (resolve) => {
+          const dir = path.dirname(filename);
+          if (dir !== "/") {
+            await mkdirRecursive(dir);
+          }
           fs.writeFile(filename, contents, "utf-8", () => {
             resolve();
           });

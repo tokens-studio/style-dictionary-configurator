@@ -16,15 +16,17 @@ export async function setupUploadBtnHandler() {
       const entries = await zipReader.getEntries({ filenameEncoding: "utf-8" });
       files = Object.fromEntries(
         await Promise.all(
-          entries.map(
-            (entry) =>
-              new Promise(async (resolve) => {
-                const fileContents = await entry.getData(
-                  new TextWriter("utf-8")
-                );
-                resolve([entry.filename, fileContents]);
-              })
-          )
+          entries
+            .filter((entry) => !entry.directory)
+            .map(
+              (entry) =>
+                new Promise(async (resolve) => {
+                  const fileContents = await entry.getData(
+                    new TextWriter("utf-8")
+                  );
+                  resolve([entry.filename, fileContents]);
+                })
+            )
         )
       );
     } else {
