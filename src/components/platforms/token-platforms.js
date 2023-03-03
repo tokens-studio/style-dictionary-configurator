@@ -176,9 +176,6 @@ class TokenPlatforms extends LitElement {
         (transform) => html`
           <div class="transform">
             <h4>${transform}</h4>
-            <div class="text-small">
-              A description for the transform to help explain it.
-            </div>
           </div>
         `
       )}
