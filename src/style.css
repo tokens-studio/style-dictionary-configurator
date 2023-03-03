@@ -100,10 +100,10 @@ h1 {
   z-index: 1;
 }
 
-.monaco-container:first-child::before {
+.monaco-wrapper:first-child .monaco-container::before {
   content: "config file";
 }
 
-.monaco-container:last-child::before {
+.monaco-wrapper:last-child .monaco-container::before {
   content: "source file";
 }
