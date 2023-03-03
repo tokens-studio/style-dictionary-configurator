@@ -45,6 +45,7 @@ export default css`
     width: 200px;
     color: #fff;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .file,
@@ -151,7 +152,6 @@ export default css`
   .loading-cue {
     position: relative;
     height: 3px;
-    margin-bottom: 6px;
     overflow: hidden;
   }
 
@@ -178,9 +178,21 @@ export default css`
     }
   }
 
-  .input-files {
-    flex-grow: 1;
+  .file-list-container {
     overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+  }
+
+  .file-list-container::-webkit-scrollbar {
+    border: none;
+    height: 5px;
+  }
+
+  .file-list-container::-webkit-scrollbar-thumb {
+    background-color: var(--bgSubtle);
   }
 
   .output-files {
@@ -189,9 +201,10 @@ export default css`
     justify-content: flex-end;
   }
 
+  .input-files > p,
   .output-files > p {
     padding-top: 0.5rem;
-    margin: 1.5rem 0 0.5rem 0;
+    margin: 0 0 0.5rem 0;
     text-align: center;
     border-top: 1px solid #1c2633;
   }

@@ -209,22 +209,25 @@ class FileTree extends LitElement {
         <div class="loading-cue">
           <div class="loading-cue-overlay"></div>
         </div>
-        ${!this.outputOnly
-          ? html`
-              <div class="input-files">
-                ${this.asDetails(
-                  this.filesAsTree(
-                    this.inputFiles.filter((file) => file !== "config.json")
-                  )
-                )}
-              </div>
-            `
-          : ""}
-        <div class="output-files">
-          <p>Output files:</p>
-          ${this.asDetails(this.filesAsTree(this.outputFiles))}
+        <div class="file-list-container">
+          ${!this.outputOnly
+            ? html`
+                <div class="input-files">
+                  <p>Input files:</p>
+                  ${this.asDetails(
+                    this.filesAsTree(
+                      this.inputFiles.filter((file) => file !== "config.json")
+                    )
+                  )}
+                </div>
+              `
+            : ""}
+          <div class="output-files">
+            <p>Output files:</p>
+            ${this.asDetails(this.filesAsTree(this.outputFiles))}
+          </div>
+          ${this.outputOnly ? html`<div class="flex-spacer"></div>` : ""}
         </div>
-        ${this.outputOnly ? html`<div class="flex-spacer"></div>` : ""}
         <div class="clear">
           <button
             title="Download all files as ZIP"

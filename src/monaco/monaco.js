@@ -93,18 +93,12 @@ ensureMonacoIsLoaded().then(() => {
     document.getElementById("monaco-container-output"),
     {
       theme: "my-theme",
-      minimap: {
-        enabled: false,
-      },
     }
   );
   editorConfig = monaco.editor.create(
     document.getElementById("monaco-container-config"),
     {
       theme: "my-theme",
-      minimap: {
-        enabled: false,
-      },
     }
   );
   editorConfig.getModel().updateOptions({ tabSize: 2 });

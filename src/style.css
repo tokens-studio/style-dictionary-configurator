@@ -82,6 +82,28 @@ h1 {
 
 .monaco-container {
   flex-grow: 1;
+  position: relative;
   border-top-right-radius: var(--border-radius-editor);
   border-bottom-right-radius: var(--border-radius-editor);
+}
+
+.monaco-wrapper:first-child {
+  border-bottom: 1px solid var(--fgDefault);
+}
+
+.monaco-container::before {
+  position: absolute;
+  font-size: 14px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.monaco-container:first-child::before {
+  content: "config file";
+}
+
+.monaco-container:last-child::before {
+  content: "source file";
 }
