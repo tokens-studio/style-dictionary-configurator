@@ -1,7 +1,7 @@
 import { editorOutput, editorConfig } from "./monaco.js";
 
 export function resizeMonacoLayout() {
-  const minimumMonacoWidth = 600;
+  const minimumMonacoWidth = 650;
   const fileTreeWidth = 200;
   const borderLeftWidth = 1;
 

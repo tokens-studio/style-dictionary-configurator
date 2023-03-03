@@ -199,7 +199,7 @@ export async function replaceSource(files) {
     )
   );
   await encodeContentsToURL();
-  await sdState.runStyleDictionary();
+  await sdState.runStyleDictionary(true);
 }
 
 export async function createInputFiles(studioTokens = false) {
@@ -235,7 +235,7 @@ export async function createFolder(foldername) {
 export async function editFileName(filePath, newName, isFolder = false) {
   const newPath = path.join(path.dirname(filePath), newName);
   fs.renameSync(filePath, newPath);
-  await sdState.runStyleDictionary();
+  // await sdState.runStyleDictionary();
 }
 
 export async function removeFile(file) {
@@ -302,7 +302,6 @@ export async function saveConfig() {
 
   // TODO: unsaved marker -> remove it
   // selectedFileBtn.removeAttribute("unsaved");
-
   await sdState.runStyleDictionary();
 }
 

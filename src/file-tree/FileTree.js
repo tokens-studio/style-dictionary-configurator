@@ -297,7 +297,7 @@ class FileTree extends LitElement {
   }
 
   play() {
-    sdState.runStyleDictionary();
+    sdState.runStyleDictionary(true);
   }
 
   uncheckAll() {

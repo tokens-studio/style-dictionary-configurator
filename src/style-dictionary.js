@@ -21,7 +21,7 @@ class SdState extends EventTarget {
   constructor() {
     super();
     this._sd = [];
-    this.themes = {};
+    this._themes = {};
     this.themedConfigs = [];
     this.hasInitializedConfig = new Promise((resolve) => {
       this.hasInitializedConfigResolve = resolve;
@@ -37,9 +37,11 @@ class SdState extends EventTarget {
 
   set config(v) {
     this._config = v;
-    this.hasInitializedConfigResolve();
-    this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
-    encodeContentsToURL();
+    if (v) {
+      this.hasInitializedConfigResolve();
+      this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
+      encodeContentsToURL();
+    }
   }
 
   get sd() {
@@ -52,30 +54,16 @@ class SdState extends EventTarget {
     this.dispatchEvent(new CustomEvent("sd-changed", { detail: v }));
   }
 
-  async processConfigForThemes(_config) {
-    let config = _config;
-    const configAsString = JSON.stringify(config);
+  get themes() {
+    return this._themes;
+  }
 
-    // Detection of tokens studio using themes
-    // This means we will run Style-Dictionary for each theme
-    // and inject the required variables into the JSON config
-    if (configAsString.includes(THEME_STRING) || config.source === THEME_SETS) {
-      try {
-        const themes = JSON.parse(await promises.readFile("$themes.json"));
-        this.themes = {};
-        themes.forEach((theme) => {
-          this.themes[theme.name] = Object.keys(theme.selectedTokenSets);
-        });
-      } catch (e) {
-        throw new Error(
-          "Missing or invalid $themes.json in the root of the tokens folder. Try uploading a ZIP that contains this $themes.json file."
-        );
-      }
-    } else {
-      this.themes = {};
-      this.themedConfigs = [];
+  set themes(v) {
+    const oldThemes = structuredClone(this._themes);
+    this._themes = v;
+    if (JSON.stringify(v) !== JSON.stringify(oldThemes)) {
+      this.dispatchEvent(new CustomEvent("themes-changed", { detail: v }));
     }
-    return config;
   }
 
   get JSFileParser() {
@@ -100,6 +88,48 @@ class SdState extends EventTarget {
     };
   }
 
+  async processConfigForThemes(cfg) {
+    const addThemeToFilePath = (file) => {
+      const fileParts = file.split(".");
+      const index = fileParts.length - 2;
+      if (index >= 0 && !file.match(THEME_STRING)) {
+        fileParts[index] = `${fileParts[index]}-${THEME_STRING}`;
+      }
+      return fileParts.join(".");
+    };
+
+    try {
+      const $themes = JSON.parse(await promises.readFile("$themes.json"));
+      // 1) adjust config source and platform files names to themed
+      cfg = {
+        ...cfg,
+        source: THEME_SETS,
+        platforms: Object.fromEntries(
+          Object.entries(cfg.platforms).map(([key, plat]) => [
+            key,
+            {
+              ...plat,
+              files: plat.files.map((file) => ({
+                ...file,
+                destination: addThemeToFilePath(file.destination),
+              })),
+            },
+          ])
+        ),
+      };
+      this.themes = Object.fromEntries(
+        $themes.map((theme) => [
+          theme.name,
+          Object.keys(theme.selectedTokenSets),
+        ])
+      );
+    } catch (e) {
+      this.themes = {};
+    }
+
+    return cfg;
+  }
+
   async loadAndProcessConfig() {
     let cfgObj;
     const configPath = findUsedConfigPath();
@@ -118,46 +148,38 @@ class SdState extends EventTarget {
       cfgObj = JSON.parse(cfgAsString);
     }
 
-    this.config = await this.processConfigForThemes(cfgObj);
+    return this.processConfigForThemes(cfgObj);
   }
 
-  async runStyleDictionary() {
-    await this.loadAndProcessConfig();
-    await this.themeDetection();
-    await this._runStyleDictionary();
+  async runStyleDictionary(force = false) {
+    const cfg = await this.loadAndProcessConfig();
+    if (JSON.stringify(this.config) !== JSON.stringify(cfg) || force) {
+      this.config = cfg;
+      await this._prepareRunStyleDictionary();
+    }
   }
 
-  async _runStyleDictionary() {
+  async _prepareRunStyleDictionary() {
     console.log("Running style-dictionary...");
     document.querySelector("#output-file-tree").animateCue();
     await this.cleanPlatformOutputDirs();
     try {
       const themeEntries = Object.entries(this.themes);
       if (themeEntries.length > 0) {
-        this.sd = await Promise.all(
-          themeEntries.map(
-            ([theme, tokensets]) =>
-              new Promise(async (resolve) => {
-                const themedCfg = this.injectThemeVariables(
-                  this.config,
-                  theme,
-                  tokensets
-                );
-                this.themedConfigs.push(themedCfg);
-                const sd = await StyleDictionary.extend(
-                  this.mergeWithJSFileParser(themedCfg)
-                );
-                await sd.buildAllPlatforms();
-                resolve(sd);
-              })
-          )
+        const tokenPlatforms = document.querySelector("token-platforms");
+        await tokenPlatforms.updateComplete;
+        const themesSegmentedControl = tokenPlatforms.shadowRoot.querySelector(
+          "ts-segmented-control"
         );
+        const selectedThemes = themesSegmentedControl.modelValue;
+        this.themedConfigs = themeEntries
+          .filter(([theme]) => selectedThemes.includes(theme))
+          .map(([theme, tokensets]) =>
+            this.injectThemeVariables(this.config, theme, tokensets)
+          );
+        this._runStyleDictionary(this.themedConfigs);
       } else {
-        const sd = await StyleDictionary.extend(
-          this.mergeWithJSFileParser(this.config)
-        );
-        this.sd = [sd];
-        await this.sd[0].buildAllPlatforms();
+        this._runStyleDictionary([this.config]);
       }
     } catch (e) {
       console.error(`Style Dictionary error: ${e.stack}`);
@@ -169,53 +191,19 @@ class SdState extends EventTarget {
     }
   }
 
-  async themeDetection() {
-    const addThemeToFilePath = (file) => {
-      const fileParts = file.split(".");
-      const index = fileParts.length - 2;
-      if (index >= 0 && !file.match(THEME_STRING)) {
-        fileParts[index] = `${fileParts[index]}-${THEME_STRING}`;
-      }
-      return fileParts.join(".");
-    };
-
-    const themeSwitch = document.getElementById("theme-switch-main");
-
-    promises
-      .readFile("$themes.json")
-      .then((themesFile) => {
-        const themes = JSON.parse(themesFile);
-        if (themes.length > 0) {
-          // 1) adjust config source and platform files names to themed
-          this.config = {
-            ...this.config,
-            source: THEME_SETS,
-            platforms: Object.fromEntries(
-              Object.entries(this.config.platforms).map(([key, plat]) => [
-                key,
-                {
-                  ...plat,
-                  files: plat.files.map((file) => ({
-                    ...file,
-                    destination: addThemeToFilePath(file.destination),
-                  })),
-                },
-              ])
-            ),
-          };
-
-          if (themeSwitch) {
-            themeSwitch.removeAttribute("disabled");
-            themeSwitch.checked = true;
-          }
-        } else {
-          if (themeSwitch) {
-            themeSwitch.setAttribute("disabled", "");
-            themeSwitch.checked = false;
-          }
-        }
-      })
-      .catch(() => {});
+  async _runStyleDictionary(cfgs) {
+    this.sd = await Promise.all(
+      cfgs.map(
+        (cfg) =>
+          new Promise(async (resolve) => {
+            const sd = await StyleDictionary.extend(
+              this.mergeWithJSFileParser(cfg)
+            );
+            await sd.buildAllPlatforms();
+            resolve(sd);
+          })
+      )
+    );
   }
 
   injectThemeVariables(cfg, theme, tokensets) {
@@ -235,11 +223,13 @@ class SdState extends EventTarget {
         (sd) =>
           new Promise(async (resolve) => {
             const foldersToClean = new Set();
-            Object.entries(sd.platforms).map(([, val]) => {
-              if (val.buildPath) {
-                foldersToClean.add(val.buildPath.split("/")[0]);
-              }
-            });
+            if (sd && sd.platforms) {
+              Object.entries(sd.platforms).map(([, val]) => {
+                if (val.buildPath) {
+                  foldersToClean.add(val.buildPath.split("/")[0]);
+                }
+              });
+            }
 
             await Promise.all(
               Array.from(foldersToClean).map((folder) => {

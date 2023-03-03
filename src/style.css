@@ -65,7 +65,7 @@ h1 {
 
 .middle {
   min-width: 350px;
-  max-width: 600px;
+  max-width: 650px;
   overflow-y: auto;
   padding: var(--space7);
   box-sizing: border-box;

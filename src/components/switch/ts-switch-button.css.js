@@ -58,13 +58,10 @@ export default css`
 
   :host([disabled]) .switch-button__thumb {
     background-color: var(--fgMuted);
+    filter: brightness(0.6);
   }
 
   :host([disabled]) .switch-button__track {
-    background-color: var(--fgMuted);
-  }
-
-  :host([disabled][checked]) .switch-button__track {
-    background-color: var(--fgSubtle);
+    filter: brightness(0.5);
   }
 `;

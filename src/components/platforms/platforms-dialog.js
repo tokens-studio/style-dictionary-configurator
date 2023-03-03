@@ -174,7 +174,6 @@ class PlatformsDialog extends LitElement {
   }
 
   formatsSearchTemplate() {
-    const formats = this._files.map((file) => file.format);
     return html`
       <sd-combobox
         ref=${ref(this.comboFormatsRef)}
@@ -328,6 +327,13 @@ class PlatformsDialog extends LitElement {
     this.dispatchEvent(
       new CustomEvent("save-platform", { detail: { [name]: platform } })
     );
+    // delete the "old" platform if the platform name was changed
+    // to prevent making a copy with new name
+    if (this.platform && this.platform !== name) {
+      this.dispatchEvent(
+        new CustomEvent("delete-platform", { detail: this.platform })
+      );
+    }
     ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
   }
 }

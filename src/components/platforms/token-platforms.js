@@ -1,5 +1,5 @@
 import fs from "fs";
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import { editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../file-tree/file-tree-utils.js";
@@ -10,6 +10,8 @@ import styles from "./token-platform.css.js";
 
 // Custom Element Definitions
 import "./platforms-dialog.js";
+import "../segmented-control/segmented-choice.js";
+import "../segmented-control/segmented-control.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -22,6 +24,9 @@ class TokenPlatforms extends LitElement {
         state: true,
       },
       _config: {
+        state: true,
+      },
+      _themes: {
         state: true,
       },
     };
@@ -59,9 +64,18 @@ class TokenPlatforms extends LitElement {
     await sdState.hasInitializedConfig;
     this._config = sdState.config;
     this._platforms = sdState.config.platforms;
+    this._themes = Object.keys(sdState.themes);
     sdState.addEventListener("config-changed", (ev) => {
       this._config = ev.detail;
       this._platforms = this._config.platforms;
+      Array.from(this.shadowRoot.querySelectorAll("platforms-dialog")).forEach(
+        (el) => {
+          el.onPlatformChanged();
+        }
+      );
+    });
+    sdState.addEventListener("themes-changed", (ev) => {
+      this._themes = Object.keys(ev.detail);
       Array.from(this.shadowRoot.querySelectorAll("platforms-dialog")).forEach(
         (el) => {
           el.onPlatformChanged();
@@ -73,6 +87,21 @@ class TokenPlatforms extends LitElement {
   render() {
     return html`
       <div class="platforms">
+        ${this._themes && this._themes.length > 0
+          ? html`
+              <ts-segmented-control name="themes" label="Themes">
+                ${this._themes.map(
+                  (theme) => html`
+                    <ts-segmented-choice
+                      checked
+                      label="${theme}"
+                      .choiceValue=${theme}
+                    ></ts-segmented-choice>
+                  `
+                )}
+              </ts-segmented-control>
+            `
+          : ""}
         <h2>Platforms</h2>
         <div class="platforms-container">${this.platformsTemplate()}</div>
         <platforms-dialog
@@ -96,6 +125,7 @@ class TokenPlatforms extends LitElement {
               <div>
                 <platforms-dialog
                   @save-platform=${this.savePlatform}
+                  @delete-platform=${(ev) => this.removePlatform(ev.detail)}
                   .platform="${plat.key}"
                 ></platforms-dialog>
                 <ts-button
