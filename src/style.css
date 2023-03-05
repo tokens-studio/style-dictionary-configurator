@@ -105,5 +105,5 @@ h1 {
 }
 
 .monaco-wrapper:last-child .monaco-container::before {
-  content: "source file";
+  content: "input/output file";
 }
