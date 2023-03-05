@@ -296,17 +296,16 @@ export async function clearAll() {
   await repopulateFileTree();
 }
 
-export async function saveConfig() {
-  await new Promise(async (resolve) => {
-    await ensureMonacoIsLoaded();
-    fs.writeFile(findUsedConfigPath(), editorConfig.getValue(), () => {
-      resolve();
-    });
-  });
-
+export async function saveFile(ed) {
   // TODO: unsaved marker -> remove it
   // selectedFileBtn.removeAttribute("unsaved");
-  await sdState.runStyleDictionary();
+  await ensureMonacoIsLoaded();
+  if (ed === editorConfig) {
+    await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
+  } else {
+    await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
+  }
+  await sdState.runStyleDictionary(true);
 }
 
 export async function switchToFile(file, ed) {
@@ -348,7 +347,7 @@ export async function switchToFile(file, ed) {
   resizeMonacoLayout();
 }
 
-export async function setupConfigChangeHandler() {
+export async function setupEditorChangeHandlers() {
   await ensureMonacoIsLoaded();
   editorConfig.onDidChangeModelContent((ev) => {
     if (!ev.isFlush) {
@@ -358,7 +357,13 @@ export async function setupConfigChangeHandler() {
   editorConfig._domElement.addEventListener("keydown", (ev) => {
     if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
       ev.preventDefault();
-      saveConfig();
+      saveFile(editorConfig);
+    }
+  });
+  editorOutput._domElement.addEventListener("keydown", (ev) => {
+    if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
+      ev.preventDefault();
+      saveFile(editorOutput);
     }
   });
 }

@@ -2,7 +2,7 @@ import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
 
 import {
   createInputFiles,
-  setupConfigChangeHandler,
+  setupEditorChangeHandlers,
   dispatchTokens,
   dispatchInputFiles,
   dispatchDictionary,
@@ -73,6 +73,6 @@ export async function changeLang(lang, ed) {
     await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
   }
   await switchToFile(findUsedConfigPath(), editorConfig);
-  await setupConfigChangeHandler();
+  await setupEditorChangeHandlers();
   resizeMonacoLayout();
 })();

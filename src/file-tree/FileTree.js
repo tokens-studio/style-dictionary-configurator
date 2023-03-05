@@ -6,7 +6,6 @@ import { sdState } from "../style-dictionary.js";
 import {
   clearAll,
   switchToFile,
-  saveConfig,
   createFile,
   createFolder,
   removeFile,
@@ -531,7 +530,7 @@ class FileTree extends LitElement {
     if (indexOrName != null) {
       await this.updateComplete;
       if (this.unsavedFileBtn) {
-        saveConfig();
+        // saveFile(editorConfig);
       }
       const filename = this.switchToFileInTree(indexOrName);
       switchToFile(filename);
