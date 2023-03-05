@@ -1,7 +1,11 @@
 import { LitElement, html } from "lit";
 import * as zip from "@zip.js/zip.js";
 import iconDefinitions from "../icons/iconDefinitions.js";
-import { ensureMonacoIsLoaded, editorOutput } from "../monaco/monaco.js";
+import {
+  ensureMonacoIsLoaded,
+  editorOutput,
+  editorConfig,
+} from "../monaco/monaco.js";
 import { sdState } from "../style-dictionary.js";
 import {
   clearAll,
@@ -11,6 +15,7 @@ import {
   removeFile,
   editFileName,
   getAllFiles,
+  saveFile,
 } from "./file-tree-utils.js";
 import styles from "./FileTreeStyles.css.js";
 
@@ -299,7 +304,9 @@ class FileTree extends LitElement {
   }
 
   play() {
-    sdState.runStyleDictionary(true);
+    Promise.all([saveFile(editorConfig), saveFile(editorOutput)]).then(() => {
+      sdState.runStyleDictionary(true);
+    });
   }
 
   uncheckAll() {
