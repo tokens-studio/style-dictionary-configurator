@@ -53,7 +53,9 @@ export class SdOption extends LionOption {
    * @param {string} matchingString
    */
   onFilterMatch(matchingString) {
-    this.innerHTML = this.__originalInnerHTML;
+    if (this.__originalInnerHTML != null) {
+      this.innerHTML = this.__originalInnerHTML;
+    }
     /** @param {string} text */
     const regEscape = (text) =>
       text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

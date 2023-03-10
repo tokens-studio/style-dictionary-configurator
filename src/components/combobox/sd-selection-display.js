@@ -221,7 +221,7 @@ export class SdSelectionDisplay extends LitElement {
         ${repeat(
           this._selectedElements,
           (el) => el.choiceValue,
-          (el) => {
+          (el, i) => {
             const highlight = Boolean(
               this._removeChipOnNextBackspace &&
                 i === this._selectedElements.length - 1

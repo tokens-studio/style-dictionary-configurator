@@ -7,6 +7,8 @@ import {
   editorConfig,
 } from "../monaco/monaco.js";
 import { sdState } from "../style-dictionary.js";
+import { REGISTER_SD_PATH } from "../constants.js";
+import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import {
   clearAll,
   switchToFile,
@@ -220,7 +222,11 @@ class FileTree extends LitElement {
                   <p>Input files:</p>
                   ${this.asDetails(
                     this.filesAsTree(
-                      this.inputFiles.filter((file) => file !== "config.json")
+                      this.inputFiles.filter(
+                        (file) =>
+                          `/${file}` !== findUsedConfigPath() &&
+                          file !== REGISTER_SD_PATH
+                      )
                     )
                   )}
                 </div>
@@ -304,7 +310,10 @@ class FileTree extends LitElement {
   }
 
   play() {
-    Promise.all([saveFile(editorConfig), saveFile(editorOutput)]).then(() => {
+    Promise.all([
+      saveFile(editorConfig, { noRun: true }),
+      saveFile(editorOutput, { noRun: true }),
+    ]).then(() => {
       sdState.runStyleDictionary(true);
     });
   }

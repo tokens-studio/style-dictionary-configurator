@@ -138,37 +138,39 @@ class PlatformsDialog extends LitElement {
         .validators=${[new TransformsValidator()]}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
-        ${Object.keys(StyleDictionary.transformGroup)
-          // put tokens-studio transform group ordered first
-          .sort((a, b) => {
-            if (a === "tokens-studio") return -1;
-            if (b === "tokens-studio") return 1;
-            return 0;
-          })
-          .map(
-            (transformGroup) => html`
-              <sd-option
-                .checked=${false}
-                .choiceValue="${transformGroup} (group)"
-                group
-                >${transformGroup} (group)</sd-option
-              >
-            `
-          )}
-        ${Object.keys(StyleDictionary.transform)
-          // put tokens-studio transforms first
-          .sort((a, b) => {
-            if (a.startsWith("ts/")) return -1;
-            if (b.startsWith("ts/")) return 1;
-            return 0;
-          })
-          .map(
-            (transform) => html`
-              <sd-option .checked=${false} .choiceValue="${transform}"
-                >${transform}</sd-option
-              >
-            `
-          )}
+        ${repeat(
+          Object.keys(StyleDictionary.transformGroup)
+            // put tokens-studio transformGroup first
+            .sort((a, b) => {
+              if (a === "tokens-studio") return -1;
+              if (b === "tokens-studio") return 1;
+              return 0;
+            }),
+          (transformGroup) => transformGroup,
+          (transformGroup) => html`
+            <sd-option
+              .checked=${false}
+              .choiceValue="${transformGroup} (group)"
+              group
+              >${transformGroup} (group)</sd-option
+            >
+          `
+        )}
+        ${repeat(
+          Object.keys(StyleDictionary.transform)
+            // put tokens-studio transforms first
+            .sort((a, b) => {
+              if (a.startsWith("ts/")) return -1;
+              if (b.startsWith("ts/")) return 1;
+              return 0;
+            }),
+          (transform) => transform,
+          (transform) => html`
+            <sd-option .checked=${false} .choiceValue="${transform}"
+              >${transform}</sd-option
+            >
+          `
+        )}
       </sd-combobox>
     `;
   }
@@ -188,7 +190,9 @@ class PlatformsDialog extends LitElement {
         @model-value-changed=${this.onFormatsComboModelValueChanged}
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
-        ${Object.keys(StyleDictionary.format).map(
+        ${repeat(
+          Object.keys(StyleDictionary.format),
+          (format) => format,
           (format) => html`
             <sd-option .checked=${false} .choiceValue="${format}"
               >${format}</sd-option
