@@ -10,6 +10,7 @@ import { registerTransforms } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_SETS, THEME_STRING } from "./constants.js";
+import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 registerTransforms(StyleDictionary);
 
@@ -183,6 +184,9 @@ class SdState extends EventTarget {
       }
     } catch (e) {
       console.error(`Style Dictionary error: ${e.stack}`);
+      snackbar.show(
+        `Config error: ${e.message}.\nSee console logs for more info.`
+      );
     } finally {
       await repopulateFileTree();
       // refresh currently selected output file
@@ -199,7 +203,14 @@ class SdState extends EventTarget {
             const sd = await StyleDictionary.extend(
               this.mergeWithJSFileParser(cfg)
             );
-            await sd.buildAllPlatforms();
+            try {
+              await sd.buildAllPlatforms();
+            } catch (e) {
+              console.error(e);
+              snackbar.show(
+                `Build error: ${e.message}.\nSee console logs for more info.`
+              );
+            }
             resolve(sd);
           })
       )
