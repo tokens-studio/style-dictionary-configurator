@@ -14,6 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
+import { FUNCTIONS, REGISTER_SD_PATH } from "../constants";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -149,7 +150,7 @@ export function createStandardTokens() {
   );
 }
 
-export function createConfig(studioTokens = false) {
+export function createConfig({ studioTokens = false } = {}) {
   fs.writeFileSync(
     // take the .js by default
     "config.json",
@@ -206,12 +207,12 @@ export async function replaceSource(files) {
   await sdState.runStyleDictionary(true);
 }
 
-export async function createInputFiles(studioTokens = false) {
+export async function createInputFiles({ studioTokens = false } = {}) {
   const urlSplit = window.location.href.split("#project=");
   if (urlSplit.length > 1) {
     await createFilesFromURL(urlSplit[1]);
   } else {
-    createConfig(studioTokens);
+    createConfig({ studioTokens });
     if (studioTokens) {
       createStudioTokens();
     } else {
@@ -296,16 +297,24 @@ export async function clearAll() {
   await repopulateFileTree();
 }
 
-export async function saveFile(ed) {
+export async function saveFile(ed, { noRun = false } = {}) {
+  const configSwitcherEl = document.getElementById("config-switcher");
   // TODO: unsaved marker -> remove it
   // selectedFileBtn.removeAttribute("unsaved");
   await ensureMonacoIsLoaded();
   if (ed === editorConfig) {
-    await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
+    if (configSwitcherEl.checkedChoice === FUNCTIONS) {
+      await promises.writeFile(REGISTER_SD_PATH, editorConfig.getValue());
+      await sdState.loadSDFunctions();
+    } else {
+      await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
+    }
   } else {
     await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
   }
-  await sdState.runStyleDictionary(true);
+  if (!noRun) {
+    await sdState.runStyleDictionary(true);
+  }
 }
 
 export async function switchToFile(file, ed) {

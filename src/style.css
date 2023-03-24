@@ -51,8 +51,6 @@ header {
 
 .content {
   display: flex;
-  overflow-y: hidden;
-  overflow-x: auto;
   height: 100%;
 }
 
@@ -69,6 +67,10 @@ h1 {
   overflow-y: auto;
   padding: var(--space7);
   box-sizing: border-box;
+}
+
+.right {
+  position: relative;
 }
 
 .monaco-wrapper {
@@ -96,14 +98,14 @@ h1 {
   font-size: 14px;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
   z-index: 1;
 }
 
-.monaco-wrapper:first-child .monaco-container::before {
-  content: "config file";
+.monaco-wrapper.config .monaco-container::before {
+  content: "config/functions file";
 }
 
-.monaco-wrapper:last-child .monaco-container::before {
+.monaco-wrapper.output .monaco-container::before {
   content: "input/output file";
 }

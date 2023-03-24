@@ -9,7 +9,7 @@ import {
 import { registerTransforms } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
-import { THEME_SETS, THEME_STRING } from "./constants.js";
+import { THEME_SETS, THEME_STRING, REGISTER_SD_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 registerTransforms(StyleDictionary);
@@ -150,6 +150,16 @@ class SdState extends EventTarget {
     }
 
     return this.processConfigForThemes(cfgObj);
+  }
+
+  async loadSDFunctions() {
+    if (fs.existsSync(REGISTER_SD_PATH)) {
+      const bundled = await bundle(REGISTER_SD_PATH);
+      const url = URL.createObjectURL(
+        new Blob([bundled], { type: "text/javascript" })
+      );
+      await import(url);
+    }
   }
 
   async runStyleDictionary(force = false) {
