@@ -14,7 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { REGISTER_SD_PATH } from "../constants";
+import { FUNCTIONS, REGISTER_SD_PATH } from "../constants";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -303,7 +303,7 @@ export async function saveFile(ed, { noRun = false } = {}) {
   // selectedFileBtn.removeAttribute("unsaved");
   await ensureMonacoIsLoaded();
   if (ed === editorConfig) {
-    if (configSwitcherEl.checked) {
+    if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(REGISTER_SD_PATH, editorConfig.getValue());
       await sdState.loadSDFunctions();
     } else {

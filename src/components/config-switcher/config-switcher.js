@@ -1,49 +1,20 @@
-import { html, css } from "lit";
-import { LionCheckbox } from "@lion/ui/checkbox-group.js";
+import { html, css, LitElement } from "lit";
+import { CONFIG, FUNCTIONS } from "../../constants.js";
+import "./config-tab-group.js";
+import "./config-tab.js";
 
-export class ConfigSwitcher extends LionCheckbox {
+const capitalizeFirstLetter = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1);
+
+export class ConfigSwitcher extends LitElement {
   static get styles() {
     return [
-      ...super.styles,
       css`
         :host {
           position: absolute;
           left: 0px;
           top: -1px;
-          background-color: var(--bgSubtle);
-          padding: 6px;
           transform: translateY(-100%);
-        }
-
-        :host([focused]) {
-          outline: 1px solid white;
-        }
-
-        :host(:hover) {
-          filter: brightness(1.2);
-        }
-
-        :host(:hover),
-        ::slotted([slot="label"]:hover) {
-          cursor: pointer;
-        }
-
-        ::slotted([slot="label"]) {
-          user-select: none;
-        }
-
-        ::slotted(.sr-only) {
-          position: absolute;
-          top: 0;
-          width: 1px;
-          height: 1px;
-          overflow: hidden;
-          clip-path: inset(100%);
-          clip: rect(1px, 1px, 1px, 1px);
-          white-space: nowrap;
-          border: 0;
-          margin: 0;
-          padding: 0;
         }
       `,
     ];
@@ -51,19 +22,35 @@ export class ConfigSwitcher extends LionCheckbox {
 
   constructor() {
     super();
-    this.labelToFunctions = "Register Style-Dictionary functions";
-    this.labelToConfig = "Back to configuration";
-    this.label = this.labelToFunctions;
+    this.checkedChoice = CONFIG;
   }
 
-  _connectSlotMixin() {
-    super._connectSlotMixin();
-    this._inputNode.classList.add("sr-only");
+  tabGroupChanged(ev) {
+    const { detail } = ev;
+    if (detail.isTriggeredByUser) {
+      if (this.checkedChoice !== ev.target.modelValue) {
+        this.checkedChoice = ev.target.modelValue;
+        this.dispatchEvent(new Event("checked-changed"));
+      }
+    }
   }
 
-  _onModelValueChanged({ modelValue }, old) {
-    super._onModelValueChanged({ modelValue }, old);
-    this.label = this.checked ? this.labelToConfig : this.labelToFunctions;
+  render() {
+    return html`
+      <config-tab-group @model-value-changed=${this.tabGroupChanged}>
+        <config-tab
+          checked
+          name="config-switcher"
+          .choiceValue=${CONFIG}
+          label="${capitalizeFirstLetter(CONFIG)}"
+        ></config-tab>
+        <config-tab
+          name="config-switcher"
+          .choiceValue=${FUNCTIONS}
+          label="${capitalizeFirstLetter(FUNCTIONS)}"
+        ></config-tab
+      ></config-tab-group>
+    `;
   }
 }
 customElements.define("config-switcher", ConfigSwitcher);

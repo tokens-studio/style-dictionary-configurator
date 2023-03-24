@@ -23,7 +23,7 @@ import {
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 import { setupUploadBtnHandler } from "./file-upload.js";
-import { REGISTER_SD_PATH } from "./constants.js";
+import { FUNCTIONS, REGISTER_SD_PATH } from "./constants.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
@@ -43,8 +43,9 @@ export async function changeLang(lang, ed) {
 
 function setupConfigSwitcher() {
   const configSwitcherEl = document.getElementById("config-switcher");
-  configSwitcherEl.addEventListener("model-value-changed", async (ev) => {
-    if (ev.target.checked) {
+  configSwitcherEl.addEventListener("checked-changed", async (ev) => {
+    const val = ev.target.checkedChoice;
+    if (val === FUNCTIONS) {
       // switch to register sd transforms
       if (!fs.existsSync(REGISTER_SD_PATH)) {
         fs.writeFileSync(

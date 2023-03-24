@@ -103,7 +103,7 @@ h1 {
 }
 
 .monaco-wrapper.config .monaco-container::before {
-  content: "config file";
+  content: "config/functions file";
 }
 
 .monaco-wrapper.output .monaco-container::before {
