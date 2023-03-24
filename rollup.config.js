@@ -9,7 +9,7 @@ import svg from "rollup-plugin-svg-import";
 
 const filesToCopy = [
   path.resolve("src", "index.html"),
-  path.resolve("src", "favicon.ico"),
+  path.resolve("src", "favicon.webp"),
   path.resolve("src", "style.css"),
   path.resolve("src", "fonts.css"),
   path.resolve("src", "assets"),
