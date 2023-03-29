@@ -188,6 +188,7 @@ class SdState extends EventTarget {
           .map(([theme, tokensets]) =>
             this.injectThemeVariables(this.config, theme, tokensets)
           );
+
         this._runStyleDictionary(this.themedConfigs);
       } else {
         this._runStyleDictionary([this.config]);
@@ -210,17 +211,26 @@ class SdState extends EventTarget {
       cfgs.map(
         (cfg) =>
           new Promise(async (resolve) => {
-            const sd = await StyleDictionary.extend(
-              this.mergeWithJSFileParser(cfg)
-            );
+            let sd;
             try {
-              await sd.buildAllPlatforms();
+              sd = await StyleDictionary.extend(
+                this.mergeWithJSFileParser(cfg)
+              );
+              try {
+                await sd.buildAllPlatforms();
+              } catch (e) {
+                console.error(e);
+                snackbar.show(
+                  `Build error: ${e.message}.\nSee console logs for more info.`
+                );
+              }
             } catch (e) {
               console.error(e);
               snackbar.show(
-                `Build error: ${e.message}.\nSee console logs for more info.`
+                `Parse error: ${e.message}.\nSee console logs for more info.`
               );
             }
+
             resolve(sd);
           })
       )
