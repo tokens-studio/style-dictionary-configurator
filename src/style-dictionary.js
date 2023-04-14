@@ -6,13 +6,29 @@ import {
   currentFileOutput,
   encodeContentsToURL,
 } from "./file-tree/file-tree-utils.js";
-import { registerTransforms } from "@tokens-studio/sd-transforms";
+import {
+  registerTransforms,
+  expandComposites,
+} from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_SETS, THEME_STRING, REGISTER_SD_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 registerTransforms(StyleDictionary);
+
+StyleDictionary.registerParser({
+  // matches js, mjs
+  pattern: /\.(j|mj)s$/,
+  parse: async ({ filePath }) => {
+    const bundled = await bundle(filePath);
+    const url = URL.createObjectURL(
+      new Blob([bundled], { type: "text/javascript" })
+    );
+    const { default: token } = await import(url);
+    return expandComposites(token);
+  },
+});
 
 /**
  * Small State object for getting/setting the current style-dictionary object.
@@ -65,28 +81,6 @@ class SdState extends EventTarget {
     if (JSON.stringify(v) !== JSON.stringify(oldThemes)) {
       this.dispatchEvent(new CustomEvent("themes-changed", { detail: v }));
     }
-  }
-
-  get JSFileParser() {
-    return {
-      // matches js, mjs
-      pattern: /\.(j|mj)s$/,
-      parse: async ({ filePath }) => {
-        const bundled = await bundle(filePath);
-        const url = URL.createObjectURL(
-          new Blob([bundled], { type: "text/javascript" })
-        );
-        const { default: token } = await import(url);
-        return token;
-      },
-    };
-  }
-
-  mergeWithJSFileParser(cfg) {
-    return {
-      ...cfg,
-      parsers: [...(cfg.parsers || []), this.JSFileParser],
-    };
   }
 
   async processConfigForThemes(cfg) {
@@ -154,7 +148,7 @@ class SdState extends EventTarget {
 
   async loadSDFunctions() {
     if (fs.existsSync(REGISTER_SD_PATH)) {
-      const bundled = await bundle(REGISTER_SD_PATH);
+      const bundled = await bundle(`./${REGISTER_SD_PATH}`);
       const url = URL.createObjectURL(
         new Blob([bundled], { type: "text/javascript" })
       );
@@ -213,9 +207,7 @@ class SdState extends EventTarget {
           new Promise(async (resolve) => {
             let sd;
             try {
-              sd = await StyleDictionary.extend(
-                this.mergeWithJSFileParser(cfg)
-              );
+              sd = await StyleDictionary.extend(cfg);
               try {
                 await sd.buildAllPlatforms();
               } catch (e) {
