@@ -148,7 +148,7 @@ class SdState extends EventTarget {
 
   async loadSDFunctions() {
     if (fs.existsSync(REGISTER_SD_PATH)) {
-      const bundled = await bundle(REGISTER_SD_PATH);
+      const bundled = await bundle(`./${REGISTER_SD_PATH}`);
       const url = URL.createObjectURL(
         new Blob([bundled], { type: "text/javascript" })
       );

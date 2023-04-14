@@ -27,6 +27,16 @@ export async function bundle(inputPath) {
     input: inputPath,
     plugins: [
       {
+        name: "resolve-bare-esm-run",
+        async resolveId(id) {
+          // if id is not relative or absolute or style-dictionary -> bare import to resolve from esm.run
+          if (!id.match(/^(\/|\.).+$/g) && id !== "style-dictionary") {
+            return { id: `https://esm.run/${id}`, external: true };
+          }
+          return null;
+        },
+      },
+      {
         name: "fake-import",
         resolveId(source, importer) {
           let resolved;
