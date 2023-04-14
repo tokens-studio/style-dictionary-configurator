@@ -23,7 +23,7 @@ import {
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 import { setupUploadBtnHandler } from "./file-upload.js";
-import { FUNCTIONS, REGISTER_SD_PATH } from "./constants.js";
+import { FUNCTIONS, SD_FUNCTIONS_PATH } from "./constants.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
@@ -43,15 +43,16 @@ export async function changeLang(lang, ed) {
 
 function setupConfigSwitcher() {
   const configSwitcherEl = document.getElementById("config-switcher");
-  configSwitcherEl.addEventListener("checked-changed", async (ev) => {
-    const val = ev.target.checkedChoice;
-    if (val === FUNCTIONS) {
-      // switch to register sd transforms
-      if (!fs.existsSync(REGISTER_SD_PATH)) {
-        fs.writeFileSync(
-          REGISTER_SD_PATH,
-          `import StyleDictionary from 'style-dictionary';
+  fs.writeFileSync(
+    SD_FUNCTIONS_PATH,
+    `import StyleDictionary from 'style-dictionary';
+import { registerTransforms } from '@tokens-studio/sd-transforms';
 
+// sd-transforms, 2nd parameter for options can be added
+// See docs: https://github.com/tokens-studio/sd-transforms
+registerTransforms(StyleDictionary);
+
+// example value transform, which just returns the token as is
 StyleDictionary.registerTransform({
   type: "value",
   name: "myCustomTransform",
@@ -61,8 +62,10 @@ StyleDictionary.registerTransform({
   }
 })
 
+// format helpers from style-dictionary
 const { fileHeader, formattedVariables } = StyleDictionary.formatHelpers;
 
+// example css format
 StyleDictionary.registerFormat({
   name: 'myCustomFormat',
   formatter: function({dictionary, file, options}) {
@@ -72,11 +75,12 @@ StyleDictionary.registerFormat({
 }\`;
   }
 });\n`
-        );
-        await sdState.loadSDFunctions();
-        await sdState.runStyleDictionary(true);
-      }
-      switchToFile(REGISTER_SD_PATH, editorConfig);
+  );
+  configSwitcherEl.addEventListener("checked-changed", async (ev) => {
+    const val = ev.target.checkedChoice;
+    if (val === FUNCTIONS) {
+      // switch to register sd transforms
+      switchToFile(SD_FUNCTIONS_PATH, editorConfig);
     } else {
       // switch to config
       switchToFile(findUsedConfigPath(), editorConfig);

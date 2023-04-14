@@ -6,16 +6,11 @@ import {
   currentFileOutput,
   encodeContentsToURL,
 } from "./file-tree/file-tree-utils.js";
-import {
-  registerTransforms,
-  expandComposites,
-} from "@tokens-studio/sd-transforms";
+import { expandComposites } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
-import { THEME_SETS, THEME_STRING, REGISTER_SD_PATH } from "./constants.js";
+import { THEME_SETS, THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
-
-registerTransforms(StyleDictionary);
 
 StyleDictionary.registerParser({
   // matches js, mjs
@@ -147,8 +142,8 @@ class SdState extends EventTarget {
   }
 
   async loadSDFunctions() {
-    if (fs.existsSync(REGISTER_SD_PATH)) {
-      const bundled = await bundle(`./${REGISTER_SD_PATH}`);
+    if (fs.existsSync(SD_FUNCTIONS_PATH)) {
+      const bundled = await bundle(`./${SD_FUNCTIONS_PATH}`);
       const url = URL.createObjectURL(
         new Blob([bundled], { type: "text/javascript" })
       );
