@@ -117,7 +117,7 @@ StyleDictionary.registerFormat({
   await setupEditorChangeHandlers();
   setupConfigSwitcher();
 
-  await createInputFiles({ studioTokens: true });
+  await createInputFiles();
   await sdState.loadSDFunctions();
   await sdState.runStyleDictionary();
 

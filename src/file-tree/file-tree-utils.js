@@ -15,6 +15,7 @@ import {
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
 import { FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
+import { snackbar } from "../components/snackbar/SnackbarManager";
 
 const asyncGlob = util.promisify(glob);
 const extensionMap = {
@@ -34,9 +35,26 @@ function getSelectedFileBtn() {
 }
 
 async function createFilesFromURL(project) {
-  // TODO: cycle a loop, every 50ms check if flate has become defined
-  // stop after 1 second and throw
-  await new Promise((resolve) => setTimeout(resolve, 200));
+  // Wait for wasm-flate to bootstrap itself
+  // After 1 second if not defined, reject and initialize with default
+  // tokens studio template
+  try {
+    await new Promise((resolve, reject) => {
+      setInterval(() => {
+        if (flate) {
+          resolve();
+        }
+      }, 10);
+      setTimeout(reject, 1000);
+    });
+  } catch (e) {
+    snackbar.show(
+      "Flate could not be loaded to decode the URL to project files.\nCreating default tokens studio template instead."
+    );
+    createConfig();
+    createStudioTokens();
+  }
+
   const parsedContents = JSON.parse(flate.deflate_decode(project));
   await Promise.all(
     Object.entries(parsedContents).map(async ([file, content]) => {
@@ -150,7 +168,7 @@ export function createStandardTokens() {
   );
 }
 
-export function createConfig({ studioTokens = false } = {}) {
+export function createConfig() {
   fs.writeFileSync(
     // take the .js by default
     "config.json",
@@ -159,7 +177,7 @@ export function createConfig({ studioTokens = false } = {}) {
         source: ["**/*.tokens.json"],
         platforms: {
           css: {
-            transformGroup: studioTokens ? "tokens-studio" : "css",
+            transformGroup: "tokens-studio",
             prefix: "sd",
             buildPath: "build/css/",
             files: [
@@ -170,7 +188,7 @@ export function createConfig({ studioTokens = false } = {}) {
             ],
           },
           js: {
-            transformGroup: studioTokens ? "tokens-studio" : "js",
+            transformGroup: "tokens-studio",
             buildPath: "build/js/",
             files: [
               {
@@ -207,17 +225,13 @@ export async function replaceSource(files) {
   await sdState.runStyleDictionary(true);
 }
 
-export async function createInputFiles({ studioTokens = false } = {}) {
+export async function createInputFiles() {
   const urlSplit = window.location.href.split("#project=");
   if (urlSplit.length > 1) {
     await createFilesFromURL(urlSplit[1]);
   } else {
-    createConfig({ studioTokens });
-    if (studioTokens) {
-      createStudioTokens();
-    } else {
-      createStandardTokens();
-    }
+    createConfig();
+    createStudioTokens();
   }
 }
 
