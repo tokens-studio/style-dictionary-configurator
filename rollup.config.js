@@ -12,6 +12,7 @@ const filesToCopy = [
   path.resolve("src", "favicon.webp"),
   path.resolve("src", "style.css"),
   path.resolve("src", "fonts.css"),
+  path.resolve("src", "thumbnail.png"),
   path.resolve("src", "assets"),
 ];
 
