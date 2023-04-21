@@ -11,6 +11,7 @@ import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_SETS, THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
+import { html } from "lit";
 
 StyleDictionary.registerParser({
   // matches js, mjs
@@ -52,6 +53,7 @@ class SdState extends EventTarget {
     if (v) {
       this.hasInitializedConfigResolve();
       this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
+      this.warnIfTransformGroupWithTransforms();
       encodeContentsToURL();
     }
   }
@@ -75,6 +77,30 @@ class SdState extends EventTarget {
     this._themes = v;
     if (JSON.stringify(v) !== JSON.stringify(oldThemes)) {
       this.dispatchEvent(new CustomEvent("themes-changed", { detail: v }));
+    }
+  }
+
+  warnIfTransformGroupWithTransforms() {
+    let shouldWarn = false;
+    if (this.config.platforms) {
+      for (const [, platform] of Object.entries(this.config.platforms)) {
+        if (platform.transformGroup && platform.transforms) {
+          shouldWarn = true;
+        }
+      }
+    }
+    if (shouldWarn) {
+      snackbar.show(
+        html`
+          <p>Transforms and transformGroup should not be combined.</p>
+          <p>
+            See
+            <a href="https://github.com/amzn/style-dictionary/issues/813"
+              >https://github.com/amzn/style-dictionary/issues/813</a
+            >
+          </p>
+        `
+      );
     }
   }
 

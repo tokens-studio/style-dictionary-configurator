@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 export class TsSnackbar extends LitElement {
   static get styles() {
@@ -9,10 +10,10 @@ export class TsSnackbar extends LitElement {
           position: fixed;
           box-sizing: border-box;
           max-width: 750px;
-          background-color: var(--accentBg);
+          background-color: var(--dangerBg);
           color: var(--fgDefault);
           border-radius: 8px;
-          border: 1px solid var(--borderDefault);
+          border: 1px solid var(--dangerBorder);
           bottom: 16px;
           left: 50%;
           padding: 16px;
@@ -22,6 +23,14 @@ export class TsSnackbar extends LitElement {
 
         :host([shown]) {
           transform: translate(-50%, 0);
+        }
+
+        p {
+          margin: 0;
+        }
+
+        a {
+          color: var(--fgSubtle);
         }
       `,
     ];
@@ -34,10 +43,13 @@ export class TsSnackbar extends LitElement {
   }
 
   render() {
-    const splitMessagesByNewLines = this.message?.split("\n");
-    const messageTpl = splitMessagesByNewLines?.reduce(
-      (acc, curr) => html`${acc}<br />${curr}`
-    );
+    let messageTpl = this.message;
+    if (typeof this.message === "string") {
+      const splitMessagesByNewLines = this.message?.split("\n");
+      messageTpl = splitMessagesByNewLines?.reduce(
+        (acc, curr) => html`${acc}<br />${curr}`
+      );
+    }
     return html` <span class="text">${messageTpl}</span> `;
   }
 }
