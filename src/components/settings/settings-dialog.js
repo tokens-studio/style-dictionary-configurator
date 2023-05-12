@@ -41,6 +41,7 @@ class SettingsDialog extends LitElement {
   constructor() {
     super();
     this.settings = null;
+    this.userHasSubmitted = false;
     this.boundParseSettings = this.parseSettings.bind(this);
 
     window.addEventListener("sd-functions-saved", this.boundParseSettings);
@@ -51,7 +52,10 @@ class SettingsDialog extends LitElement {
     return html`
       ${this.settings
         ? html`
-            <sd-dialog @before-opened=${this.checkIfCanOpen}>
+            <sd-dialog
+              @before-opened=${this.checkIfCanOpen}
+              @opened-changed=${this.resetFormOnClose}
+            >
               <ts-button slot="invoker" variant="secondary">
                 Settings <span class="codicon codicon-settings-gear"></span>
               </ts-button>
@@ -71,7 +75,11 @@ class SettingsDialog extends LitElement {
 
   formTemplate() {
     return html`
-      <sd-form class="platform-form" @submit="${this.submitForm}">
+      <sd-form
+        id="settings-form"
+        class="platform-form"
+        @submit="${this.submitForm}"
+      >
         <form>
           <sd-checkbox-group name="settings" label="Settings">
             <sd-checkbox
@@ -145,9 +153,19 @@ Please adjust the settings in code instead.`,
     }
   }
 
+  resetFormOnClose(ev) {
+    // closed by close button instead of submit, reset the form
+    if (!ev.target.opened && !this.userHasSubmitted) {
+      const form = this.shadowRoot.getElementById("settings-form");
+      form.reset();
+    }
+  }
+
   submitForm(ev) {
     ev.preventDefault();
+    this.userHasSubmitted = true;
     ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
+    this.userHasSubmitted = false;
     const formResult = ev.target.modelValue;
     const { settings } = formResult;
 
