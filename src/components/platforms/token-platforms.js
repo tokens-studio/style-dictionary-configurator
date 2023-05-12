@@ -12,6 +12,7 @@ import styles from "./token-platform.css.js";
 import "./platforms-dialog.js";
 import "../segmented-control/segmented-choice.js";
 import "../segmented-control/segmented-control.js";
+import "../settings/settings-dialog.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -87,21 +88,24 @@ class TokenPlatforms extends LitElement {
   render() {
     return html`
       <div class="platforms">
-        ${this._themes && this._themes.length > 0
-          ? html`
-              <ts-segmented-control name="themes" label="Themes">
-                ${this._themes.map(
-                  (theme) => html`
-                    <ts-segmented-choice
-                      checked
-                      label="${theme}"
-                      .choiceValue=${theme}
-                    ></ts-segmented-choice>
-                  `
-                )}
-              </ts-segmented-control>
-            `
-          : ""}
+        <div class="settings">
+          ${this._themes && this._themes.length > 0
+            ? html`
+                <ts-segmented-control name="themes" label="Themes">
+                  ${this._themes.map(
+                    (theme) => html`
+                      <ts-segmented-choice
+                        checked
+                        label="${theme}"
+                        .choiceValue=${theme}
+                      ></ts-segmented-choice>
+                    `
+                  )}
+                </ts-segmented-control>
+              `
+            : html`<div class="flex-spacer"></div>`}
+          <settings-dialog></settings-dialog>
+        </div>
         <h2>Platforms</h2>
         <div class="platforms-container">${this.platformsTemplate()}</div>
         <platforms-dialog

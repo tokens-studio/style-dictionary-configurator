@@ -54,7 +54,6 @@ class SdState extends EventTarget {
       this.hasInitializedConfigResolve();
       this.dispatchEvent(new CustomEvent("config-changed", { detail: v }));
       this.warnIfTransformGroupWithTransforms();
-      encodeContentsToURL();
     }
   }
 

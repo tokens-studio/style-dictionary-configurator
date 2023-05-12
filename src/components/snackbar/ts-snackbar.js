@@ -1,10 +1,23 @@
 import { LitElement, html, css } from "lit";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 export class TsSnackbar extends LitElement {
   static get styles() {
     return [
       css`
+        .codicon[class*="codicon-"] {
+          font: normal normal normal 16px/1 codicon;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .codicon-close:before {
+          content: "\\ea76";
+          position: absolute;
+          right: 8px;
+          top: 10px;
+        }
+
         :host {
           display: inline-block;
           position: fixed;
@@ -42,6 +55,10 @@ export class TsSnackbar extends LitElement {
     };
   }
 
+  close() {
+    this.manager.closeCurrent();
+  }
+
   render() {
     let messageTpl = this.message;
     if (typeof this.message === "string") {
@@ -50,7 +67,8 @@ export class TsSnackbar extends LitElement {
         (acc, curr) => html`${acc}<br />${curr}`
       );
     }
-    return html` <span class="text">${messageTpl}</span> `;
+    return html`<span @click=${this.close} class="codicon codicon-close"></span>
+      <span class="text">${messageTpl}</span> `;
   }
 }
 customElements.define("ts-snackbar", TsSnackbar);

@@ -43,9 +43,10 @@ export async function changeLang(lang, ed) {
 
 function setupConfigSwitcher() {
   const configSwitcherEl = document.getElementById("config-switcher");
-  fs.writeFileSync(
-    SD_FUNCTIONS_PATH,
-    `import StyleDictionary from 'style-dictionary';
+  if (!fs.existsSync(SD_FUNCTIONS_PATH)) {
+    fs.writeFileSync(
+      SD_FUNCTIONS_PATH,
+      `import StyleDictionary from 'style-dictionary';
 import { registerTransforms } from '@tokens-studio/sd-transforms';
 
 // sd-transforms, 2nd parameter for options can be added
@@ -75,7 +76,8 @@ StyleDictionary.registerFormat({
 }\`;
   }
 });\n`
-  );
+    );
+  }
   configSwitcherEl.addEventListener("checked-changed", async (ev) => {
     const val = ev.target.checkedChoice;
     if (val === FUNCTIONS) {
@@ -111,13 +113,15 @@ StyleDictionary.registerFormat({
     await ensureMonacoIsLoaded();
     resizeMonacoLayout();
   });
-  await ensureMonacoIsLoaded();
-
-  setupUploadBtnHandler();
-  await setupEditorChangeHandlers();
-  setupConfigSwitcher();
 
   await createInputFiles();
+  setupConfigSwitcher();
+  window.dispatchEvent(new Event("input-files-created"));
+
+  await ensureMonacoIsLoaded();
+  setupUploadBtnHandler();
+  await setupEditorChangeHandlers();
+
   await sdState.loadSDFunctions();
   await sdState.runStyleDictionary();
 

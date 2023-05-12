@@ -1,6 +1,6 @@
 import fs, { promises } from "fs";
 import util from "util";
-import path from "path";
+import path, { parse } from "path";
 import glob from "glob";
 import tokens from "./core.tokens.json";
 import { changeLang } from "../index.js";
@@ -41,7 +41,7 @@ async function createFilesFromURL(project) {
   try {
     await new Promise((resolve, reject) => {
       setInterval(() => {
-        if (flate) {
+        if (window.hasOwnProperty("flate")) {
           resolve();
         }
       }, 10);
@@ -53,6 +53,7 @@ async function createFilesFromURL(project) {
     );
     createConfig();
     createStudioTokens();
+    return;
   }
 
   const parsedContents = JSON.parse(flate.deflate_decode(project));
@@ -320,12 +321,15 @@ export async function saveFile(ed, { noRun = false } = {}) {
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
       await sdState.loadSDFunctions();
+      window.dispatchEvent(new Event("sd-functions-saved"));
     } else {
       await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
     }
   } else {
     await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
   }
+
+  await encodeContentsToURL();
   if (!noRun) {
     await sdState.runStyleDictionary(true);
   }
@@ -516,6 +520,7 @@ export async function dispatchInputFiles(ev) {
 
 export async function encodeContentsToURL() {
   const inputFiles = await getInputFiles();
+  console.log(inputFiles);
   // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
   if (inputFiles.length > 0) {
     const encoded = await encodeContents(inputFiles);
