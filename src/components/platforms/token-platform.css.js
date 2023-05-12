@@ -35,6 +35,12 @@ export default css`
     gap: var(--space3);
   }
 
+  .settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .platforms-container {
     display: flex;
     flex-direction: column;

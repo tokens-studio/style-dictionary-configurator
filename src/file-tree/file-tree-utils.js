@@ -1,6 +1,6 @@
 import fs, { promises } from "fs";
 import util from "util";
-import path from "path";
+import path, { parse } from "path";
 import glob from "glob";
 import tokens from "./core.tokens.json";
 import { changeLang } from "../index.js";
@@ -14,7 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
+import { CONFIG, FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
 import { snackbar } from "../components/snackbar/SnackbarManager";
 
 const asyncGlob = util.promisify(glob);
@@ -41,7 +41,7 @@ async function createFilesFromURL(project) {
   try {
     await new Promise((resolve, reject) => {
       setInterval(() => {
-        if (flate) {
+        if (window.hasOwnProperty("flate")) {
           resolve();
         }
       }, 10);
@@ -53,6 +53,7 @@ async function createFilesFromURL(project) {
     );
     createConfig();
     createStudioTokens();
+    return;
   }
 
   const parsedContents = JSON.parse(flate.deflate_decode(project));
@@ -320,12 +321,15 @@ export async function saveFile(ed, { noRun = false } = {}) {
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
       await sdState.loadSDFunctions();
+      window.dispatchEvent(new Event("sd-functions-saved"));
     } else {
       await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
     }
   } else {
     await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
   }
+
+  await encodeContentsToURL();
   if (!noRun) {
     await sdState.runStyleDictionary(true);
   }
@@ -361,6 +365,13 @@ export async function switchToFile(file, ed) {
     currentFileOutput = file;
   } else {
     currentFileConfig = file;
+
+    const configTabGroup = document
+      .getElementById("config-switcher")
+      .shadowRoot.querySelector("config-tab-group");
+
+    configTabGroup.modelValue =
+      file === findUsedConfigPath() ? CONFIG : FUNCTIONS;
   }
 
   // TODO: find better fix, e.g. an event we can wait for in monaco for set value complete or something..

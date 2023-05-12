@@ -2,7 +2,10 @@ import fs from "fs";
 import { LitElement, html } from "lit";
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import { editorConfig } from "../../monaco/monaco.js";
-import { switchToFile } from "../../file-tree/file-tree-utils.js";
+import {
+  encodeContentsToURL,
+  switchToFile,
+} from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { sdState } from "../../style-dictionary.js";
 import { codicon } from "../../icons/codicon-style.css.js";
@@ -12,6 +15,7 @@ import styles from "./token-platform.css.js";
 import "./platforms-dialog.js";
 import "../segmented-control/segmented-choice.js";
 import "../segmented-control/segmented-control.js";
+import "../settings/settings-dialog.js";
 
 class TokenPlatforms extends LitElement {
   static get styles() {
@@ -48,6 +52,7 @@ class TokenPlatforms extends LitElement {
       this._config.platforms = this._platforms;
       const cfgPath = findUsedConfigPath();
       fs.writeFileSync(cfgPath, JSON.stringify(this._config, null, 2));
+      encodeContentsToURL();
       switchToFile(cfgPath, editorConfig);
       sdState.runStyleDictionary();
     }
@@ -87,21 +92,24 @@ class TokenPlatforms extends LitElement {
   render() {
     return html`
       <div class="platforms">
-        ${this._themes && this._themes.length > 0
-          ? html`
-              <ts-segmented-control name="themes" label="Themes">
-                ${this._themes.map(
-                  (theme) => html`
-                    <ts-segmented-choice
-                      checked
-                      label="${theme}"
-                      .choiceValue=${theme}
-                    ></ts-segmented-choice>
-                  `
-                )}
-              </ts-segmented-control>
-            `
-          : ""}
+        <div class="settings">
+          ${this._themes && this._themes.length > 0
+            ? html`
+                <ts-segmented-control name="themes" label="Themes">
+                  ${this._themes.map(
+                    (theme) => html`
+                      <ts-segmented-choice
+                        checked
+                        label="${theme}"
+                        .choiceValue=${theme}
+                      ></ts-segmented-choice>
+                    `
+                  )}
+                </ts-segmented-control>
+              `
+            : html`<div class="flex-spacer"></div>`}
+          <settings-dialog></settings-dialog>
+        </div>
         <h2>Platforms</h2>
         <div class="platforms-container">${this.platformsTemplate()}</div>
         <platforms-dialog

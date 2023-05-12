@@ -61,7 +61,7 @@ export async function bundle(inputPath) {
         transform(code) {
           let rewrittenCode = code;
           let matchRes = rewrittenCode.match(
-            /import (?<id>.+?) from 'style-dictionary';/,
+            /import (?<id>.+?) from [',"]style-dictionary[',"]/,
             ""
           );
           if (matchRes) {

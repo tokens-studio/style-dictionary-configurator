@@ -13,6 +13,7 @@ class SnackbarManager {
     const snackbarEl = renderLitAsNode(
       html`<ts-snackbar role="status"></ts-snackbar>`
     );
+    snackbarEl.manager = this;
     document.body.appendChild(snackbarEl);
     this.controller = new OverlayController({
       placementMode: "global",
@@ -88,6 +89,10 @@ class SnackbarManager {
       };
       snackbar.addEventListener("transitionend", hideSnackbarCallback);
     });
+  }
+
+  async closeCurrent() {
+    this.timeoutResolver();
   }
 
   async wait(dur) {

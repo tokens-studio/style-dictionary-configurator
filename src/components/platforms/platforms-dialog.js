@@ -19,8 +19,7 @@ import "../combobox/sd-selection-display.js";
 import "../input/sd-input.js";
 import "../button/ts-button.js";
 import "../button/ts-button-submit.js";
-
-customElements.define("sd-form", LionForm);
+import "../form/sd-form.js";
 
 class PlatformsDialog extends LitElement {
   static get properties() {

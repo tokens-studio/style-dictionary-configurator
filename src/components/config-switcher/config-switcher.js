@@ -28,10 +28,8 @@ export class ConfigSwitcher extends LitElement {
   tabGroupChanged(ev) {
     const { detail } = ev;
     if (detail.isTriggeredByUser) {
-      if (this.checkedChoice !== ev.target.modelValue) {
-        this.checkedChoice = ev.target.modelValue;
-        this.dispatchEvent(new Event("checked-changed"));
-      }
+      this.checkedChoice = ev.target.modelValue;
+      this.dispatchEvent(new Event("checked-changed"));
     }
   }
 
