@@ -116,7 +116,6 @@ class SettingsDialog extends LitElement {
 
   parseSettings() {
     this.settings = parseTransformOptions().currentOptions;
-    console.log(123, this.settings);
     if (this.settings.expand === undefined) {
       this.settings.expand = {};
     }

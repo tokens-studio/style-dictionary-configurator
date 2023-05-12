@@ -2,7 +2,10 @@ import fs from "fs";
 import { LitElement, html } from "lit";
 import StyleDictionary from "browser-style-dictionary/browser.js";
 import { editorConfig } from "../../monaco/monaco.js";
-import { switchToFile } from "../../file-tree/file-tree-utils.js";
+import {
+  encodeContentsToURL,
+  switchToFile,
+} from "../../file-tree/file-tree-utils.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { sdState } from "../../style-dictionary.js";
 import { codicon } from "../../icons/codicon-style.css.js";
@@ -49,6 +52,7 @@ class TokenPlatforms extends LitElement {
       this._config.platforms = this._platforms;
       const cfgPath = findUsedConfigPath();
       fs.writeFileSync(cfgPath, JSON.stringify(this._config, null, 2));
+      encodeContentsToURL();
       switchToFile(cfgPath, editorConfig);
       sdState.runStyleDictionary();
     }

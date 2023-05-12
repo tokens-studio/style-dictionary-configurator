@@ -14,7 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
+import { CONFIG, FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
 import { snackbar } from "../components/snackbar/SnackbarManager";
 
 const asyncGlob = util.promisify(glob);
@@ -365,6 +365,13 @@ export async function switchToFile(file, ed) {
     currentFileOutput = file;
   } else {
     currentFileConfig = file;
+
+    const configTabGroup = document
+      .getElementById("config-switcher")
+      .shadowRoot.querySelector("config-tab-group");
+
+    configTabGroup.modelValue =
+      file === findUsedConfigPath() ? CONFIG : FUNCTIONS;
   }
 
   // TODO: find better fix, e.g. an event we can wait for in monaco for set value complete or something..
@@ -520,7 +527,6 @@ export async function dispatchInputFiles(ev) {
 
 export async function encodeContentsToURL() {
   const inputFiles = await getInputFiles();
-  console.log(inputFiles);
   // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
   if (inputFiles.length > 0) {
     const encoded = await encodeContents(inputFiles);
