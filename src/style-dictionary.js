@@ -178,6 +178,7 @@ class SdState extends EventTarget {
 
   async runStyleDictionary(force = false) {
     const cfg = await this.loadAndProcessConfig();
+    await this.loadSDFunctions();
     if (JSON.stringify(this.config) !== JSON.stringify(cfg) || force) {
       this.config = cfg;
       await this._prepareRunStyleDictionary();
@@ -277,7 +278,7 @@ class SdState extends EventTarget {
             await Promise.all(
               Array.from(foldersToClean).map((folder) => {
                 return new Promise((_resolve) => {
-                  fs.rmdir(folder, { recursive: true }, () => {
+                  fs.rmdir("build", { recursive: true }, () => {
                     _resolve();
                   });
                 });

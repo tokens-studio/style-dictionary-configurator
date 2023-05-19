@@ -7,6 +7,12 @@ const capitalizeFirstLetter = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
 export class ConfigSwitcher extends LitElement {
+  static get properties() {
+    return {
+      checkedChoice: { state: true, hasChanged: () => true },
+    };
+  }
+
   static get styles() {
     return [
       css`
@@ -29,6 +35,11 @@ export class ConfigSwitcher extends LitElement {
     const { detail } = ev;
     if (detail.isTriggeredByUser) {
       this.checkedChoice = ev.target.modelValue;
+    }
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has("checkedChoice")) {
       this.dispatchEvent(new Event("checked-changed"));
     }
   }

@@ -17,7 +17,7 @@ class SettingsDialog extends LitElement {
   static get properties() {
     return {
       settings: {
-        attribute: false,
+        state: true,
       },
     };
   }
@@ -159,13 +159,13 @@ Please adjust the settings in code instead.`,
       const form = this.shadowRoot.getElementById("settings-form");
       form.reset();
     }
+    this.userHasSubmitted = false;
   }
 
   submitForm(ev) {
     ev.preventDefault();
     this.userHasSubmitted = true;
     ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
-    this.userHasSubmitted = false;
     const formResult = ev.target.modelValue;
     const { settings } = formResult;
 
@@ -186,7 +186,6 @@ Please adjust the settings in code instead.`,
       }
       prop[checkEl.choiceValue] = val;
     });
-
     syncTransformOptionsWithUI(result);
   }
 }

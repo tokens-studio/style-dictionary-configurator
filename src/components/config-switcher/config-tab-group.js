@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "lit";
+import { css } from "lit";
 import { LionRadioGroup } from "@lion/ui/radio-group.js";
 
 class ConfigTabGroup extends LionRadioGroup {

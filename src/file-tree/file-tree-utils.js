@@ -320,12 +320,11 @@ export async function saveFile(ed, { noRun = false } = {}) {
   if (ed === editorConfig) {
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
-      await sdState.loadSDFunctions();
       window.dispatchEvent(new Event("sd-functions-saved"));
     } else {
       await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
     }
-  } else {
+  } else if (fileTreeEl.checkedFile) {
     await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
   }
 
