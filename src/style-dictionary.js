@@ -103,6 +103,51 @@ class SdState extends EventTarget {
     }
   }
 
+  getThemes(themesObj) {
+    // cartesian permutations: [[1,2], [3,4]] -> [[1,3], [1,4], [2,3], [2,4]]
+    const cartesian = (a) =>
+      a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+
+    // if the themes have a group property, this means multi-dimensional theming
+    if (themesObj.find((theme) => theme.group)) {
+      // Sort themes by groups
+      let groups = {};
+      themesObj.forEach((theme) => {
+        groups[theme.group] = [...(groups[theme.group] ?? []), theme];
+      });
+
+      // Create theme permutations
+      const permutations = cartesian(Object.values(groups));
+
+      return Object.fromEntries(
+        permutations.map((perm) => {
+          // 1) concat the names of the theme groups to create the permutation theme name
+          // 2) merge the selectedTokenSets together from the different theme group parts
+          const reduced = perm.reduce(
+            (acc, curr) => [
+              `${acc[0]}${acc[0] ? "-" : ""}${curr.name}`,
+              [
+                ...acc[1],
+                ...Object.entries(curr.selectedTokenSets)
+                  .filter(([set, val]) => val !== "disabled")
+                  .map(([set, val]) => set),
+              ],
+            ],
+            ["", []]
+          );
+          // Dedupe the tokensets, return as entries [name, sets]
+          return [reduced[0], [...new Set(reduced[1])]];
+        })
+      );
+    }
+    return Object.fromEntries(
+      themesObj.map((theme) => [
+        theme.name,
+        Object.keys(theme.selectedTokenSets),
+      ])
+    );
+  }
+
   async processConfigForThemes(cfg) {
     const addThemeToFilePath = (file) => {
       const fileParts = file.split(".");
@@ -132,12 +177,7 @@ class SdState extends EventTarget {
           ])
         ),
       };
-      this.themes = Object.fromEntries(
-        $themes.map((theme) => [
-          theme.name,
-          Object.keys(theme.selectedTokenSets),
-        ])
-      );
+      this.themes = this.getThemes($themes);
     } catch (e) {
       this.themes = {};
     }
