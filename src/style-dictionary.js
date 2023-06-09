@@ -4,9 +4,8 @@ import {
   repopulateFileTree,
   fileTreeEl,
   currentFileOutput,
-  encodeContentsToURL,
 } from "./file-tree/file-tree-utils.js";
-import { expandComposites } from "@tokens-studio/sd-transforms";
+import { expandComposites, permutateThemes } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_SETS, THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
@@ -104,48 +103,18 @@ class SdState extends EventTarget {
   }
 
   getThemes(themesObj) {
-    // cartesian permutations: [[1,2], [3,4]] -> [[1,3], [1,4], [2,3], [2,4]]
-    const cartesian = (a) =>
-      a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+    let themes = permutateThemes(themesObj, { separator: '-' });
 
-    // if the themes have a group property, this means multi-dimensional theming
-    if (themesObj.find((theme) => theme.group)) {
-      // Sort themes by groups
-      let groups = {};
-      themesObj.forEach((theme) => {
-        groups[theme.group] = [...(groups[theme.group] ?? []), theme];
-      });
-
-      // Create theme permutations
-      const permutations = cartesian(Object.values(groups));
-
-      return Object.fromEntries(
-        permutations.map((perm) => {
-          // 1) concat the names of the theme groups to create the permutation theme name
-          // 2) merge the selectedTokenSets together from the different theme group parts
-          const reduced = perm.reduce(
-            (acc, curr) => [
-              `${acc[0]}${acc[0] ? "-" : ""}${curr.name}`,
-              [
-                ...acc[1],
-                ...Object.entries(curr.selectedTokenSets)
-                  .filter(([set, val]) => val !== "disabled")
-                  .map(([set, val]) => set),
-              ],
-            ],
-            ["", []]
-          );
-          // Dedupe the tokensets, return as entries [name, sets]
-          return [reduced[0], [...new Set(reduced[1])]];
-        })
-      );
-    }
-    return Object.fromEntries(
-      themesObj.map((theme) => [
+    // if single-dimensional theming, we still have to map it accordingly
+    // TODO: handle in next breaking version of sd-transforms, to give back the same format
+    if (themesObj.every(theme => !theme.group)) {
+      themes = Object.fromEntries(themes.map((theme) => [
         theme.name,
         Object.keys(theme.selectedTokenSets),
-      ])
-    );
+      ]))
+    }
+
+    return themes;
   }
 
   async processConfigForThemes(cfg) {
