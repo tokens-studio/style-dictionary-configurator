@@ -1,6 +1,6 @@
 import fs, { promises } from "fs";
 import util from "util";
-import path, { parse } from "path";
+import path from "path";
 import glob from "glob";
 import tokens from "./core.tokens.json";
 import { changeLang } from "../index.js";
@@ -14,7 +14,7 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { CONFIG, FUNCTIONS, SD_FUNCTIONS_PATH } from "../constants";
+import { CONFIG, FUNCTIONS, SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "../constants";
 import { snackbar } from "../components/snackbar/SnackbarManager";
 
 const asyncGlob = util.promisify(glob);
@@ -172,7 +172,7 @@ export function createStandardTokens() {
 export function createConfig() {
   fs.writeFileSync(
     // take the .js by default
-    "config.json",
+    SD_CONFIG_PATH,
     JSON.stringify(
       {
         source: ["**/*.tokens.json"],
@@ -287,7 +287,7 @@ export async function openAllFolders() {
 export async function clearAll() {
   const files = await asyncGlob("**/*", { fs, mark: true });
   // Keep config, only remove source tokens and output files
-  const filtered = files.filter((file) => file !== "config.json");
+  const filtered = files.filter((file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH);
   await Promise.all(
     filtered.map((file) => {
       return new Promise(async (resolve) => {

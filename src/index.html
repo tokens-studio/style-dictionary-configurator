@@ -64,8 +64,19 @@
     <header>
       <h1>Style-Dictionary Configurator</h1>
       <div class="menu">
+
         <ts-button id="upload-tokens-btn">
           <span class="codicon codicon-cloud-upload"></span> Upload tokens
+          <input
+            id="upload-tokens-input"
+            type="file"
+            accept="application/*, text/*"
+            aria-hidden="true"
+            hidden
+          />
+        </ts-button>
+        <ts-button variant="secondary" id="eject-btn" title="Eject by downloading your project so that you can run it locally.">
+          <span class="codicon codicon-debug-disconnect"></span> Eject
           <input
             id="upload-tokens-input"
             type="file"

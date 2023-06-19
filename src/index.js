@@ -23,6 +23,7 @@ import {
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
 import { setupUploadBtnHandler } from "./file-upload.js";
+import { setupEjectBtnHandler } from "./eject.js";
 import { FUNCTIONS, SD_FUNCTIONS_PATH } from "./constants.js";
 // side effect: loads file-tree CE definition
 import "./file-tree/FileTree.js";
@@ -120,6 +121,7 @@ StyleDictionary.registerFormat({
 
   await ensureMonacoIsLoaded();
   setupUploadBtnHandler();
+  setupEjectBtnHandler();
   await setupEditorChangeHandlers();
 
   await sdState.loadSDFunctions();
