@@ -7,6 +7,7 @@ import * as babel from "prettier/parser-babel";
 import { sdState } from "./style-dictionary.js";
 import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
 import { getInputFiles } from "./file-tree/file-tree-utils.js";
+import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 export async function setupEjectBtnHandler() {
   const btn = document.getElementById("eject-btn");
@@ -170,7 +171,7 @@ sd.buildAllPlatforms();
   // Add all files to zip
 
   await zipWriter.add(
-    "npm-install-command.md",
+    "instructions.md",
     new TextReader(`# Install Dependencies
 
 Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
@@ -201,4 +202,8 @@ node build-tokens.cjs
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);
+
+  snackbar.show(
+    `You can now extract the .zip that you received, make sure to follow the instructions from the instructions.md file and voila! 🎉`
+  );
 }
