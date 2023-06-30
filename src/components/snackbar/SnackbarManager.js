@@ -9,6 +9,10 @@ class SnackbarManager {
     this.showing = false;
   }
 
+  get snackbarEl() {
+    return this.controller.contentNode;
+  }
+
   async init() {
     const snackbarEl = renderLitAsNode(
       html`<ts-snackbar role="status"></ts-snackbar>`
@@ -27,31 +31,34 @@ class SnackbarManager {
     await this.wait();
   }
 
-  show(msg = "", dur = 5000) {
-    const prom = () => this.msgPromise(msg, dur);
+  show(msg = "", { dur = 5000, status = "error" } = {}) {
+    const prom = () => this.msgPromise(msg, { dur, status });
     this.queue.push(prom);
     this.runQueue();
   }
 
-  async showAnimation(msg) {
-    const snackbar = this.controller.contentNode;
-    snackbar.message = msg;
-    snackbar.setAttribute("shown", "");
-    snackbar.removeAttribute("aria-hidden");
+  async showAnimation(msg, status) {
+    this.snackbarEl.message = msg;
+    this.snackbarEl.status = status;
+    this.snackbarEl.setAttribute("shown", "");
+    this.snackbarEl.removeAttribute("aria-hidden");
     await new Promise((resolve) => {
       const showSnackbarCallback = () => {
-        snackbar.removeEventListener("transitionend", showSnackbarCallback);
+        this.snackbarEl.removeEventListener(
+          "transitionend",
+          showSnackbarCallback
+        );
         resolve();
       };
-      snackbar.addEventListener("transitionend", showSnackbarCallback);
+      this.snackbarEl.addEventListener("transitionend", showSnackbarCallback);
     });
   }
 
-  async msgPromise(msg, dur) {
+  async msgPromise(msg, { dur, status }) {
     if (!this.controller) {
       await this.init();
     }
-    await this.showAnimation(msg);
+    await this.showAnimation(msg, status);
     await this.wait(dur);
     await this.hideAnimation();
   }
@@ -79,15 +86,17 @@ class SnackbarManager {
   }
 
   async hideAnimation() {
-    const snackbar = this.controller.contentNode;
-    snackbar.removeAttribute("shown");
-    snackbar.setAttribute("aria-hidden", "true");
+    this.snackbarEl.removeAttribute("shown");
+    this.snackbarEl.setAttribute("aria-hidden", "true");
     await new Promise((resolve) => {
       const hideSnackbarCallback = () => {
-        snackbar.removeEventListener("transitionend", hideSnackbarCallback);
+        this.snackbarEl.removeEventListener(
+          "transitionend",
+          hideSnackbarCallback
+        );
         resolve();
       };
-      snackbar.addEventListener("transitionend", hideSnackbarCallback);
+      this.snackbarEl.addEventListener("transitionend", hideSnackbarCallback);
     });
   }
 

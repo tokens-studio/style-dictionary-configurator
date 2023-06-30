@@ -204,6 +204,7 @@ node build-tokens.cjs
   document.body.removeChild(anchor);
 
   snackbar.show(
-    `You can now extract the .zip that you received, make sure to follow the instructions from the instructions.md file and voila! 🎉`
+    `You can now extract the .zip that you received, make sure to follow the instructions from the instructions.md file and voila! 🎉`,
+    { status: "success" }
   );
 }

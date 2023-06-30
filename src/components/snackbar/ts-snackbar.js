@@ -34,6 +34,11 @@ export class TsSnackbar extends LitElement {
           transition: transform 0.3s ease-in-out;
         }
 
+        :host([status="success"]) {
+          background-color: var(--successBg);
+          border-color: var(--successBorder);
+        }
+
         :host([shown]) {
           transform: translate(-50%, 0);
         }
@@ -52,6 +57,7 @@ export class TsSnackbar extends LitElement {
   static get properties() {
     return {
       message: { state: true },
+      status: { reflect: true, type: String },
     };
   }
 

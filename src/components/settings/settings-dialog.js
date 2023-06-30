@@ -148,7 +148,7 @@ class SettingsDialog extends LitElement {
         `You are using functions inside your sd-transforms settings.
 This means we cannot let you configure the settings in code through the UI anymore, as it is too complex of an operation.
 Please adjust the settings in code instead.`,
-        10000
+        { dur: 10000 }
       );
     }
   }
