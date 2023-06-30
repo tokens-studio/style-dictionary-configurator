@@ -5,10 +5,13 @@ import {
   fileTreeEl,
   currentFileOutput,
 } from "./file-tree/file-tree-utils.js";
-import { expandComposites, permutateThemes } from "@tokens-studio/sd-transforms";
+import {
+  expandComposites,
+  permutateThemes,
+} from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
-import { THEME_SETS, THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
+import { THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 import { html } from "lit";
 
@@ -103,15 +106,17 @@ class SdState extends EventTarget {
   }
 
   getThemes(themesObj) {
-    let themes = permutateThemes(themesObj, { separator: '-' });
+    let themes = permutateThemes(themesObj, { separator: "-" });
 
     // if single-dimensional theming, we still have to map it accordingly
     // TODO: handle in next breaking version of sd-transforms, to give back the same format
-    if (themesObj.every(theme => !theme.group)) {
-      themes = Object.fromEntries(themes.map((theme) => [
-        theme.name,
-        Object.keys(theme.selectedTokenSets),
-      ]))
+    if (themesObj.every((theme) => !theme.group)) {
+      themes = Object.fromEntries(
+        themes.map((theme) => [
+          theme.name,
+          Object.keys(theme.selectedTokenSets),
+        ])
+      );
     }
 
     return themes;
@@ -132,7 +137,6 @@ class SdState extends EventTarget {
       // 1) adjust config source and platform files names to themed
       cfg = {
         ...cfg,
-        source: THEME_SETS,
         platforms: Object.fromEntries(
           Object.entries(cfg.platforms).map(([key, plat]) => [
             key,
@@ -146,6 +150,7 @@ class SdState extends EventTarget {
           ])
         ),
       };
+      delete cfg.source;
       this.themes = this.getThemes($themes);
     } catch (e) {
       this.themes = {};
