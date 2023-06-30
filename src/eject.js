@@ -168,6 +168,12 @@ Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-inst
 \`\`\`sh
 npm install ${dependencies.map((dep) => dep.package).join(" ")}
 \`\`\`
+
+Then run
+
+\`\`\`sh
+node build-tokens.cjs
+\`\`\`
 `)
   );
 
