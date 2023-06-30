@@ -5,7 +5,8 @@ import { simple } from "acorn-walk";
 import * as prettier from "prettier/standalone";
 import * as babel from "prettier/parser-babel";
 import { sdState } from "./style-dictionary.js";
-import { SD_FUNCTIONS_PATH } from "./constants.js";
+import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
+import { getInputFiles } from "./file-tree/file-tree-utils.js";
 
 export async function setupEjectBtnHandler() {
   const btn = document.getElementById("eject-btn");
@@ -103,6 +104,15 @@ function handleThemePlaceholder(str) {
 
 async function ejectHandler() {
   const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
+  const inputFiles = await getInputFiles();
+  await Promise.all(
+    inputFiles
+      .filter((file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file))
+      .map((file) =>
+        zipWriter.add(file, new TextReader(readFileSync(file, "utf-8")))
+      )
+  );
+
   const { themes, config } = sdState;
   const hasThemes = Object.keys(themes).length > 0;
   const functionsContent = readFileSync(SD_FUNCTIONS_PATH, "utf-8");
