@@ -14,7 +14,12 @@ import {
 } from "../monaco/monaco.js";
 import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
 import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
-import { CONFIG, FUNCTIONS, SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "../constants";
+import {
+  CONFIG,
+  FUNCTIONS,
+  SD_CONFIG_PATH,
+  SD_FUNCTIONS_PATH,
+} from "../constants";
 import { snackbar } from "../components/snackbar/SnackbarManager";
 
 const asyncGlob = util.promisify(glob);
@@ -287,7 +292,9 @@ export async function openAllFolders() {
 export async function clearAll() {
   const files = await asyncGlob("**/*", { fs, mark: true });
   // Keep config, only remove source tokens and output files
-  const filtered = files.filter((file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH);
+  const filtered = files.filter(
+    (file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH
+  );
   await Promise.all(
     filtered.map((file) => {
       return new Promise(async (resolve) => {
@@ -485,6 +492,14 @@ export async function dispatchTokens(ev) {
     },
     "*"
   );
+}
+
+export function uploadTokens(ev) {
+  const { data } = ev;
+  const { tokens } = data;
+  replaceSource({
+    "/studio.tokens.json": JSON.stringify(tokens, null, 2),
+  });
 }
 
 export async function dispatchDictionary(ev) {

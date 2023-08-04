@@ -5,6 +5,7 @@ import {
   createInputFiles,
   setupEditorChangeHandlers,
   dispatchTokens,
+  uploadTokens,
   dispatchInputFiles,
   dispatchDictionary,
   dispatchEnrichedTokens,
@@ -97,6 +98,9 @@ StyleDictionary.registerFormat({
     switch (data.type) {
       case "sd-tokens-request":
         dispatchTokens(ev);
+        break;
+      case "sd-tokens-upload":
+        uploadTokens(ev);
         break;
       case "sd-input-files-request":
         dispatchInputFiles(ev);
