@@ -2,27 +2,27 @@
   "dimension": {
     "scale": {
       "value": "2",
-      "type": "math"
+      "type": "sizing"
     },
     "xs": {
       "value": "4px",
-      "type": "dimension"
+      "type": "sizing"
     },
     "sm": {
       "value": "{dimension.xs} * {dimension.scale}",
-      "type": "dimension"
+      "type": "sizing"
     },
     "md": {
       "value": "{dimension.sm} * {dimension.scale}",
-      "type": "dimension"
+      "type": "sizing"
     },
     "lg": {
       "value": "{dimension.md} * {dimension.scale}",
-      "type": "dimension"
+      "type": "sizing"
     },
     "xl": {
       "value": "{dimension.lg} * {dimension.scale}",
-      "type": "dimension"
+      "type": "sizing"
     }
   },
   "spacing": {
