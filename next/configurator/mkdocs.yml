@@ -1,0 +1,14 @@
+site_name: ${{values.name | dump}}
+site_description: ${{values.description | dump}}
+
+nav:
+  - Home: index.md
+
+docs_dir: developer-docs
+repo_url: https://github.com/${{values.destination.owner + "/" + values.destination.repo}}
+edit_uri: edit/-/docs/
+theme:
+    name: readthedocs
+
+plugins:
+  - techdocs-core

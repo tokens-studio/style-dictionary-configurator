@@ -1,0 +1,8 @@
+{
+  "myKey": "de translation",
+  "login": "Einloggen",
+  "dashboard": "Armaturenbrett",
+  "nested": {
+    "key": "nested en translation"
+  }
+}

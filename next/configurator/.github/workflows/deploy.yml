@@ -1,0 +1,120 @@
+name: 'Deploy-to-site'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy into"
+        type: environment
+        default: dev
+  push:
+    branches: ['main', 'master']
+
+permissions:
+  contents: read
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  S3_BUCKET: ${{ vars.S3_BUCKET }}
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # 1: Setup node
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      #2: Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      - name: Checkout LFS objects
+        run: git lfs checkout
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          # caching node_modules
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.cache-name }}-
+      # 3: Install dependencies
+      - name: Install dependencies
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        run: npm ci
+        # Only install production dependencies for the build
+        env:
+          NODE_ENV: production
+      # 4: Get the Next cache for faster builds
+      - name: Get Next Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      # 5: Build output to `site`
+      - name: Build Package
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: output
+          path: site
+
+  deployment:
+    needs: build
+    name: 'Deployment'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment  || 'dev' }}
+    permissions:
+      contents: read
+      id-token: write
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: output
+          path : ./out
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ vars.VAULT_URL }}
+          role: ${{ vars.VAULT_ROLE }}_${{ inputs.environment  || 'dev' }}
+          method: jwt
+          namespace: admin
+          # We need the Terraform API token to interact with terraform cloud with the state storage is
+          secrets: |
+            aws/${{ inputs.environment  || 'dev' }}/creds/${{ vars.AWS_ROLE }} access_key | AWS_ACCESS_KEY_ID ;
+            aws/${{ inputs.environment  || 'dev' }}/creds/${{ vars.AWS_ROLE }}secret_key | AWS_SECRET_ACCESS_KEY ;
+            aws/${{ inputs.environment  || 'dev' }}/creds/${{ vars.AWS_ROLE }} security_token |  AWS_SESSION_TOKEN;
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.secrets.outputs.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.secrets.outputs.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ steps.secrets.outputs.AWS_SESSION_TOKEN }}
+          aws-region: ${{vars.AWS_REGION}}
+      - name: Copy files to the production website with the AWS CLI
+        run: |
+          aws s3 sync ./out ${{ env.S3_BUCKET }}

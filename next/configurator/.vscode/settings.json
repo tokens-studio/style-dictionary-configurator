@@ -1,0 +1,15 @@
+{
+    "jest.jestCommandLine": "yarn run test",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": [
+        "javascript"
+    ],
+    "[tsx]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.formatOnSave": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
+}

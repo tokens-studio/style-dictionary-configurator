@@ -1,4 +1,4 @@
-import { themeData } from "./monaco-theme";
+import { themeData } from './monaco-theme';
 
 let loaderPending = false;
 const loaderCallbacks = [];
@@ -27,7 +27,7 @@ function onAmdLoaderError(err) {
 
 export function ensureMonacoIsLoaded(
   // srcPath = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/dev' // <-- for debugging
-  srcPath = "https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/min"
+  srcPath = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/min'
 ) {
   return new Promise((resolve, reject) => {
     if (monaco) {
@@ -36,14 +36,14 @@ export function ensureMonacoIsLoaded(
     }
     const config = {
       paths: {
-        vs: srcPath + "/vs",
-        vs_dev: srcPath.replace(/\/min$/, "/dev") + "/vs",
-      },
+        vs: srcPath + '/vs',
+        vs_dev: srcPath.replace(/\/min$/, '/dev') + '/vs'
+      }
     };
     const loaderUrl = `${config.paths.vs}/loader.js`;
 
     const timeout = setTimeout(() => {
-      reject(new Error("Couldn't load monaco editor after 60s"));
+      reject(new Error('Couldn\'t load monaco editor after 60s'));
     }, 60000);
 
     loaderCallbacks.push({
@@ -61,24 +61,24 @@ export function ensureMonacoIsLoaded(
                   baseUrl: '${srcPath}'
                 };
                 importScripts('${srcPath}/vs/base/worker/workerMain.js');`)}`;
-          },
+          }
         };
 
-        window.require(["vs/editor/editor.main"], resolve);
+        window.require(['vs/editor/editor.main'], resolve);
       },
       timeout,
-      reject,
+      reject
     });
 
     if (!loaderPending) {
       if (window.require) {
         onAmdLoaderLoad();
       } else {
-        const loaderScript = window.document.createElement("script");
-        loaderScript.type = "text/javascript";
+        const loaderScript = window.document.createElement('script');
+        loaderScript.type = 'text/javascript';
         loaderScript.src = loaderUrl;
-        loaderScript.addEventListener("load", onAmdLoaderLoad);
-        loaderScript.addEventListener("error", onAmdLoaderError);
+        loaderScript.addEventListener('load', onAmdLoaderLoad);
+        loaderScript.addEventListener('error', onAmdLoaderError);
         window.document.body.appendChild(loaderScript);
         loaderPending = true;
       }
@@ -88,17 +88,17 @@ export function ensureMonacoIsLoaded(
 
 ensureMonacoIsLoaded().then(() => {
   monaco = window.monaco;
-  monaco.editor.defineTheme("my-theme", themeData);
+  monaco.editor.defineTheme('my-theme', themeData);
   editorOutput = monaco.editor.create(
-    document.getElementById("monaco-container-output"),
+    document.getElementById('monaco-container-output'),
     {
-      theme: "my-theme",
+      theme: 'my-theme'
     }
   );
   editorConfig = monaco.editor.create(
-    document.getElementById("monaco-container-config"),
+    document.getElementById('monaco-container-config'),
     {
-      theme: "my-theme",
+      theme: 'my-theme'
     }
   );
   editorConfig.getModel().updateOptions({ tabSize: 2 });

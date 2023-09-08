@@ -1,12 +1,12 @@
-import { editorOutput, editorConfig } from "./monaco.js";
+import { editorConfig, editorOutput } from './monaco.js';
 
 export function resizeMonacoLayout() {
   const minimumMonacoWidth = 650;
   const fileTreeWidth = 200;
   const borderLeftWidth = 1;
 
-  const sectionRightHeight = document.querySelector(".right").offsetHeight;
-  const sectionMiddleWidth = document.querySelector(".middle").offsetWidth;
+  const sectionRightHeight = document.querySelector('.right').offsetHeight;
+  const sectionMiddleWidth = document.querySelector('.middle').offsetWidth;
 
   const viewportWidth = Math.max(
     document.documentElement.clientWidth || 0,
@@ -18,7 +18,7 @@ export function resizeMonacoLayout() {
       minimumMonacoWidth - fileTreeWidth,
       viewportWidth - sectionMiddleWidth - fileTreeWidth - borderLeftWidth
     ),
-    height: sectionRightHeight / 2,
+    height: sectionRightHeight / 2
   });
 
   editorConfig.layout({
@@ -26,6 +26,6 @@ export function resizeMonacoLayout() {
       minimumMonacoWidth,
       viewportWidth - sectionMiddleWidth - borderLeftWidth
     ),
-    height: sectionRightHeight / 2,
+    height: sectionRightHeight / 2
   });
 }

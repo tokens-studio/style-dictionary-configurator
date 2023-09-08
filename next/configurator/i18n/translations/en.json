@@ -1,0 +1,71 @@
+{
+  "login": "Login",
+  "sidebar": {
+    "releases": "Releases",
+    "backToOverview": "Back to overview",
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "sets": "Token Sets",
+    "resolvers": "Resolvers",
+    "generators": "Generators",
+    "branches": "Branches",
+    "settings": "Settings",
+    "users": "Users",
+    "groups": "Groups",
+    "apiKeys": "API Keys",
+    "policies": "Policies",
+    "expand": "Expand sidebar",
+    "collapse": "Collapse sidebar"
+  },
+  "errors": {
+    "password": {
+      "dontMatch": "Passwords don't match"
+    }
+  },
+  "sets": {
+    "create": "Create a new Token Set",
+    "title": "Token Sets"
+  },
+  "resolvers": {
+    "title": "resolvers"
+  },
+  "users": {
+    "title": "Users",
+    "heading": "User Dashboard"
+  },
+  "update": "Update",
+  "projects": {
+    "heading": "Manage your projects",
+    "title": "Projects",
+    "create": "Create a new project"
+  },
+  "tokens": {
+    "create": "Create a token"
+  },
+  "navbar": {
+    "organizations": "Your Organizations",
+    "settings": "Settings",
+    "invitations": "Invitations",
+    "permissions": "Permissions",
+    "logout": "Sign out"
+  },
+  "pages": {
+    "resolvers": {
+      "create": "Create a resolver"
+    },
+    "login": {
+      "noAccount": "Don't have an account?"
+    },
+    "groups": {
+      "create": "Create a Group"
+    },
+    "organizations": {
+      "title": "Organizations"
+    }
+  },
+  "breadcrumb": {
+    "tokens": "Design Tokens",
+    "releases": "Releases",
+    "generators": "Generators"
+  }
+}
