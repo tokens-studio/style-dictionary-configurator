@@ -1,5 +1,5 @@
-import path from "path";
-import fs from "fs";
+import path from "@bundled-es-modules/path-browserify";
+import fs from "@bundled-es-modules/memfs";
 
 export const findUsedConfigPath = () => {
   // supported config paths, prioritized in this order

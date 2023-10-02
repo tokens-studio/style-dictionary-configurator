@@ -1,9 +1,9 @@
 import { TextReader, ZipWriter, BlobWriter } from "@zip.js/zip.js";
-import { readFileSync } from "fs";
+import fs from "@bundled-es-modules/memfs";
 import { parse } from "acorn";
-import { simple } from "acorn-walk";
-import * as prettier from "prettier/standalone";
-import * as babel from "prettier/parser-babel";
+import { asyncWalk } from "estree-walker";
+import prettier from "prettier/esm/standalone.mjs";
+import babel from "prettier/esm/parser-babel.mjs";
 import { sdState } from "./style-dictionary.js";
 import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
 import { getInputFiles } from "./file-tree/file-tree-utils.js";
@@ -14,23 +14,25 @@ export async function setupEjectBtnHandler() {
   btn.addEventListener("click", ejectHandler);
 }
 
-function analyzeDependencies(code) {
+async function analyzeDependencies(code) {
   let dependencies = [];
   const ast = parse(code, { allowImportExportEverywhere: true });
-  simple(ast, {
-    ImportDeclaration(node) {
-      const source = node.source.value;
-      dependencies.push({
-        source: source,
-        specifiers: node.specifiers.map((spec) => ({
-          name: spec.local.name,
-          default: spec.imported === undefined,
-        })),
-        package: source
-          .split("/")
-          .slice(0, source.startsWith("@") ? 2 : 1)
-          .join("/"),
-      });
+  await asyncWalk(ast, {
+    enter: async (node) => {
+      if (node.type === "ImportDeclaration") {
+        const source = node.source.value;
+        dependencies.push({
+          source: source,
+          specifiers: node.specifiers.map((spec) => ({
+            name: spec.local.name,
+            default: spec.imported === undefined,
+          })),
+          package: source
+            .split("/")
+            .slice(0, source.startsWith("@") ? 2 : 1)
+            .join("/"),
+        });
+      }
     },
   });
   return dependencies;
@@ -110,14 +112,14 @@ async function ejectHandler() {
     inputFiles
       .filter((file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file))
       .map((file) =>
-        zipWriter.add(file, new TextReader(readFileSync(file, "utf-8")))
+        zipWriter.add(file, new TextReader(fs.readFileSync(file, "utf-8")))
       )
   );
 
   const { themes, config } = sdState;
   const hasThemes = Object.keys(themes).length > 0;
-  const functionsContent = readFileSync(SD_FUNCTIONS_PATH, "utf-8");
-  const dependencies = analyzeDependencies(functionsContent);
+  const functionsContent = fs.readFileSync(SD_FUNCTIONS_PATH, "utf-8");
+  const dependencies = await analyzeDependencies(functionsContent);
 
   // regex that covers imports
   const reg = /import\s*?{?\s*?.*?\s*?}?\s*?from\s*['"](?<source>.*)['"];?/g;

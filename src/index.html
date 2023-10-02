@@ -46,7 +46,14 @@
     />
     <title>Token Configurator</title>
     <link rel="icon" href="./favicon.webp" />
-    <link rel="stylesheet" href="./index.css" />
+    <link
+      rel="stylesheet"
+      href="../node_modules/@tokens-studio/tokens/dist/css/dark.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/@tokens-studio/tokens/dist/css/core.css"
+    />
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./fonts.css" />
     <script src="https://cdn.jsdelivr.net/npm/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script>
@@ -64,7 +71,6 @@
     <header>
       <h1>Style-Dictionary Configurator</h1>
       <div class="menu">
-
         <ts-button id="upload-tokens-btn">
           <span class="codicon codicon-cloud-upload"></span> Upload tokens
           <input
@@ -75,7 +81,11 @@
             hidden
           />
         </ts-button>
-        <ts-button variant="secondary" id="eject-btn" title="Eject by downloading your project so that you can run it locally.">
+        <ts-button
+          variant="secondary"
+          id="eject-btn"
+          title="Eject by downloading your project so that you can run it locally."
+        >
           <span class="codicon codicon-debug-disconnect"></span> Eject
           <input
             id="upload-tokens-input"

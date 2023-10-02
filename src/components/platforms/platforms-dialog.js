@@ -1,14 +1,13 @@
-import StyleDictionary from "browser-style-dictionary/browser.js";
+import StyleDictionary from "style-dictionary";
 import { html, LitElement } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { ref, createRef } from "lit/directives/ref.js";
 import { Required } from "@lion/ui/form-core.js";
-import { LionForm } from "@lion/ui/form.js";
 import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
 import styles from "./platforms-dialog.css.js";
-import PencilIcon from "../../assets/icons/pencil.svg";
+import PencilIcon from "../../assets/icons/pencil.svg.js";
 import PlusIcon from "../../assets/icons/plus.svg";
 
 import "../dialog/sd-dialog.js";
@@ -73,10 +72,10 @@ class PlatformsDialog extends LitElement {
               slot="invoker"
               variant="tertiary"
             >
-              ${PencilIcon()}
+              ${PencilIcon}
             </ts-button>`
           : html`<ts-button slot="invoker" variant="secondary">
-              ${PlusIcon()} Add platform
+              ${PlusIcon} Add platform
             </ts-button>`}
         <sd-dialog-frame
           class="dialog__frame"

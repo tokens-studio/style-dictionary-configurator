@@ -1,5 +1,8 @@
 import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
-import { fs } from "fs";
+import fs from "@bundled-es-modules/memfs";
+import { setFs } from "style-dictionary";
+
+setFs(fs);
 
 import {
   createInputFiles,
@@ -31,8 +34,6 @@ import "./file-tree/FileTree.js";
 import "./components/platforms/token-platforms.js";
 import "./components/button/ts-button.js";
 import "./components/config-switcher/config-switcher.js";
-import "@tokens-studio/tokens/dist/css/dark.css";
-import "@tokens-studio/tokens/dist/css/core.css";
 
 loadDefaultFeedbackMessages();
 

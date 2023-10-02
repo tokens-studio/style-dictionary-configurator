@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit";
-import XIcon from "../../assets/icons/x.svg";
+import XIcon from "../../assets/icons/x.svg.js";
 
 import "../button/ts-button.js";
 
@@ -62,7 +62,7 @@ class SdDialogFrame extends LitElement {
                   );
                 }}
               >
-                ${XIcon()}
+                ${XIcon}
               </ts-button>
             `
           : ""}

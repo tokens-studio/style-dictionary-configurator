@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "@bundled-es-modules/memfs";
 import { LitElement, html } from "lit";
-import StyleDictionary from "browser-style-dictionary/browser.js";
+import StyleDictionary from "style-dictionary";
 import { editorConfig } from "../../monaco/monaco.js";
 import {
   encodeContentsToURL,
