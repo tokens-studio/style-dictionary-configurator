@@ -1,8 +1,8 @@
-import path from "path";
-import fs from "fs";
+import path from "@bundled-es-modules/path-browserify";
+import fs from "@bundled-es-modules/memfs";
 import { v4 as uuidv4 } from "uuid";
 import * as rollup from "rollup";
-import StyleDictionary from "browser-style-dictionary/browser.js";
+import StyleDictionary from "style-dictionary";
 
 /**
  * Somewhat naive bundle step with rollup

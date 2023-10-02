@@ -1,11 +1,9 @@
-import fs, { promises } from "fs";
-import util from "util";
-import path from "path";
-import glob from "glob";
-import tokens from "./core.tokens.json";
+import createDictionary from "style-dictionary/create-dictionary";
+import fs from "@bundled-es-modules/memfs";
+import path from "@bundled-es-modules/path-browserify";
+import glob from "@bundled-es-modules/glob";
 import { changeLang } from "../index.js";
 import { sdState } from "../style-dictionary.js";
-import createDictionary from "browser-style-dictionary/lib/utils/createDictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
 import {
   ensureMonacoIsLoaded,
@@ -22,10 +20,11 @@ import {
 } from "../constants";
 import { snackbar } from "../components/snackbar/SnackbarManager";
 
-const asyncGlob = util.promisify(glob);
 const extensionMap = {
   js: "javascript",
 };
+
+const { promises } = fs;
 
 export const fileTreeEl = document.querySelector("#output-file-tree");
 export let currentFileConfig = findUsedConfigPath();
@@ -78,6 +77,10 @@ async function createFilesFromURL(project) {
 }
 
 export async function createStudioTokens() {
+  const tokens = await (
+    await fetch(new URL("./core.tokens.json", import.meta.url).href)
+  ).json();
+
   fs.writeFileSync("studio.tokens.json", JSON.stringify(tokens, null, 2));
 }
 
@@ -290,11 +293,14 @@ export async function openAllFolders() {
 }
 
 export async function clearAll() {
-  const files = await asyncGlob("**/*", { fs, mark: true });
+  const files = glob
+    .sync("**/*", { fs, mark: true })
+    .map((file) => file.slice(1));
   // Keep config, only remove source tokens and output files
   const filtered = files.filter(
     (file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH
   );
+
   await Promise.all(
     filtered.map((file) => {
       return new Promise(async (resolve) => {
@@ -409,7 +415,9 @@ export async function setupEditorChangeHandlers() {
 }
 
 export async function getAllFiles() {
-  const filePaths = await asyncGlob("**/*", { fs, nodir: true });
+  const filePaths = glob
+    .sync("**/*", { fs, nodir: true })
+    .map((file) => file.slice(1));
 
   const allFiles = {};
   await Promise.all(
@@ -430,7 +438,10 @@ export async function getAllFiles() {
 
 export async function getInputFiles() {
   await sdState.hasInitialized;
-  const allFiles = await asyncGlob("**/*", { nodir: true, fs });
+  const allFiles = glob
+    .sync("**/*", { nodir: true, fs })
+    .map((file) => file.slice(1));
+
   const outputFiles = await getOutputFiles();
   return allFiles.filter((file) => !outputFiles.includes(file));
 }
@@ -458,10 +469,12 @@ export async function getOutputFiles() {
   await Promise.all(
     platforms.map(([, platform]) => {
       return new Promise(async (resolve) => {
-        const outFiles = await asyncGlob(`${platform.buildPath}**`, {
-          nodir: true,
-          fs,
-        });
+        const outFiles = glob
+          .sync(`${platform.buildPath}**`, {
+            nodir: true,
+            fs,
+          })
+          .map((file) => file.slice(1));
         outputFiles = [...outputFiles, ...outFiles];
         resolve();
       });

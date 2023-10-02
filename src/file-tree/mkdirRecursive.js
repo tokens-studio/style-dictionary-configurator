@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "@bundled-es-modules/memfs";
+import path from "@bundled-es-modules/path-browserify";
 
 export default async function mkdirRecursive(pathToCreate) {
   await pathToCreate.split(path.sep).reduce(async (prevPath, folder) => {

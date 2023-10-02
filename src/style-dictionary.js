@@ -1,5 +1,5 @@
-import fs, { promises } from "fs";
-import StyleDictionary from "browser-style-dictionary/browser.js";
+import fs from "@bundled-es-modules/memfs";
+import StyleDictionary from "style-dictionary";
 import {
   repopulateFileTree,
   fileTreeEl,
@@ -14,6 +14,8 @@ import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 import { html } from "lit";
+
+const { promises } = fs;
 
 StyleDictionary.registerParser({
   // matches js, mjs

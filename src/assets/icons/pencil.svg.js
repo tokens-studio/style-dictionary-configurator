@@ -1,5 +1,6 @@
-<svg
+import { svg } from "lit";
 
+export default svg`<svg
   width="15"
   height="15"
   viewBox="0 0 15 15"
@@ -12,4 +13,4 @@
     fill-rule="evenodd"
     clip-rule="evenodd"
   ></path>
-</svg>
+</svg>`;
