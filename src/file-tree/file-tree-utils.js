@@ -395,23 +395,27 @@ export async function switchToFile(file, ed) {
 
 export async function setupEditorChangeHandlers() {
   await ensureMonacoIsLoaded();
-  editorConfig.onDidChangeModelContent((ev) => {
-    if (!ev.isFlush) {
-      configContentHasChanged();
-    }
-  });
-  editorConfig._domElement.addEventListener("keydown", (ev) => {
-    if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
-      ev.preventDefault();
-      saveFile(editorConfig);
-    }
-  });
-  editorOutput._domElement.addEventListener("keydown", (ev) => {
-    if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
-      ev.preventDefault();
-      saveFile(editorOutput);
-    }
-  });
+  if (editorConfig) {
+    editorConfig.onDidChangeModelContent((ev) => {
+      if (!ev.isFlush) {
+        configContentHasChanged();
+      }
+    });
+    editorConfig._domElement.addEventListener("keydown", (ev) => {
+      if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
+        ev.preventDefault();
+        saveFile(editorConfig);
+      }
+    });
+  }
+  if (editorOutput) {
+    editorOutput._domElement.addEventListener("keydown", (ev) => {
+      if (ev.key === "s" && (ev.ctrlKey || ev.metaKey)) {
+        ev.preventDefault();
+        saveFile(editorOutput);
+      }
+    });
+  }
 }
 
 export async function getAllFiles() {
@@ -557,13 +561,28 @@ export async function encodeContentsToURL() {
   // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
   if (inputFiles.length > 0) {
     const encoded = await encodeContents(inputFiles);
-    window.location.href = `${window.location.origin}/#project=${encoded}`;
+    if (encoded) {
+      window.location.href = `${window.location.origin}/#project=${encoded}`;
+    }
   }
 }
 
 export async function encodeContents(files) {
   const contents = await getContents(files);
   const content = JSON.stringify(contents);
+  try {
+    await new Promise((resolve, reject) => {
+      setInterval(() => {
+        if (window.hasOwnProperty("flate")) {
+          resolve();
+        }
+      }, 10);
+      setTimeout(reject, 1000);
+    });
+  } catch (e) {
+    snackbar.show("Flate could not be loaded to encode the files to a URL.");
+    return "";
+  }
   return flate.deflate_encode(content);
 }
 

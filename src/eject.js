@@ -11,7 +11,9 @@ import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 export async function setupEjectBtnHandler() {
   const btn = document.getElementById("eject-btn");
-  btn.addEventListener("click", ejectHandler);
+  if (btn) {
+    btn.addEventListener("click", ejectHandler);
+  }
 }
 
 async function analyzeDependencies(code) {

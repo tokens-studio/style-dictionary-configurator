@@ -4,7 +4,9 @@ import styles from "./button.css.js";
 export const ButtonMixin = dedupeMixin(
   (superclass) =>
     class extends superclass {
-      static styles = styles;
+      static get styles() {
+        return [...super.styles, styles];
+      }
 
       static get properties() {
         return {
