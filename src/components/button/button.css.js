@@ -4,6 +4,12 @@ export default css`
     display: inline-block;
     width: max-content;
     color: var(--fgDefault);
+    background: none;
+    padding: 0;
+  }
+
+  :host(:hover) {
+    background: none;
   }
 
   .button-content {

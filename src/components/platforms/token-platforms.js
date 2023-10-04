@@ -172,7 +172,7 @@ class TokenPlatforms extends LitElement {
       <div class="transform">
         <h4>${platform.transformGroup}</h4>
         <div class="text-small">
-          ${StyleDictionary.transformGroup[platform.transformGroup].join(", ")}
+          ${StyleDictionary.transformGroup[platform.transformGroup]?.join(", ")}
         </div>
       </div>
     `;

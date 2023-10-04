@@ -81,16 +81,18 @@ StyleDictionary.registerFormat({
 });\n`
     );
   }
-  configSwitcherEl.addEventListener("checked-changed", async (ev) => {
-    const val = ev.target.checkedChoice;
-    if (val === FUNCTIONS) {
-      // switch to register sd transforms
-      switchToFile(SD_FUNCTIONS_PATH, editorConfig);
-    } else {
-      // switch to config
-      switchToFile(findUsedConfigPath(), editorConfig);
-    }
-  });
+  if (configSwitcherEl) {
+    configSwitcherEl.addEventListener("checked-changed", async (ev) => {
+      const val = ev.target.checkedChoice;
+      if (val === FUNCTIONS) {
+        // switch to register sd transforms
+        switchToFile(SD_FUNCTIONS_PATH, editorConfig);
+      } else {
+        // switch to config
+        switchToFile(findUsedConfigPath(), editorConfig);
+      }
+    });
+  }
 }
 
 (async function () {
