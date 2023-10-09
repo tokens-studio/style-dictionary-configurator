@@ -1,4 +1,4 @@
-import { themeData } from "./monaco-theme";
+import { themeData } from "./monaco-theme.js";
 
 let loaderPending = false;
 const loaderCallbacks = [];

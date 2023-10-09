@@ -78,10 +78,10 @@ async function createFilesFromURL(project) {
 
 export async function createStudioTokens() {
   const tokens = await (
-    await fetch(new URL("./core.tokens.json", import.meta.url).href)
+    await fetch(new URL("./core.json", import.meta.url).href)
   ).json();
 
-  fs.writeFileSync("studio.tokens.json", JSON.stringify(tokens, null, 2));
+  fs.writeFileSync("studio.json", JSON.stringify(tokens, null, 2));
 }
 
 export function createStandardTokens() {
@@ -89,7 +89,7 @@ export function createStandardTokens() {
   fs.mkdirSync(`card`);
   fs.mkdirSync(`radii`);
   fs.writeFileSync(
-    path.join(`color`, "base.tokens.json"),
+    path.join(`color`, "base.json"),
     JSON.stringify(
       {
         color: {
@@ -110,7 +110,7 @@ export function createStandardTokens() {
   );
 
   fs.writeFileSync(
-    path.join(`color`, "font.tokens.json"),
+    path.join(`color`, "font.json"),
     JSON.stringify(
       {
         color: {
@@ -127,7 +127,7 @@ export function createStandardTokens() {
   );
 
   fs.writeFileSync(
-    path.join(`card`, "card.tokens.json"),
+    path.join(`card`, "card.json"),
     JSON.stringify(
       {
         card: {
@@ -159,7 +159,7 @@ export function createStandardTokens() {
   );
 
   fs.writeFileSync(
-    path.join(`radii`, "base.tokens.json"),
+    path.join(`radii`, "base.json"),
     JSON.stringify(
       {
         radii: {
@@ -183,7 +183,7 @@ export function createConfig() {
     SD_CONFIG_PATH,
     JSON.stringify(
       {
-        source: ["**/*.tokens.json"],
+        source: ["**/*.json"],
         platforms: {
           css: {
             transformGroup: "tokens-studio",
@@ -515,7 +515,7 @@ export function uploadTokens(ev) {
   const { data } = ev;
   const { tokens } = data;
   replaceSource({
-    "/studio.tokens.json": JSON.stringify(tokens, null, 2),
+    "/studio.json": JSON.stringify(tokens, null, 2),
   });
 }
 
