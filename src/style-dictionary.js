@@ -107,23 +107,6 @@ class SdState extends EventTarget {
     }
   }
 
-  getThemes(themesObj) {
-    let themes = permutateThemes(themesObj, { separator: "-" });
-
-    // if single-dimensional theming, we still have to map it accordingly
-    // TODO: handle in next breaking version of sd-transforms, to give back the same format
-    if (themesObj.every((theme) => !theme.group)) {
-      themes = Object.fromEntries(
-        themes.map((theme) => [
-          theme.name,
-          Object.keys(theme.selectedTokenSets),
-        ])
-      );
-    }
-
-    return themes;
-  }
-
   async processConfigForThemes(cfg) {
     const addThemeToFilePath = (file) => {
       const fileParts = file.split(".");
@@ -136,6 +119,7 @@ class SdState extends EventTarget {
 
     try {
       const $themes = JSON.parse(await promises.readFile("$themes.json"));
+
       // 1) adjust config source and platform files names to themed
       cfg = {
         ...cfg,
@@ -153,8 +137,9 @@ class SdState extends EventTarget {
         ),
       };
       delete cfg.source;
-      this.themes = this.getThemes($themes);
+      this.themes = permutateThemes($themes, { separator: "-" });
     } catch (e) {
+      console.error(e);
       this.themes = {};
     }
 
