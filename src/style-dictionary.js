@@ -139,7 +139,6 @@ class SdState extends EventTarget {
       delete cfg.source;
       this.themes = permutateThemes($themes, { separator: "-" });
     } catch (e) {
-      console.error(e);
       this.themes = {};
     }
 

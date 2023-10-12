@@ -7,7 +7,7 @@ export class ConfigTab extends LionRadio {
       ...super.styles,
       css`
         :host {
-          background-color: var(--bgSubtle);
+          background-color: var(--bgEmphasis);
           border: 1px solid transparent;
         }
 
