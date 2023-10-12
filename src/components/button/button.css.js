@@ -1,7 +1,6 @@
 import { css } from "lit-element";
 export default css`
   :host {
-    display: inline-block;
     width: max-content;
     color: var(--fgDefault);
     background: none;
@@ -32,12 +31,12 @@ export default css`
   }
 
   :host([variant="primary"]) .button-content {
-    background: var(--buttonPrimaryBgRest);
-    color: var(--buttonPrimaryFg);
+    background: var(--accentEmphasis);
+    color: var(--buttonSecondaryFg);
   }
 
   :host([variant="primary"]:hover) .button-content {
-    background-color: var(--buttonPrimaryBgHover);
+    background-color: var(--accentMuted);
   }
 
   :host([variant="secondary"]) .button-content {

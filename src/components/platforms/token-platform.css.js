@@ -11,7 +11,6 @@ export default css`
   h2 {
     font-size: var(--fontSizesSmall);
     font-weight: var(--fontWeightsSansMedium);
-    color: var(--fgSubtle);
     margin: 0;
     margin-bottom: var(--space3);
   }
@@ -19,7 +18,6 @@ export default css`
   h3 {
     font-size: var(--fontSizesBasel);
     font-weight: var(--fontWeightsSansMedium);
-    color: var(--fgSubtle);
     margin: 0;
   }
 
@@ -50,7 +48,7 @@ export default css`
   .platform {
     border: 1px solid var(--borderMuted);
     border-radius: var(--radiiMedium);
-    background: var(--bgDefault);
+    background: var(--bgCanvas);
   }
 
   .platform__header {
@@ -71,7 +69,6 @@ export default css`
 
   .platform__title {
     font-size: var(--fontSizesBase);
-    color: var(--fgDefault);
   }
 
   .text-small {

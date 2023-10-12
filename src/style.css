@@ -4,7 +4,7 @@
 
 html {
   font-family: var(--fontsSans);
-  background-color: var(--bgCanvas);
+  background-color: var(--contextMenuBg);
   color: var(--fgDefault);
   overflow-x: hidden;
 }
