@@ -23,6 +23,7 @@
     "@zip.js/zip.js": "^2.7.24",
     "acorn": "^8.10.0",
     "estree-walker": "^3.0.3",
+    "is-plain-object": "^5.0.0",
     "lit": "^2.0.0",
     "magic-string": "^0.30.3",
     "prettier": "^2.8.8",
