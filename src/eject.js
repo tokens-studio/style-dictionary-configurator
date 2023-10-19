@@ -172,7 +172,6 @@ sd.buildAllPlatforms();
       })
     )
   );
-  // Add all files to zip
 
   await zipWriter.add(
     "instructions.md",
@@ -181,7 +180,7 @@ sd.buildAllPlatforms();
 Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 \`\`\`sh
-npm install ${dependencies.map((dep) => dep.package).join(" ")}
+npm init -y && npm install ${dependencies.map((dep) => dep.package).join(" ")}
 \`\`\`
 
 Then run
@@ -200,7 +199,7 @@ node build-tokens.cjs
   const anchor = document.createElement("a");
   anchor.href = url;
   const today = new Date();
-  anchor.download = `sd-eject-${today.getFullYear()}-${today.getMonth()}-${(
+  anchor.download = `sd-eject-${today.getFullYear()}-${today.getMonth() + 1}-${(
     "0" + today.getDate()
   ).slice(-2)}.zip`;
   document.body.appendChild(anchor);
