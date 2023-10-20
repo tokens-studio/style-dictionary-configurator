@@ -1,7 +1,7 @@
-import createDictionary from "style-dictionary/create-dictionary";
 import fs from "@bundled-es-modules/memfs";
 import path from "@bundled-es-modules/path-browserify";
 import glob from "@bundled-es-modules/glob";
+import { isPlainObject } from "is-plain-object";
 import { changeLang } from "../index.js";
 import { sdState } from "../style-dictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
@@ -538,12 +538,29 @@ export async function dispatchEnrichedTokens(ev) {
   const { platform } = data;
   await sdState.hasInitialized;
 
+  function flattenProperties(properties, result) {
+    result = result || [];
+
+    for (var name in properties) {
+      if (isPlainObject(properties[name]) && properties.hasOwnProperty(name)) {
+        // TODO: handle $value as well
+        if ("value" in properties[name]) {
+          result.push(properties[name]);
+        } else {
+          flattenProperties(properties[name], result);
+        }
+      }
+    }
+
+    return result;
+  }
+
   const dictionaries = sdState.sd.map((_sd) => {
     const enrichedTokens = _sd.exportPlatform(platform);
-    const { allTokens, tokens } = createDictionary({
-      properties: enrichedTokens,
-    });
-    return { allTokens, tokens };
+    return {
+      allTokens: flattenProperties(enrichedTokens),
+      tokens: enrichedTokens,
+    };
   });
 
   source.postMessage({ type: "sd-enriched-tokens", dictionaries }, "*");
