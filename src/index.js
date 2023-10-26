@@ -1,6 +1,6 @@
 import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
 import fs from "@bundled-es-modules/memfs";
-import { setFs } from "style-dictionary";
+import { setFs } from "style-dictionary/fs";
 
 setFs(fs);
 

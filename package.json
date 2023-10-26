@@ -27,7 +27,7 @@
     "lit": "^2.0.0",
     "magic-string": "^0.30.3",
     "prettier": "^2.8.8",
-    "style-dictionary": "github:amzn/style-dictionary#esmify-browser",
+    "style-dictionary": "4.0.0-prerelease.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
