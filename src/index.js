@@ -95,27 +95,30 @@ StyleDictionary.registerFormat({
   }
 }
 
-(async function () {
-  window.addEventListener("message", (ev) => {
-    const { data } = ev;
-    switch (data.type) {
-      case "sd-tokens-request":
-        dispatchTokens(ev);
-        break;
-      case "sd-tokens-upload":
-        uploadTokens(ev);
-        break;
-      case "sd-input-files-request":
-        dispatchInputFiles(ev);
-        break;
-      case "sd-dictionary-request":
-        dispatchDictionary(ev);
-        break;
-      case "sd-enriched-tokens-request":
-        dispatchEnrichedTokens(ev);
-        break;
-    }
-  });
+export async function initApp(standalone = true) {
+  window.__configurator_standalone__ = standalone;
+  if (standalone) {
+    window.addEventListener("message", (ev) => {
+      const { data } = ev;
+      switch (data.type) {
+        case "sd-tokens-request":
+          dispatchTokens(ev);
+          break;
+        case "sd-tokens-upload":
+          uploadTokens(ev);
+          break;
+        case "sd-input-files-request":
+          dispatchInputFiles(ev);
+          break;
+        case "sd-dictionary-request":
+          dispatchDictionary(ev);
+          break;
+        case "sd-enriched-tokens-request":
+          dispatchEnrichedTokens(ev);
+          break;
+      }
+    });
+  }
 
   window.addEventListener("resize", async () => {
     await ensureMonacoIsLoaded();
@@ -141,4 +144,4 @@ StyleDictionary.registerFormat({
   await switchToFile(findUsedConfigPath(), editorConfig);
 
   resizeMonacoLayout();
-})();
+}

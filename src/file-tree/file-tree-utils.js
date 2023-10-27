@@ -236,7 +236,7 @@ export async function replaceSource(files) {
 
 export async function createInputFiles() {
   const urlSplit = window.location.href.split("#project=");
-  if (urlSplit.length > 1) {
+  if (urlSplit.length > 1 && window.__configurator_standalone__) {
     await createFilesFromURL(urlSplit[1]);
   } else {
     createConfig();
@@ -574,6 +574,9 @@ export async function dispatchInputFiles(ev) {
 }
 
 export async function encodeContentsToURL() {
+  if (!window.__configurator_standalone__) {
+    return;
+  }
   const inputFiles = await getInputFiles();
   // If no inputFiles, run was error so can't send something useful to analytics atm or encode contents in url
   if (inputFiles.length > 0) {

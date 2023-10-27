@@ -64,7 +64,10 @@
       href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script type="module" src="./src/index.js"></script>
+    <script type="module">
+      import { initApp } from "./src/index.js";
+      initApp();
+    </script>
   </head>
   <!-- hack to make monaco layout behave -->
   <body>
