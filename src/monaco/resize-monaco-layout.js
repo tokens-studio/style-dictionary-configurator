@@ -8,15 +8,14 @@ export function resizeMonacoLayout() {
   const sectionRightHeight = document.querySelector(".right").offsetHeight;
   const sectionMiddleWidth = document.querySelector(".middle").offsetWidth;
 
-  const viewportWidth = Math.max(
-    document.documentElement.clientWidth || 0,
-    window.innerWidth || 0
-  );
+  const mainSectionWidth = document
+    .querySelector(".middle")
+    .parentElement.getBoundingClientRect().width;
 
   editorOutput.layout({
     width: Math.max(
       minimumMonacoWidth - fileTreeWidth,
-      viewportWidth - sectionMiddleWidth - fileTreeWidth - borderLeftWidth
+      mainSectionWidth - sectionMiddleWidth - fileTreeWidth - borderLeftWidth
     ),
     height: sectionRightHeight / 2,
   });
@@ -24,7 +23,7 @@ export function resizeMonacoLayout() {
   editorConfig.layout({
     width: Math.max(
       minimumMonacoWidth,
-      viewportWidth - sectionMiddleWidth - borderLeftWidth
+      mainSectionWidth - sectionMiddleWidth - borderLeftWidth
     ),
     height: sectionRightHeight / 2,
   });

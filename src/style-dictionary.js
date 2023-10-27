@@ -187,7 +187,7 @@ class SdState extends EventTarget {
 
   async _prepareRunStyleDictionary() {
     console.log("Running style-dictionary...");
-    document.querySelector("#output-file-tree").animateCue();
+    document.querySelector("#output-file-tree")?.animateCue();
     await this.cleanPlatformOutputDirs();
     try {
       const themeEntries = Object.entries(this.themes);
