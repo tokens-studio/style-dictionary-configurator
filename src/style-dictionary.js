@@ -25,7 +25,7 @@ StyleDictionary.registerParser({
     const url = URL.createObjectURL(
       new Blob([bundled], { type: "text/javascript" })
     );
-    const { default: token } = await import(url);
+    const { default: token } = await import(/* webpackIgnore: true */ url);
     return expandComposites(token);
   },
 });
@@ -156,7 +156,7 @@ class SdState extends EventTarget {
       const url = URL.createObjectURL(
         new Blob([bundled], { type: "text/javascript" })
       );
-      const { default: cfg } = await import(url);
+      const { default: cfg } = await import(/* webpackIgnore: true */ url);
       cfgObj = cfg;
     } else {
       const cfgAsString = await promises.readFile(configPath, "utf-8");
@@ -172,7 +172,7 @@ class SdState extends EventTarget {
       const url = URL.createObjectURL(
         new Blob([bundled], { type: "text/javascript" })
       );
-      await import(url);
+      await import(/* webpackIgnore: true */ url);
     }
   }
 
