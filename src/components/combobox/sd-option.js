@@ -43,29 +43,29 @@ export class SdOption extends LionOption {
     };
   }
 
-  firstUpdated(changedProperties) {
-    super.firstUpdated(changedProperties);
-    this.__originalInnerHTML = this.innerHTML;
-  }
+  // firstUpdated(changedProperties) {
+  //   super.firstUpdated(changedProperties);
+  //   this.__originalInnerHTML = this.innerHTML;
+  // }
 
-  /**
-   * override from LionOption
-   * @param {string} matchingString
-   */
-  onFilterMatch(matchingString) {
-    if (this.__originalInnerHTML != null) {
-      this.innerHTML = this.__originalInnerHTML;
-    }
-    /** @param {string} text */
-    const regEscape = (text) =>
-      text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    this.innerHTML = this.innerHTML.replace(
-      new RegExp(`(${regEscape(matchingString)})`, "i"),
-      `<span class="match-highlight">$1</span>`
-    );
+  // /**
+  //  * override from LionOption
+  //  * @param {string} matchingString
+  //  */
+  // onFilterMatch(matchingString) {
+  //   if (this.__originalInnerHTML != null) {
+  //     this.innerHTML = this.__originalInnerHTML;
+  //   }
+  //   /** @param {string} text */
+  //   const regEscape = (text) =>
+  //     text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  //   this.innerHTML = this.innerHTML.replace(
+  //     new RegExp(`(${regEscape(matchingString)})`, "i"),
+  //     `<span class="match-highlight">$1</span>`
+  //   );
 
-    this.style.display = "";
-  }
+  //   this.style.display = "";
+  // }
 
   render() {
     return html`
