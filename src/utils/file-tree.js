@@ -220,8 +220,10 @@ export function createConfig() {
   );
 }
 
-export async function replaceSource(files) {
-  await clearAll();
+export async function replaceSource(files, clear = true, run = true) {
+  if (clear) {
+    await clearAll();
+  }
   await Promise.all(
     Object.entries(files).map(
       ([filename, contents]) =>
@@ -237,7 +239,9 @@ export async function replaceSource(files) {
     )
   );
   await encodeContentsToURL();
-  await sdState.runStyleDictionary({ force: true });
+  if (run) {
+    await sdState.runStyleDictionary({ force: true });
+  }
 }
 
 export async function createInputFiles() {
