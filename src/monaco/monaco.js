@@ -1,4 +1,5 @@
 import { themeData } from "./monaco-theme.js";
+import { resizeMonacoLayout } from "./resize-monaco-layout.js";
 
 let loaderPending = false;
 const loaderCallbacks = [];
@@ -6,6 +7,7 @@ const loaderCallbacks = [];
 export let monaco;
 export let editorOutput;
 export let editorConfig;
+let initialized = false;
 
 function onAmdLoaderLoad() {
   let currentCallback = loaderCallbacks.shift();
@@ -25,7 +27,7 @@ function onAmdLoaderError(err) {
   }
 }
 
-export function ensureMonacoIsLoaded(
+export function _ensureMonacoIsLoaded(
   // srcPath = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/dev' // <-- for debugging
   srcPath = "https://cdn.jsdelivr.net/npm/monaco-editor@0.29.1/min"
 ) {
@@ -86,7 +88,12 @@ export function ensureMonacoIsLoaded(
   });
 }
 
-ensureMonacoIsLoaded().then(() => {
+async function init() {
+  if (initialized) {
+    return;
+  }
+  initialized = true;
+
   monaco = window.monaco;
   monaco.editor.defineTheme("my-theme", themeData);
   editorOutput = monaco.editor.create(
@@ -102,4 +109,19 @@ ensureMonacoIsLoaded().then(() => {
     }
   );
   editorConfig.getModel().updateOptions({ tabSize: 2 });
-});
+  window.addEventListener("resize", resizeMonacoLayout);
+}
+
+export async function ensureMonacoIsLoaded() {
+  await _ensureMonacoIsLoaded();
+  await init();
+}
+
+export async function changeLang(lang, ed) {
+  await ensureMonacoIsLoaded();
+  const _editor = ed || editorOutput;
+
+  monaco.editor.setModelLanguage(_editor.getModel(), lang);
+}
+
+export { resizeMonacoLayout };

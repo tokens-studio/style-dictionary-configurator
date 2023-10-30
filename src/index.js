@@ -1,147 +1,43 @@
-import { loadDefaultFeedbackMessages } from "@lion/ui/validate-messages.js";
 import fs from "@bundled-es-modules/memfs";
 import { setFs } from "style-dictionary/fs";
-
-setFs(fs);
-
 import {
   createInputFiles,
-  setupEditorChangeHandlers,
   dispatchTokens,
   uploadTokens,
   dispatchInputFiles,
   dispatchDictionary,
   dispatchEnrichedTokens,
-  openAllFolders,
-  switchToFile,
-  fileTreeEl,
-} from "./file-tree/file-tree-utils.js";
-import { sdState } from "./style-dictionary.js";
-// side effect: loads the monaco editor
-import {
-  ensureMonacoIsLoaded,
-  editorOutput,
-  editorConfig,
-  monaco,
-} from "./monaco/monaco.js";
-import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
-import { resizeMonacoLayout } from "./monaco/resize-monaco-layout.js";
+} from "./utils/file-tree.js";
 import { setupUploadBtnHandler } from "./file-upload.js";
 import { setupEjectBtnHandler } from "./eject.js";
-import { FUNCTIONS, SD_FUNCTIONS_PATH } from "./constants.js";
-// side effect: loads file-tree CE definition
-import "./file-tree/FileTree.js";
-import "./components/platforms/token-platforms.js";
-import "./components/button/ts-button.js";
-import "./components/config-switcher/config-switcher.js";
 
-loadDefaultFeedbackMessages();
+setFs(fs);
 
-export async function changeLang(lang, ed) {
-  await ensureMonacoIsLoaded();
-  const _editor = ed || editorOutput;
-
-  monaco.editor.setModelLanguage(_editor.getModel(), lang);
-}
-
-function setupConfigSwitcher() {
-  const configSwitcherEl = document.getElementById("config-switcher");
-  if (!fs.existsSync(SD_FUNCTIONS_PATH)) {
-    fs.writeFileSync(
-      SD_FUNCTIONS_PATH,
-      `import StyleDictionary from 'style-dictionary';
-import { registerTransforms } from '@tokens-studio/sd-transforms';
-
-// sd-transforms, 2nd parameter for options can be added
-// See docs: https://github.com/tokens-studio/sd-transforms
-registerTransforms(StyleDictionary);
-
-// example value transform, which just returns the token as is
-StyleDictionary.registerTransform({
-  type: "value",
-  name: "myCustomTransform",
-  matcher: (token) => {},
-  transformer: (token) => {
-    return token; // <-- transform as needed
-  }
-})
-
-// format helpers from style-dictionary
-const { fileHeader, formattedVariables } = StyleDictionary.formatHelpers;
-
-// example css format
-StyleDictionary.registerFormat({
-  name: 'myCustomFormat',
-  formatter: function({dictionary, file, options}) {
-    const { outputReferences } = options;
-    return \`\${fileHeader({file})}:root {
-\${formattedVariables({format: 'css', dictionary, outputReferences})}
-}\`;
-  }
-});\n`
-    );
-  }
-  if (configSwitcherEl) {
-    configSwitcherEl.addEventListener("checked-changed", async (ev) => {
-      const val = ev.target.checkedChoice;
-      if (val === FUNCTIONS) {
-        // switch to register sd transforms
-        switchToFile(SD_FUNCTIONS_PATH, editorConfig);
-      } else {
-        // switch to config
-        switchToFile(findUsedConfigPath(), editorConfig);
-      }
-    });
-  }
-}
-
-export async function initApp(standalone = true) {
-  window.__configurator_standalone__ = standalone;
-  if (standalone) {
-    window.addEventListener("message", (ev) => {
-      const { data } = ev;
-      switch (data.type) {
-        case "sd-tokens-request":
-          dispatchTokens(ev);
-          break;
-        case "sd-tokens-upload":
-          uploadTokens(ev);
-          break;
-        case "sd-input-files-request":
-          dispatchInputFiles(ev);
-          break;
-        case "sd-dictionary-request":
-          dispatchDictionary(ev);
-          break;
-        case "sd-enriched-tokens-request":
-          dispatchEnrichedTokens(ev);
-          break;
-      }
-    });
-  }
-
-  window.addEventListener("resize", async () => {
-    await ensureMonacoIsLoaded();
-    resizeMonacoLayout();
+export async function initApp() {
+  // set so that file tree utils knows to encode file contents to URL
+  window.__configurator_standalone__ = true;
+  window.addEventListener("message", (ev) => {
+    const { data } = ev;
+    switch (data.type) {
+      case "sd-tokens-request":
+        dispatchTokens(ev);
+        break;
+      case "sd-tokens-upload":
+        uploadTokens(ev);
+        break;
+      case "sd-input-files-request":
+        dispatchInputFiles(ev);
+        break;
+      case "sd-dictionary-request":
+        dispatchDictionary(ev);
+        break;
+      case "sd-enriched-tokens-request":
+        dispatchEnrichedTokens(ev);
+        break;
+    }
   });
-
   await createInputFiles();
-  setupConfigSwitcher();
   window.dispatchEvent(new Event("input-files-created"));
-
-  await ensureMonacoIsLoaded();
   setupUploadBtnHandler();
   setupEjectBtnHandler();
-  await setupEditorChangeHandlers();
-
-  await sdState.loadSDFunctions();
-  await sdState.runStyleDictionary();
-
-  await openAllFolders();
-  if (fileTreeEl.outputFiles.length > 0) {
-    await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
-  }
-  await switchToFile(findUsedConfigPath(), editorConfig);
-
-  resizeMonacoLayout();
 }

@@ -6,7 +6,7 @@ import prettier from "prettier/esm/standalone.mjs";
 import babel from "prettier/esm/parser-babel.mjs";
 import { sdState } from "./style-dictionary.js";
 import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
-import { getInputFiles } from "./file-tree/file-tree-utils.js";
+import { getInputFiles } from "./utils/file-tree.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 export async function setupEjectBtnHandler() {

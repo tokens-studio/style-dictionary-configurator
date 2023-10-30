@@ -2,23 +2,23 @@ import fs from "@bundled-es-modules/memfs";
 import path from "@bundled-es-modules/path-browserify";
 import glob from "@bundled-es-modules/glob";
 import { isPlainObject } from "is-plain-object";
-import { changeLang } from "../index.js";
 import { sdState } from "../style-dictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
+import { findUsedConfigPath } from "./findUsedConfigPath.js";
 import {
   ensureMonacoIsLoaded,
   editorOutput,
   editorConfig,
+  resizeMonacoLayout,
+  changeLang,
 } from "../monaco/monaco.js";
-import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
-import { resizeMonacoLayout } from "../monaco/resize-monaco-layout.js";
 import {
   CONFIG,
   FUNCTIONS,
   SD_CONFIG_PATH,
   SD_FUNCTIONS_PATH,
-} from "../constants";
-import { snackbar } from "../components/snackbar/SnackbarManager";
+} from "../constants.js";
+import { snackbar } from "../components/snackbar/SnackbarManager.js";
 
 const extensionMap = {
   js: "javascript",
@@ -26,15 +26,21 @@ const extensionMap = {
 
 const { promises } = fs;
 
-export const fileTreeEl = document.querySelector("#output-file-tree");
 export let currentFileConfig = findUsedConfigPath();
 export let currentFileOutput;
+
+export async function getFileTreeEl() {
+  const configuratorAppEl = document.querySelector("configurator-app");
+  await configuratorAppEl.updateComplete;
+  return configuratorAppEl.shadowRoot.getElementById("output-file-tree");
+}
 
 async function configContentHasChanged() {
   // TODO: Unsaved marker
 }
 
-function getSelectedFileBtn() {
+async function getSelectedFileBtn() {
+  const fileTreeEl = await getFileTreeEl();
   return fileTreeEl.checkedFileBtn;
 }
 
@@ -231,7 +237,7 @@ export async function replaceSource(files) {
     )
   );
   await encodeContentsToURL();
-  await sdState.runStyleDictionary(true);
+  await sdState.runStyleDictionary({ force: true });
 }
 
 export async function createInputFiles() {
@@ -284,6 +290,7 @@ export async function removeFile(file) {
 }
 
 export async function openAllFolders() {
+  const fileTreeEl = await getFileTreeEl();
   await fileTreeEl.updateComplete;
   Array.from(fileTreeEl.shadowRoot.querySelectorAll("details")).forEach(
     (el) => {
@@ -326,10 +333,14 @@ export async function clearAll() {
 }
 
 export async function saveFile(ed, { noRun = false } = {}) {
-  const configSwitcherEl = document.getElementById("config-switcher");
+  const configuratorAppEl = document.querySelector("configurator-app");
+  await configuratorAppEl.updateComplete;
+  const configSwitcherEl =
+    configuratorAppEl.shadowRoot.getElementById("config-switcher");
   // TODO: unsaved marker -> remove it
   // selectedFileBtn.removeAttribute("unsaved");
   await ensureMonacoIsLoaded();
+  const fileTreeEl = await getFileTreeEl();
   if (ed === editorConfig) {
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
@@ -343,7 +354,7 @@ export async function saveFile(ed, { noRun = false } = {}) {
 
   await encodeContentsToURL();
   if (!noRun) {
-    await sdState.runStyleDictionary(true);
+    await sdState.runStyleDictionary({ force: true });
   }
 }
 
@@ -367,6 +378,7 @@ export async function switchToFile(file, ed) {
     await changeLang(lang, _editor);
     _editor.setScrollTop(0);
   } catch (err) {
+    const fileTreeEl = await getFileTreeEl();
     _editor.setValue("");
     fileTreeEl.uncheckAll();
     return;
@@ -379,7 +391,8 @@ export async function switchToFile(file, ed) {
     currentFileConfig = file;
 
     const configTabGroup = document
-      .getElementById("config-switcher")
+      .querySelector("configurator-app")
+      .shadowRoot.getElementById("config-switcher")
       .shadowRoot.querySelector("config-tab-group");
 
     configTabGroup.modelValue =
@@ -495,6 +508,7 @@ export async function repopulateFileTree() {
   }
   const inputFiles = await getInputFiles();
   const outputFiles = await getOutputFiles();
+  const fileTreeEl = await getFileTreeEl();
   fileTreeEl.outputFiles = outputFiles;
   fileTreeEl.inputFiles = inputFiles;
 }

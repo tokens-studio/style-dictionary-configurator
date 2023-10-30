@@ -45,7 +45,7 @@
       content="Display picture of Token Configurator"
     />
     <title>Token Configurator</title>
-    <link rel="icon" href="./src/favicon.webp" />
+    <link rel="icon" href="./favicon.webp" />
     <link
       rel="stylesheet"
       href="./node_modules/@tokens-studio/tokens/dist/css/dark.css"
@@ -54,8 +54,8 @@
       rel="stylesheet"
       href="./node_modules/@tokens-studio/tokens/dist/css/core.css"
     />
-    <link rel="stylesheet" href="./src/style.css" />
-    <link rel="stylesheet" href="./src/fonts.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./fonts.css" />
     <script src="https://cdn.jsdelivr.net/npm/wasm-flate@0.1.11-alpha/dist/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/json5@^2.0.0/dist/index.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -64,12 +64,13 @@
       href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <script type="module" src="./src/configurator-app.js"></script>
+    <script type="module" src="./src/components/button/ts-button.js"></script>
     <script type="module">
       import { initApp } from "./src/index.js";
       initApp();
     </script>
   </head>
-  <!-- hack to make monaco layout behave -->
   <body>
     <header>
       <h1>Style-Dictionary Configurator</h1>
@@ -108,30 +109,18 @@
       </div>
     </header>
     <main>
-      <section class="page-title"></section>
-      <section class="content">
-        <section class="middle">
-          <token-platforms></token-platforms>
-        </section>
-        <section class="right">
-          <config-switcher id="config-switcher"></config-switcher>
-          <div class="monaco-wrapper config">
-            <div
-              id="monaco-container-config"
-              class="monaco-container"
-              style="height: 100%"
-            ></div>
-          </div>
-          <div class="monaco-wrapper output">
-            <file-tree id="output-file-tree"></file-tree>
-            <div
-              id="monaco-container-output"
-              class="monaco-container"
-              style="height: 100%"
-            ></div>
-          </div>
-        </section>
-      </section>
+      <configurator-app>
+        <div
+          id="monaco-container-config"
+          style="height: 100%"
+          slot="monaco-config"
+        ></div>
+        <div
+          id="monaco-container-output"
+          style="height: 100%"
+          slot="monaco-output"
+        ></div>
+      </configurator-app>
     </main>
   </body>
 </html>

@@ -128,7 +128,6 @@ export default css`
     top: 0;
     margin-bottom: 2px;
     background-color: #050608;
-    border-top-left-radius: var(--border-radius-editor);
   }
 
   .new > .codicon,
@@ -220,7 +219,6 @@ export default css`
     display: flex;
     justify-content: center;
     overflow: hidden;
-    border-bottom-left-radius: var(--border-radius-editor);
   }
 
   .clear > .codicon {

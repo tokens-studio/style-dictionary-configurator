@@ -2,10 +2,7 @@ import fs from "@bundled-es-modules/memfs";
 import { LitElement, html } from "lit";
 import StyleDictionary from "style-dictionary";
 import { editorConfig } from "../../monaco/monaco.js";
-import {
-  encodeContentsToURL,
-  switchToFile,
-} from "../../file-tree/file-tree-utils.js";
+import { encodeContentsToURL, switchToFile } from "../../utils/file-tree.js";
 import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import { sdState } from "../../style-dictionary.js";
 import { codicon } from "../../icons/codicon-style.css.js";

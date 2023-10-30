@@ -2,9 +2,9 @@ import fs from "@bundled-es-modules/memfs";
 import StyleDictionary from "style-dictionary";
 import {
   repopulateFileTree,
-  fileTreeEl,
+  getFileTreeEl,
   currentFileOutput,
-} from "./file-tree/file-tree-utils.js";
+} from "./utils/file-tree.js";
 import {
   expandComposites,
   permutateThemes,
@@ -176,10 +176,10 @@ class SdState extends EventTarget {
     }
   }
 
-  async runStyleDictionary(force = false) {
+  async runStyleDictionary(opts = {}) {
     const cfg = await this.loadAndProcessConfig();
     await this.loadSDFunctions();
-    if (JSON.stringify(this.config) !== JSON.stringify(cfg) || force) {
+    if (JSON.stringify(this.config) !== JSON.stringify(cfg) || opts.force) {
       this.config = cfg;
       await this._prepareRunStyleDictionary();
     }
@@ -187,12 +187,17 @@ class SdState extends EventTarget {
 
   async _prepareRunStyleDictionary() {
     console.log("Running style-dictionary...");
-    document.querySelector("#output-file-tree")?.animateCue();
+    const configuratorAppEl = document.querySelector("configurator-app");
+    await configuratorAppEl.updateComplete;
+    configuratorAppEl.shadowRoot
+      .querySelector("#output-file-tree")
+      ?.animateCue();
     await this.cleanPlatformOutputDirs();
     try {
       const themeEntries = Object.entries(this.themes);
       if (themeEntries.length > 0) {
-        const tokenPlatforms = document.querySelector("token-platforms");
+        const tokenPlatforms =
+          configuratorAppEl.shadowRoot.querySelector("token-platforms");
         await tokenPlatforms.updateComplete;
         const themesSegmentedControl = tokenPlatforms.shadowRoot.querySelector(
           "ts-segmented-control"
@@ -215,6 +220,7 @@ class SdState extends EventTarget {
       );
     } finally {
       await repopulateFileTree();
+      const fileTreeEl = await getFileTreeEl();
       // refresh currently selected output file
       fileTreeEl.switchToFile(currentFileOutput);
       return this.sd;
@@ -278,7 +284,7 @@ class SdState extends EventTarget {
             await Promise.all(
               Array.from(foldersToClean).map((folder) => {
                 return new Promise((_resolve) => {
-                  fs.rmdir("build", { recursive: true }, () => {
+                  fs.rmdir(folder, { recursive: true }, () => {
                     _resolve();
                   });
                 });

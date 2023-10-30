@@ -20,7 +20,7 @@ import StyleDictionary from "style-dictionary";
  *    }
  *  }
  */
-export async function bundle(inputPath) {
+export async function bundle(inputPath, _fs = fs) {
   const sdName = uuidv4();
   globalThis[sdName] = StyleDictionary;
   const rollupCfg = await rollup.rollup({
@@ -51,7 +51,7 @@ export async function bundle(inputPath) {
         load(id) {
           if (id) {
             // try to load it from our virtual FS
-            return fs.readFileSync(id, "utf-8");
+            return _fs.readFileSync(id, "utf-8");
           }
         },
       },

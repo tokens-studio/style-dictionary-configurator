@@ -1,5 +1,5 @@
 import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
-import { replaceSource } from "./file-tree/file-tree-utils.js";
+import { replaceSource } from "./utils/file-tree.js";
 
 export async function setupUploadBtnHandler() {
   const btn = document.getElementById("upload-tokens-btn");

@@ -5,7 +5,7 @@ import { asyncWalk } from "estree-walker";
 import fs from "@bundled-es-modules/memfs";
 import { parseTransformOptions } from "./parseTransformOptions.js";
 import { SD_FUNCTIONS_PATH, FUNCTIONS } from "../constants.js";
-import { encodeContentsToURL } from "../file-tree/file-tree-utils.js";
+import { encodeContentsToURL } from "../utils/file-tree.js";
 import { sdState } from "../style-dictionary.js";
 
 export async function syncTransformOptionsWithUI(options) {
@@ -39,7 +39,11 @@ export async function syncTransformOptionsWithUI(options) {
   });
 
   fs.writeFileSync(SD_FUNCTIONS_PATH, newCode);
-  document.querySelector("config-switcher").checkedChoice = FUNCTIONS;
-  sdState.runStyleDictionary(true);
+
+  const configuratorAppEl = document.querySelector("configurator-app");
+  await configuratorAppEl.updateComplete;
+  configuratorAppEl.shadowRoot.querySelector("config-switcher").checkedChoice =
+    FUNCTIONS;
+  sdState.runStyleDictionary({ force: true });
   await encodeContentsToURL();
 }

@@ -1,14 +1,14 @@
 import { LitElement, html } from "lit";
 import * as zip from "@zip.js/zip.js";
-import iconDefinitions from "../icons/iconDefinitions.js";
+import iconDefinitions from "../../icons/iconDefinitions.js";
 import {
   ensureMonacoIsLoaded,
   editorOutput,
   editorConfig,
-} from "../monaco/monaco.js";
-import { sdState } from "../style-dictionary.js";
-import { SD_FUNCTIONS_PATH } from "../constants.js";
-import { findUsedConfigPath } from "../utils/findUsedConfigPath.js";
+} from "../../monaco/monaco.js";
+import { sdState } from "../../style-dictionary.js";
+import { SD_FUNCTIONS_PATH } from "../../constants.js";
+import { findUsedConfigPath } from "../../utils/findUsedConfigPath.js";
 import {
   clearAll,
   switchToFile,
@@ -18,8 +18,8 @@ import {
   editFileName,
   getAllFiles,
   saveFile,
-} from "./file-tree-utils.js";
-import styles from "./FileTreeStyles.css.js";
+} from "../../utils/file-tree.js";
+import styles from "./file-tree.css.js";
 
 class FileTree extends LitElement {
   static get properties() {
@@ -314,7 +314,7 @@ class FileTree extends LitElement {
       saveFile(editorConfig, { noRun: true }),
       saveFile(editorOutput, { noRun: true }),
     ]).then(() => {
-      sdState.runStyleDictionary(true);
+      sdState.runStyleDictionary({ force: true });
     });
   }
 
