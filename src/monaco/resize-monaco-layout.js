@@ -1,11 +1,14 @@
 import { editorOutput, editorConfig } from "./monaco.js";
 
 export function resizeMonacoLayout() {
+  const configuratorAppEl = document.querySelector("configurator-app");
+  if (!configuratorAppEl) {
+    return;
+  }
   const minimumMonacoWidth = 650;
   const middlePreferredWidth = 550;
   const fileTreeWidth = 200;
   const borderLeftWidth = 1;
-  const configuratorAppEl = document.querySelector("configurator-app");
 
   const sectionRightHeight =
     configuratorAppEl.shadowRoot.querySelector(".right").offsetHeight;
