@@ -188,27 +188,31 @@ class SdState extends EventTarget {
   async _prepareRunStyleDictionary() {
     console.log("Running style-dictionary...");
     const configuratorAppEl = document.querySelector("configurator-app");
-    await configuratorAppEl.updateComplete;
-    configuratorAppEl.shadowRoot
-      .querySelector("#output-file-tree")
-      ?.animateCue();
+    if (configuratorAppEl) {
+      await configuratorAppEl.updateComplete;
+      configuratorAppEl.shadowRoot
+        .querySelector("#output-file-tree")
+        ?.animateCue();
+    }
     await this.cleanPlatformOutputDirs();
     try {
-      const themeEntries = Object.entries(this.themes);
+      let themeEntries = Object.entries(this.themes);
       if (themeEntries.length > 0) {
-        const tokenPlatforms =
-          configuratorAppEl.shadowRoot.querySelector("token-platforms");
-        await tokenPlatforms.updateComplete;
-        const themesSegmentedControl = tokenPlatforms.shadowRoot.querySelector(
-          "ts-segmented-control"
-        );
-        const selectedThemes = themesSegmentedControl.modelValue;
-        this.themedConfigs = themeEntries
-          .filter(([theme]) => selectedThemes.includes(theme))
-          .map(([theme, tokensets]) =>
-            this.injectThemeVariables(this.config, theme, tokensets)
+        if (configuratorAppEl) {
+          const tokenPlatforms =
+            configuratorAppEl.shadowRoot.querySelector("token-platforms");
+          await tokenPlatforms.updateComplete;
+          const themesSegmentedControl =
+            tokenPlatforms.shadowRoot.querySelector("ts-segmented-control");
+          const selectedThemes = themesSegmentedControl.modelValue;
+          themeEntries = themeEntries.filter(([theme]) =>
+            selectedThemes.includes(theme)
           );
+        }
 
+        this.themedConfigs = themeEntries.map(([theme, tokensets]) =>
+          this.injectThemeVariables(this.config, theme, tokensets)
+        );
         this._runStyleDictionary(this.themedConfigs);
       } else {
         this._runStyleDictionary([this.config]);
@@ -219,10 +223,12 @@ class SdState extends EventTarget {
         `Config error: ${e.message}.\nSee console logs for more info.`
       );
     } finally {
-      await repopulateFileTree();
       const fileTreeEl = await getFileTreeEl();
-      // refresh currently selected output file
-      fileTreeEl.switchToFile(currentFileOutput);
+      if (fileTreeEl) {
+        await repopulateFileTree();
+        // refresh currently selected output file
+        fileTreeEl.switchToFile(currentFileOutput);
+      }
       return this.sd;
     }
   }

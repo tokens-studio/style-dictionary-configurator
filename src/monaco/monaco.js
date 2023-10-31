@@ -89,25 +89,24 @@ export function _ensureMonacoIsLoaded(
 }
 
 async function init() {
-  if (initialized) {
-    return;
-  }
-  initialized = true;
-
   monaco = window.monaco;
   monaco.editor.defineTheme("my-theme", themeData);
-  editorOutput = monaco.editor.create(
-    document.getElementById("monaco-container-output"),
-    {
+
+  const monacoOutput = document.getElementById("monaco-container-output");
+  // check if it has been initialized already, by checking this attribute
+  if (monacoOutput && !monacoOutput.hasAttribute("data-keybinding-context")) {
+    editorOutput = monaco.editor.create(monacoOutput, {
       theme: "my-theme",
-    }
-  );
-  editorConfig = monaco.editor.create(
-    document.getElementById("monaco-container-config"),
-    {
+    });
+  }
+
+  const monacoConfig = document.getElementById("monaco-container-config");
+  // check if it has been initialized already, by checking this attribute
+  if (monacoConfig && !monacoConfig.hasAttribute("data-keybinding-context")) {
+    editorConfig = monaco.editor.create(monacoConfig, {
       theme: "my-theme",
-    }
-  );
+    });
+  }
   editorConfig.getModel().updateOptions({ tabSize: 2 });
   window.addEventListener("resize", resizeMonacoLayout);
 }
