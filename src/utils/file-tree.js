@@ -31,6 +31,9 @@ export let currentFileOutput;
 
 export async function getFileTreeEl() {
   const configuratorAppEl = document.querySelector("configurator-app");
+  if (!configuratorAppEl) {
+    return null;
+  }
   await configuratorAppEl.updateComplete;
   return configuratorAppEl.shadowRoot.getElementById("output-file-tree");
 }
