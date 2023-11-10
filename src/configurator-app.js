@@ -28,12 +28,14 @@ class ConfiguratorApp extends LitElement {
           max-width: 550px;
           overflow-y: auto;
           padding: var(--space7);
+          padding-top: 0;
           box-sizing: border-box;
         }
 
         .content {
           display: flex;
-          height: 100%;
+          height: calc(100% - 35px);
+          padding-top: 35px;
         }
 
         .right {
