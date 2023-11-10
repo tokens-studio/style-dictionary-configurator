@@ -34,8 +34,8 @@ class ConfiguratorApp extends LitElement {
 
         .content {
           display: flex;
-          height: calc(100% - 35px);
-          padding-top: 35px;
+          height: calc(100% - 40px);
+          padding-top: 40px;
         }
 
         .right {
@@ -53,7 +53,7 @@ class ConfiguratorApp extends LitElement {
 
         ::slotted(#monaco-container-config) {
           z-index: 1;
-          border-bottom: 1px solid var(--fgDefault);
+          border-bottom: 1px solid var(--accentOnAccent);
         }
 
         ::slotted(*)::before {
