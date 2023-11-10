@@ -69,6 +69,7 @@ class ConfiguratorApp extends LitElement {
 
         ::slotted(#monaco-container-output)::before {
           content: "input/output file";
+          color: var(--accentOnAccent);
         }
       `,
     ];
