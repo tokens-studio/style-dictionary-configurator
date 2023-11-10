@@ -53,6 +53,7 @@ class ConfiguratorApp extends LitElement {
 
         ::slotted(#monaco-container-config) {
           z-index: 1;
+          box-sizing: content-box !important;
           border-bottom: 1px solid var(--accentOnAccent);
         }
 
