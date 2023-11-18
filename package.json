@@ -1,6 +1,7 @@
 {
   "name": "@tokens-studio/token-configurator",
   "version": "0.0.0",
+  "private":true,
   "description": "Online IDE for configuring Style-Dictionary",
   "license": "MIT",
   "author": "divRiots <joren.broekema@gmail.com>",
