@@ -15,6 +15,7 @@ import {
 import {
   CONFIG,
   FUNCTIONS,
+  FUNCTIONS_SAVED_EVENT,
   SD_CONFIG_PATH,
   SD_FUNCTIONS_PATH,
 } from "../constants.js";
@@ -351,7 +352,7 @@ export async function saveFile(ed, { noRun = false } = {}) {
   if (ed === editorConfig) {
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
       await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
-      window.dispatchEvent(new Event("sd-functions-saved"));
+      window.dispatchEvent(new Event(FUNCTIONS_SAVED_EVENT));
     } else {
       await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
     }

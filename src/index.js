@@ -10,6 +10,7 @@ import {
 } from "./utils/file-tree.js";
 import { setupUploadBtnHandler } from "./file-upload.js";
 import { setupEjectBtnHandler } from "./eject.js";
+import { INPUT_FILES_CREATED_EVENT } from "./constants.js";
 
 setFs(fs);
 
@@ -37,7 +38,7 @@ export async function initApp() {
     }
   });
   await createInputFiles();
-  window.dispatchEvent(new Event("input-files-created"));
+  window.dispatchEvent(new Event(INPUT_FILES_CREATED_EVENT));
   setupUploadBtnHandler();
   setupEjectBtnHandler();
 }

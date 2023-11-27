@@ -12,6 +12,10 @@ import "../checkbox/sd-checkbox-group.js";
 import "../checkbox/sd-checkbox.js";
 import { syncTransformOptionsWithUI } from "../../ast/syncTransformOptionsWithUI.js";
 import { snackbar } from "../snackbar/SnackbarManager.js";
+import {
+  FUNCTIONS_SAVED_EVENT,
+  INPUT_FILES_CREATED_EVENT,
+} from "../../constants.js";
 
 class SettingsDialog extends LitElement {
   static get properties() {
@@ -44,8 +48,8 @@ class SettingsDialog extends LitElement {
     this.userHasSubmitted = false;
     this.boundParseSettings = this.parseSettings.bind(this);
 
-    window.addEventListener("sd-functions-saved", this.boundParseSettings);
-    window.addEventListener("input-files-created", this.boundParseSettings);
+    window.addEventListener(FUNCTIONS_SAVED_EVENT, this.boundParseSettings);
+    window.addEventListener(INPUT_FILES_CREATED_EVENT, this.boundParseSettings);
     // This constructor might be called after the input-files-created event has already been fired.
     // To avoid race conditions, we call this.parseSettings(), just in case that happens.
     this.parseSettings();
