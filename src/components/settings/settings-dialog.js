@@ -46,6 +46,9 @@ class SettingsDialog extends LitElement {
 
     window.addEventListener("sd-functions-saved", this.boundParseSettings);
     window.addEventListener("input-files-created", this.boundParseSettings);
+    // This constructor might be called after the input-files-created event has already been fired.
+    // To avoid race conditions, we call this.parseSettings(), just in case that happens.
+    this.parseSettings();
   }
 
   render() {
