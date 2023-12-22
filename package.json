@@ -14,7 +14,7 @@
     "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@bundled-es-modules/glob": "^10.3.4",
+    "@bundled-es-modules/glob": "^10.3.11",
     "@bundled-es-modules/memfs": "^4.2.3",
     "@bundled-es-modules/path-browserify": "^1.0.2",
     "@lion/ui": "^0.4.1",
