@@ -1,4 +1,4 @@
-import path from "@bundled-es-modules/path-browserify";
+import { posix as path } from "path-unified";
 import fs from "@bundled-es-modules/memfs";
 
 export const findUsedConfigPath = () => {

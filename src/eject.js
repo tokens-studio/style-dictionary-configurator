@@ -18,7 +18,10 @@ export async function setupEjectBtnHandler() {
 
 async function analyzeDependencies(code) {
   let dependencies = [];
-  const ast = parse(code, { allowImportExportEverywhere: true });
+  const ast = parse(code, {
+    allowImportExportEverywhere: true,
+    ecmaVersion: "latest",
+  });
   await asyncWalk(ast, {
     enter: async (node) => {
       if (node.type === "ImportDeclaration") {

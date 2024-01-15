@@ -1,6 +1,6 @@
 import fs from "@bundled-es-modules/memfs";
-import path from "@bundled-es-modules/path-browserify";
-import glob from "@bundled-es-modules/glob";
+import { posix as path } from "path-unified";
+import { glob } from "@bundled-es-modules/glob";
 import { isPlainObject } from "is-plain-object";
 import { sdState } from "../style-dictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
@@ -367,12 +367,11 @@ export async function saveFile(ed, { noRun = false } = {}) {
 }
 
 export async function switchToFile(file, ed) {
-  // openOrCloseJSSwitch(file);
-  const ext = path.extname(file).slice(1);
-  const lang = extensionMap[ext] || ext;
   const _editor = ed || editorOutput;
 
   try {
+    const ext = path.extname(file).slice(1);
+    const lang = extensionMap[ext] || ext;
     const fileData = await new Promise((resolve, reject) => {
       fs.readFile(file, "utf-8", (err, data) => {
         if (err) {
