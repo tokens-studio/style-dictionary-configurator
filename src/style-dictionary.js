@@ -5,10 +5,7 @@ import {
   getFileTreeEl,
   currentFileOutput,
 } from "./utils/file-tree.js";
-import {
-  expandComposites,
-  permutateThemes,
-} from "@tokens-studio/sd-transforms";
+import { permutateThemes } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import { THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
@@ -25,8 +22,8 @@ StyleDictionary.registerParser({
     const url = URL.createObjectURL(
       new Blob([bundled], { type: "text/javascript" })
     );
-    const { default: token } = await import(/* webpackIgnore: true */ url);
-    return expandComposites(token);
+    const { default: tokens } = await import(/* webpackIgnore: true */ url);
+    return tokens;
   },
 });
 
@@ -211,9 +208,9 @@ class SdState extends EventTarget {
         this.themedConfigs = themeEntries.map(([theme, tokensets]) =>
           this.injectThemeVariables(this.config, theme, tokensets)
         );
-        this._runStyleDictionary(this.themedConfigs);
+        await this._runStyleDictionary(this.themedConfigs);
       } else {
-        this._runStyleDictionary([this.config]);
+        await this._runStyleDictionary([this.config]);
       }
     } catch (e) {
       console.error(`Style Dictionary error: ${e.stack}`);
