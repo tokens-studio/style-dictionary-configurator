@@ -1,8 +1,10 @@
-import path from "@bundled-es-modules/path-browserify";
+import { posix as path } from "path-unified";
 import fs from "@bundled-es-modules/memfs";
 import { v4 as uuidv4 } from "uuid";
 import * as rollup from "rollup";
 import StyleDictionary from "style-dictionary";
+import * as sdFs from "style-dictionary/fs";
+import * as sdUtils from "style-dictionary/utils";
 
 /**
  * Somewhat naive bundle step with rollup
@@ -22,7 +24,12 @@ import StyleDictionary from "style-dictionary";
  */
 export async function bundle(inputPath, _fs = fs) {
   const sdName = uuidv4();
+  const sdFsName = uuidv4();
+  const sdUtilsName = uuidv4();
   globalThis[sdName] = StyleDictionary;
+  globalThis[sdFsName] = sdFs;
+  globalThis[sdUtilsName] = sdUtils;
+
   const rollupCfg = await rollup.rollup({
     input: inputPath,
     plugins: [
@@ -57,20 +64,38 @@ export async function bundle(inputPath, _fs = fs) {
       },
       {
         name: "sd-external",
-        // Naive and simplified regex version of rollup externals global plugin just for style-dictionary import..
+        // Naive and simplified regex version of rollup externals global plugin just for style-dictionary imports..
         transform(code) {
           let rewrittenCode = code;
-          let matchRes = rewrittenCode.match(
-            /import (?<id>.+?) from [',"]style-dictionary[',"]/,
-            ""
-          );
-          if (matchRes) {
-            let { id } = matchRes.groups;
-            // Remove the import statement, replace the id wherever used with the global
+          const reg =
+            /import (?<id>.+?) from [',"]style-dictionary(?<entrypoint>\/.+?)?[',"];?/;
+          let matchRes;
+          while ((matchRes = reg.exec(rewrittenCode)) !== null) {
+            let { id, entrypoint } = matchRes.groups;
+            let namedImport = id;
+            let replacement;
+
+            if (id.startsWith("{") && id.endsWith("}") && entrypoint) {
+              namedImport = namedImport
+                .replace("{", "")
+                .replace("}", "")
+                .trim();
+              const entry = entrypoint.replace(/^\//, "");
+
+              if (entry === "fs") {
+                replacement = `globalThis['${sdFsName}']['${namedImport}']`;
+              } else if (entry === "utils") {
+                replacement = `globalThis['${sdUtilsName}']['${namedImport}']`;
+              }
+            } else {
+              // Remove the import statement, replace the id wherever used with the global
+              replacement = `globalThis['${sdName}']`;
+            }
             rewrittenCode = rewrittenCode
               .replace(matchRes[0], "")
-              .replace(new RegExp(id, "g"), `globalThis['${sdName}']`);
+              .replace(new RegExp(namedImport, "g"), replacement);
           }
+
           return rewrittenCode;
         },
       },

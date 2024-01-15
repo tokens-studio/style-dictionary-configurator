@@ -5,7 +5,10 @@ import { SD_FUNCTIONS_PATH } from "../constants";
 
 export async function parseTransformOptions() {
   const functionsFile = fs.readFileSync(SD_FUNCTIONS_PATH, "utf-8");
-  const ast = parse(functionsFile, { allowImportExportEverywhere: true });
+  const ast = parse(functionsFile, {
+    allowImportExportEverywhere: true,
+    ecmaVersion: "latest",
+  });
   let currentOptions = {};
   await asyncWalk(ast, {
     enter: (node) => {

@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 export default css`
   .codicon-edit:before {
     content: "\\ea73";

@@ -1,7 +1,7 @@
 {
   "name": "@tokens-studio/token-configurator",
   "version": "0.0.0",
-  "private":true,
+  "private": true,
   "description": "Online IDE for configuring Style-Dictionary",
   "license": "MIT",
   "author": "divRiots <joren.broekema@gmail.com>",
@@ -14,9 +14,9 @@
     "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@bundled-es-modules/glob": "^10.3.4",
+    "@bundled-es-modules/glob": "^10.3.13",
     "@bundled-es-modules/memfs": "^4.2.3",
-    "@bundled-es-modules/path-browserify": "^1.0.2",
+    "path-unified": "^0.1.0",
     "@lion/ui": "^0.4.1",
     "@open-wc/dedupe-mixin": "^1.3.1",
     "@tokens-studio/sd-transforms": "^0.11.9",
@@ -28,7 +28,7 @@
     "lit": "^2.0.0",
     "magic-string": "^0.30.5",
     "prettier": "^2.8.8",
-    "style-dictionary": "4.0.0-prerelease.1",
+    "style-dictionary": "4.0.0-prerelease.7",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

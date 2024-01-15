@@ -93,17 +93,15 @@ class SdState extends EventTarget {
       }
     }
     if (shouldWarn) {
-      snackbar.show(
-        html`
-          <p>Transforms and transformGroup should not be combined.</p>
-          <p>
-            See
-            <a href="https://github.com/amzn/style-dictionary/issues/813"
-              >https://github.com/amzn/style-dictionary/issues/813</a
-            >
-          </p>
-        `
-      );
+      snackbar.show(html`
+        <p>Transforms and transformGroup should not be combined.</p>
+        <p>
+          See
+          <a href="https://github.com/amzn/style-dictionary/issues/813"
+            >https://github.com/amzn/style-dictionary/issues/813</a
+          >
+        </p>
+      `);
     }
   }
 
@@ -240,7 +238,8 @@ class SdState extends EventTarget {
           new Promise(async (resolve) => {
             let sd;
             try {
-              sd = await StyleDictionary.extend(cfg);
+              sd = new StyleDictionary(cfg);
+              await sd.hasInitialized;
               try {
                 await sd.buildAllPlatforms();
               } catch (e) {
