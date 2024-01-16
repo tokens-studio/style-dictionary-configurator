@@ -12,6 +12,7 @@ export default css`
   }
 
   .button-content {
+    width: 100%;
     border-width: 1px;
     border-style: solid;
     border-color: transparent;

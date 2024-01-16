@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -66,6 +66,11 @@
     />
     <script type="module" src="./src/configurator-app.js"></script>
     <script type="module" src="./src/components/button/ts-button.js"></script>
+    <script type="module" src="./src/components/dialog/sd-dialog.js"></script>
+    <script
+      type="module"
+      src="./src/components/dialog/sd-dialog-frame.js"
+    ></script>
     <script type="module">
       import { initApp } from "./src/index.js";
       initApp();
@@ -85,20 +90,52 @@
             hidden
           />
         </ts-button>
-        <ts-button
-          variant="secondary"
-          id="eject-btn"
-          title="Eject by downloading your project so that you can run it locally."
-        >
-          <span class="codicon codicon-debug-disconnect"></span> Eject
-          <input
-            id="upload-tokens-input"
-            type="file"
-            accept="application/*, text/*"
-            aria-hidden="true"
-            hidden
-          />
-        </ts-button>
+        <sd-dialog>
+          <ts-button
+            slot="invoker"
+            variant="secondary"
+            title="Eject by downloading your project so that you can run it locally."
+          >
+            <span class="codicon codicon-debug-disconnect"></span> Eject
+          </ts-button>
+          <sd-dialog-frame
+            slot="content"
+            title="Choose between Style-Dictionary v3 or v4"
+            class="eject-version-frame"
+          >
+            <div slot="content" class="eject-version-wrapper">
+              <ts-button
+                slot="invoker"
+                variant="primary"
+                id="eject-btn-v3"
+                title="Select Style-Dictionary v3"
+              >
+                v3
+                <input
+                  type="file"
+                  accept="application/*, text/*"
+                  aria-hidden="true"
+                  hidden
+                />
+              </ts-button>
+              <ts-button
+                slot="invoker"
+                variant="primary"
+                id="eject-btn-v4"
+                title="Select Style-Dictionary v4"
+              >
+                v4
+                <input
+                  type="file"
+                  accept="application/*, text/*"
+                  aria-hidden="true"
+                  hidden
+                />
+              </ts-button>
+            </div>
+          </sd-dialog-frame>
+        </sd-dialog>
+
         <nav class="header-nav">
           <a href="https://www.youtube.com/watch?v=dr3RWjZ28BE">
             <ts-button variant="secondary">
