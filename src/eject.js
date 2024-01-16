@@ -10,9 +10,13 @@ import { getInputFiles } from "./utils/file-tree.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 export async function setupEjectBtnHandler() {
-  const btn = document.getElementById("eject-btn");
-  if (btn) {
-    btn.addEventListener("click", ejectHandler);
+  const btnv3 = document.getElementById("eject-btn-v3");
+  const btnv4 = document.getElementById("eject-btn-v4");
+  if (btnv3) {
+    btnv3.addEventListener("click", ejectHandler);
+  }
+  if (btnv4) {
+    btnv4.addEventListener("click", ejectHandler);
   }
 }
 
@@ -43,7 +47,7 @@ async function analyzeDependencies(code) {
   return dependencies;
 }
 
-function getDepsCJSString(dependencies, hasThemes) {
+function getImportsStrMap(dependencies, hasThemes) {
   // if there's theming, we will import permutateThemes, so add to dependencies
   if (hasThemes) {
     const sdTransformsPkgName = "@tokens-studio/sd-transforms";
@@ -65,39 +69,68 @@ function getDepsCJSString(dependencies, hasThemes) {
     }
   }
 
-  // convert our dependencies array to a CJS imports string
-  const depsCJSString = dependencies
-    .map((dep) => {
-      const hasDefault = dep.specifiers.find((spec) => spec.default);
-      const hasNamed = dep.specifiers.find((spec) => !spec.default);
+  const importsStrMap = new Map();
 
-      const namedImportsStr = (specifiers) =>
-        specifiers
-          .filter((spec) => !spec.default)
-          .reduce((acc, curr) => `${acc}${curr.name}, `, "")
-          .trim()
-          .replace(/,$/g, "");
+  // convert our dependencies array to a ESM imports string
+  dependencies.forEach((dep) => {
+    importsStrMap.set(dep.source, {
+      namedImportsStr: dep.specifiers
+        .filter((spec) => !spec.default)
+        .reduce((acc, curr) => `${acc}${curr.name}, `, "")
+        .trim()
+        .replace(/,$/g, ""),
+      defaultImportStr: dep.specifiers.find((spec) => spec.default)?.name,
+    });
+  });
+  return importsStrMap;
+}
 
-      let str = "const ";
-      if (hasDefault) {
-        str += `${dep.specifiers.find((spec) => spec.default).name}`;
-      } else {
-        str += `{ ${namedImportsStr(dep.specifiers)} }`;
+function getDepsESMString(dependencies, hasThemes) {
+  const importsStrMap = getImportsStrMap(dependencies, hasThemes);
+
+  return Array.from(importsStrMap)
+    .map(([source, data]) => {
+      let str = "import ";
+      const { defaultImportStr, namedImportsStr } = data;
+      if (defaultImportStr) {
+        str += defaultImportStr;
+        if (namedImportsStr) {
+          str += ", ";
+        }
       }
-      str += ` = require('${dep.source}');`;
 
-      // If there is a combination of default and named import, add a second line to destructure the named
-      if (hasNamed && hasDefault) {
-        str += `\nconst { ${namedImportsStr(dep.specifiers)} } = ${
-          dep.specifiers.find((spec) => spec.default).name
-        };`;
+      if (namedImportsStr) {
+        str += `{ ${namedImportsStr} }`;
+      }
+      str += ` from '${source}';`;
+
+      return str;
+    })
+    .join("\n");
+}
+
+function getDepsCJSString(dependencies, hasThemes) {
+  const importsStrMap = getImportsStrMap(dependencies, hasThemes);
+  // if there's theming, we will import permutateThemes, so add to dependencies
+
+  return Array.from(importsStrMap)
+    .map(([source, data]) => {
+      let str = "const ";
+      const { defaultImportStr, namedImportsStr } = data;
+      if (defaultImportStr) {
+        str += defaultImportStr;
+      } else {
+        str += `{ ${namedImportsStr} }`;
+      }
+      str += ` = require('${source}');`;
+
+      if (defaultImportStr && namedImportsStr) {
+        str += `\nconst { ${namedImportsStr} } = ${defaultImportStr};`;
       }
 
       return str;
     })
     .join("\n");
-
-  return depsCJSString;
 }
 
 // replace %theme% placeholder with ${name}
@@ -110,7 +143,10 @@ function handleThemePlaceholder(str) {
   });
 }
 
-async function ejectHandler() {
+async function ejectHandler(ev) {
+  const sdVersion = ev.target.getAttribute("id").split("eject-btn-")[1];
+  ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
+
   const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
   const inputFiles = await getInputFiles();
   await Promise.all(
@@ -132,10 +168,20 @@ async function ejectHandler() {
   const functionsWithoutImports = functionsContent.replace(reg, "");
 
   let newFileContent;
+  const sdInitStr =
+    sdVersion === "v3" ? "StyleDictionary.extend" : "new StyleDictionary";
   if (hasThemes) {
     const { platforms } = config;
-    newFileContent = `const { readFileSync } = require('fs');
-${getDepsCJSString(dependencies, hasThemes)}
+    newFileContent = `${
+      sdVersion === "v3"
+        ? "const { readFileSync } = require('node:fs');"
+        : "import { readFileSync } from 'node:fs';"
+    };
+${
+  sdVersion === "v3"
+    ? getDepsCJSString(dependencies, hasThemes)
+    : getDepsESMString(dependencies, hasThemes)
+}
 
 ${functionsWithoutImports.trim()}
 
@@ -146,27 +192,33 @@ const configs = Object.entries(themes).map(([name, tokensets]) => ({
   platforms: ${handleThemePlaceholder(JSON.stringify(platforms, null, 2))}
 }));
 
-configs.forEach(cfg => {
-  const sd = StyleDictionary.extend(cfg);
-  sd.cleanAllPlatforms(); // optionally, cleanup files first..
-  sd.buildAllPlatforms();
-});
+for (const cfg of configs) {
+  const sd = ${sdInitStr}(cfg);
+  // optionally, cleanup files first..
+  ${sdVersion === "v4" ? "await " : ""}sd.cleanAllPlatforms();
+  ${sdVersion === "v4" ? "await " : ""}sd.buildAllPlatforms();
+}
 `;
   } else {
-    newFileContent = `${getDepsCJSString(dependencies, hasThemes)}
+    newFileContent = `${
+      sdVersion === "v3"
+        ? getDepsCJSString(dependencies, hasThemes)
+        : getDepsESMString(dependencies, hasThemes)
+    }
 
 ${functionsWithoutImports.trim()}
 
-const sd = StyleDictionary.extend(${handleThemePlaceholder(
+const sd = ${sdInitStr}(${handleThemePlaceholder(
       JSON.stringify(config, null, 2)
     )});
-sd.cleanAllPlatforms(); // optionally, cleanup files first..
-sd.buildAllPlatforms();
+// optionally, cleanup files first..
+${sdVersion === "v4" ? "await " : ""}sd.cleanAllPlatforms(); 
+${sdVersion === "v4" ? "await " : ""}sd.buildAllPlatforms();
 `;
   }
 
   await zipWriter.add(
-    "build-tokens.cjs",
+    `build-tokens.${sdVersion === "v3" ? "c" : "m"}js`,
     new TextReader(
       prettier.format(newFileContent, {
         parser: "babel",
@@ -183,13 +235,22 @@ sd.buildAllPlatforms();
 Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 \`\`\`sh
-npm init -y && npm install ${dependencies.map((dep) => dep.package).join(" ")}
+npm init -y && npm install ${dependencies
+      .map((dep) => {
+        if (dep.package === "style-dictionary") {
+          return sdVersion === "v3"
+            ? `${dep.package}@latest`
+            : `${dep.package}@prerelease`;
+        }
+        return dep.package;
+      })
+      .join(" ")}
 \`\`\`
 
 Then run
 
 \`\`\`sh
-node build-tokens.cjs
+node build-tokens.${sdVersion === "v3" ? "c" : "m"}js
 \`\`\`
 `)
   );

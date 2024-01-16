@@ -55,3 +55,17 @@ h1 {
   margin: 0;
   padding: 0;
 }
+
+.eject-version-frame {
+  width: fit-content;
+}
+
+.eject-version-wrapper {
+  display: flex;
+  gap: 2rem;
+  padding-bottom: 1rem;
+}
+
+.eject-version-wrapper > ts-button {
+  flex-grow: 1;
+}
