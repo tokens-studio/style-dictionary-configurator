@@ -31,7 +31,7 @@ export let currentFileConfig = findUsedConfigPath();
 export let currentFileOutput;
 
 export async function getFileTreeEl() {
-  const configuratorAppEl = document.querySelector("configurator-app");
+  const configuratorAppEl = document.querySelector("configurator-element");
   if (!configuratorAppEl) {
     return null;
   }
@@ -341,7 +341,7 @@ export async function clearAll() {
 }
 
 export async function saveFile(ed, { noRun = false } = {}) {
-  const configuratorAppEl = document.querySelector("configurator-app");
+  const configuratorAppEl = document.querySelector("configurator-element");
   await configuratorAppEl.updateComplete;
   const configSwitcherEl =
     configuratorAppEl.shadowRoot.getElementById("config-switcher");
@@ -398,7 +398,7 @@ export async function switchToFile(file, ed) {
     currentFileConfig = file;
 
     const configTabGroup = document
-      .querySelector("configurator-app")
+      .querySelector("configurator-element")
       .shadowRoot.getElementById("config-switcher")
       .shadowRoot.querySelector("config-tab-group");
 

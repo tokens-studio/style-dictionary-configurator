@@ -1,7 +1,7 @@
 import { posix as path } from "path-unified";
 import fs from "@bundled-es-modules/memfs";
 import { v4 as uuidv4 } from "uuid";
-import * as rollup from "rollup";
+import { rollup } from "@rollup/browser";
 import StyleDictionary from "style-dictionary";
 import * as sdFs from "style-dictionary/fs";
 import * as sdUtils from "style-dictionary/utils";
@@ -30,7 +30,7 @@ export async function bundle(inputPath, _fs = fs) {
   globalThis[sdFsName] = sdFs;
   globalThis[sdUtilsName] = sdUtils;
 
-  const rollupCfg = await rollup.rollup({
+  const rollupCfg = await rollup({
     input: inputPath,
     plugins: [
       {

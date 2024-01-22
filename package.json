@@ -7,38 +7,46 @@
   "author": "divRiots <joren.broekema@gmail.com>",
   "repository": "https://github.com/tokens-studio/style-dictionary-configurator",
   "type": "module",
-  "main": "index.js",
-  "files": [],
+  "files": [
+    "src/"
+  ],
+  "exports": {
+    ".": "./src/configurator-element.js",
+    "./utils": "./src/utils.js"
+  },
   "scripts": {
     "dev": "wds",
-    "build": "rimraf dist && rollup -c rollup.config.js"
+    "build": "rimraf dist && rollup -c rollup.config.js",
+    "release": "npm run build && changeset publish"
   },
   "dependencies": {
     "@bundled-es-modules/glob": "^10.3.13",
     "@bundled-es-modules/memfs": "^4.2.3",
-    "path-unified": "^0.1.0",
     "@lion/ui": "^0.5.2",
-    "@open-wc/dedupe-mixin": "^1.3.1",
-    "@tokens-studio/sd-transforms": "^0.13.2",
-    "@tokens-studio/tokens": "^0.0.23",
+    "@open-wc/dedupe-mixin": "^1.4.0",
+    "@rollup/browser": "^4.9.6",
+    "@tokens-studio/sd-transforms": "^0.13.3",
+    "@tokens-studio/tokens": "^0.0.24",
     "@zip.js/zip.js": "^2.7.32",
     "acorn": "^8.11.3",
     "estree-walker": "^3.0.3",
     "is-plain-object": "^5.0.0",
-    "lit": "^2.0.0",
+    "lit": "^3.1.1",
     "magic-string": "^0.30.5",
-    "prettier": "^2.8.8",
+    "path-unified": "^0.1.0",
+    "prettier": "^3.2.4",
     "style-dictionary": "4.0.0-prerelease.8",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "@web/dev-server": "^0.1.23",
-    "@web/dev-server-rollup": "^0.5.2",
-    "@web/rollup-plugin-html": "^2.0.1",
-    "@web/rollup-plugin-import-meta-assets": "^2.1.0",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.60.1"
+    "@changesets/cli": "^2.27.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@web/dev-server": "^0.4.1",
+    "@web/dev-server-rollup": "^0.6.1",
+    "@web/rollup-plugin-html": "^2.1.2",
+    "@web/rollup-plugin-import-meta-assets": "^2.2.1",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6"
   },
   "keywords": [
     "style dictionary",

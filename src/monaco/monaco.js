@@ -92,7 +92,7 @@ async function init() {
   monaco = window.monaco;
   monaco.editor.defineTheme("my-theme", themeData);
 
-  const monacoOutput = document.getElementById("monaco-container-output");
+  const monacoOutput = document.querySelector('[slot="monaco-output"]');
   // check if it has been initialized already, by checking this attribute
   if (monacoOutput && !monacoOutput.hasAttribute("data-keybinding-context")) {
     editorOutput = monaco.editor.create(monacoOutput, {
@@ -100,7 +100,7 @@ async function init() {
     });
   }
 
-  const monacoConfig = document.getElementById("monaco-container-config");
+  const monacoConfig = document.querySelector('[slot="monaco-config"]');
   // check if it has been initialized already, by checking this attribute
   if (monacoConfig && !monacoConfig.hasAttribute("data-keybinding-context")) {
     editorConfig = monaco.editor.create(monacoConfig, {

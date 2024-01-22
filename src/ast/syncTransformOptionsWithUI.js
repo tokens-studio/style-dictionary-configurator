@@ -1,5 +1,6 @@
-import prettier from "prettier/esm/standalone.mjs";
-import babel from "prettier/esm/parser-babel.mjs";
+import * as prettier from "prettier/standalone";
+import * as parserBabel from "prettier/plugins/babel";
+import * as prettierPluginEstree from "prettier/plugins/estree";
 import MagicString from "magic-string";
 import { asyncWalk } from "estree-walker";
 import fs from "@bundled-es-modules/memfs";
@@ -32,15 +33,15 @@ export async function syncTransformOptionsWithUI(options) {
     },
   });
 
-  const newCode = prettier.format(ms.toString(), {
+  const newCode = await prettier.format(ms.toString(), {
     parser: "babel",
-    plugins: [babel],
+    plugins: [parserBabel, prettierPluginEstree],
     singleQuote: true,
   });
 
   fs.writeFileSync(SD_FUNCTIONS_PATH, newCode);
 
-  const configuratorAppEl = document.querySelector("configurator-app");
+  const configuratorAppEl = document.querySelector("configurator-element");
   await configuratorAppEl.updateComplete;
   configuratorAppEl.shadowRoot.querySelector("config-switcher").checkedChoice =
     FUNCTIONS;
