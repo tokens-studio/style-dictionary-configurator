@@ -1,10 +1,12 @@
 {
-  "name": "@tokens-studio/token-configurator",
+  "name": "@tokens-studio/configurator",
   "version": "0.0.1",
-  "private": true,
   "description": "Online IDE for configuring Style-Dictionary",
   "license": "MIT",
-  "author": "divRiots <joren.broekema@gmail.com>",
+  "author": "Tokens Studio (https://tokens.studio)",
+  "contributors": [
+    "Joren Broekema <joren.broekema@gmail.com>"
+  ],
   "repository": "https://github.com/tokens-studio/style-dictionary-configurator",
   "type": "module",
   "files": [
@@ -50,19 +52,10 @@
   },
   "keywords": [
     "style dictionary",
-    "style",
-    "dictionary",
-    "amazon",
-    "css",
-    "design",
-    "properties",
+    "configurator",
+    "tokens studio",
     "tokens",
-    "sass",
-    "scss",
-    "iOS",
-    "Android",
-    "react",
-    "react native",
-    "style guide"
+    "design tokens",
+    "design"
   ]
 }
