@@ -11,10 +11,11 @@ import {
 import { setupUploadBtnHandler } from "./file-upload.js";
 import { setupEjectBtnHandler } from "./eject.js";
 import { INPUT_FILES_CREATED_EVENT } from "./constants.js";
-
-setFs(fs);
+import "./configurator-element.js";
 
 export async function initApp() {
+  // TODO: consider allowing users to customize fs shim, similar to how it's done in style-dictionary
+  setFs(fs);
   // set so that file tree utils knows to encode file contents to URL
   window.__configurator_standalone__ = true;
   window.addEventListener("message", (ev) => {

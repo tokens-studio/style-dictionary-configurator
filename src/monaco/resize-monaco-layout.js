@@ -1,7 +1,7 @@
 import { editorOutput, editorConfig } from "./monaco.js";
 
 export function resizeMonacoLayout() {
-  const configuratorAppEl = document.querySelector("configurator-app");
+  const configuratorAppEl = document.querySelector("configurator-element");
   if (!configuratorAppEl) {
     return;
   }

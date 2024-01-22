@@ -15,7 +15,7 @@ import "./components/config-switcher/config-switcher.js";
 
 loadDefaultFeedbackMessages();
 
-class ConfiguratorApp extends LitElement {
+export class ConfiguratorElement extends LitElement {
   static get styles() {
     return [
       css`
@@ -51,7 +51,7 @@ class ConfiguratorApp extends LitElement {
           position: relative;
         }
 
-        ::slotted(#monaco-container-config) {
+        ::slotted([slot="monaco-config"]) {
           z-index: 1;
           box-sizing: content-box !important;
           border-bottom: 1px solid var(--accentOnAccent);
@@ -66,11 +66,11 @@ class ConfiguratorApp extends LitElement {
           z-index: 1;
         }
 
-        ::slotted(#monaco-container-config)::before {
+        ::slotted([slot="monaco-config"])::before {
           content: "config/functions file";
         }
 
-        ::slotted(#monaco-container-output)::before {
+        ::slotted([slot="monaco-output"])::before {
           content: "input/output file";
           color: var(--accentOnAccent);
         }
@@ -119,4 +119,4 @@ class ConfiguratorApp extends LitElement {
   }
 }
 
-customElements.define("configurator-app", ConfiguratorApp);
+customElements.define("configurator-element", ConfiguratorElement);

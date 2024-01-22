@@ -2,8 +2,9 @@ import { TextReader, ZipWriter, BlobWriter } from "@zip.js/zip.js";
 import fs from "@bundled-es-modules/memfs";
 import { parse } from "acorn";
 import { asyncWalk } from "estree-walker";
-import prettier from "prettier/esm/standalone.mjs";
-import babel from "prettier/esm/parser-babel.mjs";
+import * as prettier from "prettier/standalone";
+import * as parserBabel from "prettier/plugins/babel";
+import * as prettierPluginEstree from "prettier/plugins/estree";
 import { sdState } from "./style-dictionary.js";
 import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
 import { getInputFiles } from "./utils/file-tree.js";
@@ -217,15 +218,14 @@ ${sdVersion === "v4" ? "await " : ""}sd.buildAllPlatforms();
 `;
   }
 
+  const formattedCode = await prettier.format(newFileContent, {
+    parser: "babel",
+    plugins: [prettierPluginEstree, parserBabel],
+    singleQuote: true,
+  });
   await zipWriter.add(
     `build-tokens.${sdVersion === "v3" ? "c" : "m"}js`,
-    new TextReader(
-      prettier.format(newFileContent, {
-        parser: "babel",
-        plugins: [babel],
-        singleQuote: true,
-      })
-    )
+    new TextReader(formattedCode)
   );
 
   await zipWriter.add(

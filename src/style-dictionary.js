@@ -182,7 +182,7 @@ class SdState extends EventTarget {
 
   async _prepareRunStyleDictionary() {
     console.log("Running style-dictionary...");
-    const configuratorAppEl = document.querySelector("configurator-app");
+    const configuratorAppEl = document.querySelector("configurator-element");
     if (configuratorAppEl) {
       await configuratorAppEl.updateComplete;
       configuratorAppEl.shadowRoot

@@ -64,7 +64,6 @@
       href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script type="module" src="./src/configurator-app.js"></script>
     <script type="module" src="./src/components/button/ts-button.js"></script>
     <script type="module" src="./src/components/dialog/sd-dialog.js"></script>
     <script
@@ -146,18 +145,10 @@
       </div>
     </header>
     <main>
-      <configurator-app>
-        <div
-          id="monaco-container-config"
-          style="height: 100%"
-          slot="monaco-config"
-        ></div>
-        <div
-          id="monaco-container-output"
-          style="height: 100%"
-          slot="monaco-output"
-        ></div>
-      </configurator-app>
+      <configurator-element>
+        <div style="height: 100%" slot="monaco-config"></div>
+        <div style="height: 100%" slot="monaco-output"></div>
+      </configurator-element>
     </main>
   </body>
 </html>
