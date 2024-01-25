@@ -7,8 +7,8 @@ import { TransformsValidator } from "../combobox/TransformsValidator.js";
 import { codicon } from "../../icons/codicon-style.css.js";
 import { sdState } from "../../style-dictionary.js";
 import styles from "./platforms-dialog.css.js";
-import PencilIcon from "../../assets/icons/pencil.svg.js";
-import PlusIcon from "../../assets/icons/plus.svg";
+import PencilIcon from "../../icons/pencil.svg.js";
+import PlusIcon from "../../icons/plus.svg.js";
 
 import "../dialog/sd-dialog.js";
 import "../dialog/sd-dialog-frame.js";

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit";
-import XIcon from "../../assets/icons/x.svg.js";
+import XIcon from "../../icons/x.svg.js";
 
 import "../button/ts-button.js";
 
