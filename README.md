@@ -44,12 +44,38 @@ For them to render properly, ensure the [`codicon` font definition](https://gith
 We also export some utilities to make it easier to work with this
 
 ```js
-import { replaceSource, resizeMonacoLayout } from '@tokens-studio/configurator/utils';
+import { replaceSource, resizeMonacoLayout, SD_FUNCTIONS_PATH, SD_CONFIG_PATH } from '@tokens-studio/configurator/utils';
 
-window.addEventListener("resize", resizeMonacoLayout);
+window.addEventListener('resize', resizeMonacoLayout);
 
 replaceSource({
-  "config.json": "{}",
-  "studio.tokens.json": "{}"
+  [SD_CONFIG_PATH]: '{}',
+  [SD_FUNCTIONS_PATH]: `import StyleDictionary from 'style-dictionary';
+import { registerTransforms } from '@tokens-studio/sd-transforms';
+
+registerTransforms(StyleDictionary);`,
+  'studio.tokens.json': '{}'
 });
+```
+
+> Note that your token files cannot match "config.json", "sd.config.json", "config.js", "sd.config.js", "config.mjs", "sd.config.mjs" or "registerSDFunctions.js".
+> These are reserved filenames for the SD Config / Functions files.
+
+### Events
+
+There are a couple of events you can listen to on `window`:
+
+- When the Functions tab content gets saved - `FUNCTIONS_SAVED_EVENT` -> `ev.detail` is the saved content
+- When the Config tab content gets saved - `CONFIG_SAVED_EVENT` -> `ev.detail` is the saved content
+- When the tokens (input/output) content gets saved - `TOKENS_SAVED_EVENT` -> `ev.detail` is the saved content
+- When the input files are created initially or when using `replaceSource()` utility - `INPUT_FILES_CREATED_EVENT`
+
+There's also an event on `sdState` you can listen to, which gives you the updated Style-Dictionary object:
+
+```js
+import { sdState, SD_CHANGED_EVENT } from '@tokens-studio/configurator/utils';
+
+sdState.addEventListener(SD_CHANGED_EVENT, (ev) => {
+  console.log(ev.detail); // Style-Dictionary object
+})
 ```

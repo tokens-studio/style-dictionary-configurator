@@ -1,5 +1,5 @@
 import { posix as path } from "path-unified";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { v4 as uuidv4 } from "uuid";
 import { rollup } from "@rollup/browser";
 import StyleDictionary from "style-dictionary";

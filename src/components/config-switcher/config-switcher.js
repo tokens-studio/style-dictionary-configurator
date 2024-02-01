@@ -1,5 +1,5 @@
 import { html, css, LitElement } from "lit";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { CONFIG, FUNCTIONS, SD_FUNCTIONS_PATH } from "../../constants.js";
 import { ensureMonacoIsLoaded, editorConfig } from "../../monaco/monaco.js";
 import { switchToFile } from "../../utils/file-tree.js";

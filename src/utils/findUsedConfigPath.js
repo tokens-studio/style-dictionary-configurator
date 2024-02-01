@@ -1,5 +1,5 @@
 import { posix as path } from "path-unified";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 
 export const findUsedConfigPath = () => {
   // supported config paths, prioritized in this order

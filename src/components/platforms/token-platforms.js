@@ -1,4 +1,4 @@
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { LitElement, html } from "lit";
 import StyleDictionary from "style-dictionary";
 import { editorConfig } from "../../monaco/monaco.js";

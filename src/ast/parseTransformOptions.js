@@ -1,6 +1,6 @@
 import { parse } from "acorn";
 import { asyncWalk } from "estree-walker";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { SD_FUNCTIONS_PATH } from "../constants";
 
 export async function parseTransformOptions() {
