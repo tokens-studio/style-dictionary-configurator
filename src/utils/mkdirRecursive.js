@@ -1,4 +1,4 @@
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { posix as path } from "path-unified";
 
 export default async function mkdirRecursive(pathToCreate) {

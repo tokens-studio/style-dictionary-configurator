@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@bundled-es-modules/glob": "^10.3.13",
-    "@bundled-es-modules/memfs": "^4.2.3",
     "@lion/ui": "^0.5.2",
     "@open-wc/dedupe-mixin": "^1.4.0",
     "@rollup/browser": "^4.9.6",

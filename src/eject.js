@@ -1,5 +1,5 @@
 import { TextReader, ZipWriter, BlobWriter } from "@zip.js/zip.js";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { parse } from "acorn";
 import { asyncWalk } from "estree-walker";
 import * as prettier from "prettier/standalone";

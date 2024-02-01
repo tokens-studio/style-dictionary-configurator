@@ -1,4 +1,4 @@
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import StyleDictionary from "style-dictionary";
 import {
   repopulateFileTree,
@@ -8,7 +8,11 @@ import {
 import { permutateThemes } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
-import { THEME_STRING, SD_FUNCTIONS_PATH } from "./constants.js";
+import {
+  THEME_STRING,
+  SD_FUNCTIONS_PATH,
+  SD_CHANGED_EVENT,
+} from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 import { html } from "lit";
 
@@ -65,7 +69,7 @@ class SdState extends EventTarget {
   set sd(v) {
     this._sd = v;
     this.hasInitializedResolve();
-    this.dispatchEvent(new CustomEvent("sd-changed", { detail: v }));
+    this.dispatchEvent(new CustomEvent(SD_CHANGED_EVENT, { detail: v }));
   }
 
   get themes() {

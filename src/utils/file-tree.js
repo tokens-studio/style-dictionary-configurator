@@ -1,4 +1,4 @@
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { posix as path } from "path-unified";
 import { glob } from "@bundled-es-modules/glob";
 import { isPlainObject } from "is-plain-object";
@@ -16,6 +16,8 @@ import {
   CONFIG,
   FUNCTIONS,
   FUNCTIONS_SAVED_EVENT,
+  CONFIG_SAVED_EVENT,
+  TOKENS_SAVED_EVENT,
   SD_CONFIG_PATH,
   SD_FUNCTIONS_PATH,
 } from "../constants.js";
@@ -242,6 +244,7 @@ export async function replaceSource(files, clear = true, run = true) {
         })
     )
   );
+  window.dispatchEvent(new Event(INPUT_FILES_CREATED_EVENT));
   await encodeContentsToURL();
   if (run) {
     await sdState.runStyleDictionary({ force: true });
@@ -350,14 +353,24 @@ export async function saveFile(ed, { noRun = false } = {}) {
   await ensureMonacoIsLoaded();
   const fileTreeEl = await getFileTreeEl();
   if (ed === editorConfig) {
+    const configVal = editorConfig.getValue();
     if (configSwitcherEl.checkedChoice === FUNCTIONS) {
-      await promises.writeFile(SD_FUNCTIONS_PATH, editorConfig.getValue());
-      window.dispatchEvent(new Event(FUNCTIONS_SAVED_EVENT));
+      await promises.writeFile(SD_FUNCTIONS_PATH, configVal);
+      window.dispatchEvent(
+        new CustomEvent(FUNCTIONS_SAVED_EVENT, { detail: configVal })
+      );
     } else {
-      await promises.writeFile(findUsedConfigPath(), editorConfig.getValue());
+      await promises.writeFile(findUsedConfigPath(), configVal);
+      window.dispatchEvent(
+        new CustomEvent(CONFIG_SAVED_EVENT, { detail: configVal })
+      );
     }
   } else if (fileTreeEl.checkedFile) {
-    await promises.writeFile(fileTreeEl.checkedFile, editorOutput.getValue());
+    const outputVal = editorOutput.getValue();
+    await promises.writeFile(fileTreeEl.checkedFile, outputVal);
+    window.dispatchEvent(
+      new CustomEvent(TOKENS_SAVED_EVENT, { detail: outputVal })
+    );
   }
 
   await encodeContentsToURL();

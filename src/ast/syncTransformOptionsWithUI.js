@@ -3,7 +3,7 @@ import * as parserBabel from "prettier/plugins/babel";
 import * as prettierPluginEstree from "prettier/plugins/estree";
 import MagicString from "magic-string";
 import { asyncWalk } from "estree-walker";
-import fs from "@bundled-es-modules/memfs";
+import { fs } from "style-dictionary/fs";
 import { parseTransformOptions } from "./parseTransformOptions.js";
 import { SD_FUNCTIONS_PATH, FUNCTIONS } from "../constants.js";
 import { encodeContentsToURL } from "../utils/file-tree.js";
