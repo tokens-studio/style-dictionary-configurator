@@ -17,9 +17,10 @@ import {
   FUNCTIONS,
   FUNCTIONS_SAVED_EVENT,
   CONFIG_SAVED_EVENT,
+  INPUT_FILES_CREATED_EVENT,
+  SD_FUNCTIONS_PATH,
   TOKENS_SAVED_EVENT,
   SD_CONFIG_PATH,
-  SD_FUNCTIONS_PATH,
 } from "../constants.js";
 import { snackbar } from "../components/snackbar/SnackbarManager.js";
 
