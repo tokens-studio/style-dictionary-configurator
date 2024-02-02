@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.4
+
+### Patch Changes
+
+- 7ca6b2d: Add missing import of event constant.
+
 ## 0.0.3
 
 ### Patch Changes
