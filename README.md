@@ -33,6 +33,15 @@ import '@tokens-studio/configurator';
 </configurator-element>
 ```
 
+### Attributes
+
+```html
+<configurator-element prevent-init></configurator-element>
+```
+
+Allow `prevent-init` attribute to **not** initialize the configurator-element. Users can call `configuratorEl.init()` themselves e.g. after initializing the source files with the `replaceSource` utility, since this utility requires the `configurator-element` definition to at least be loaded.
+
+
 ### Icons
 
 This element uses [Microsoft Codicons](https://microsoft.github.io/vscode-codicons/dist/codicon.html).
@@ -41,7 +50,7 @@ For them to render properly, ensure the [`codicon` font definition](https://gith
 
 ### Utils
 
-We also export some utilities to make it easier to work with this
+We also export some utilities to make it easier to work with this:
 
 ```js
 import { replaceSource, resizeMonacoLayout, SD_FUNCTIONS_PATH, SD_CONFIG_PATH } from '@tokens-studio/configurator/utils';
@@ -55,8 +64,16 @@ import { registerTransforms } from '@tokens-studio/sd-transforms';
 
 registerTransforms(StyleDictionary);`,
   'studio.tokens.json': '{}'
+}, {
+  run: true,
+  clear: 'all'
 });
 ```
+
+The second param of `replaceSource` is  an options object with props:
+
+- `run` -> `true` or `false`, default value: `true`. Whether or not to run Style-Dictionary after replacing the files.
+- `clear` -> `true`, `false` or `"all"`, default value: `true`. `"all"` means all files are cleared first, including the Style-Dictionary config and functions files.
 
 > Note that your token files cannot match "config.json", "sd.config.json", "config.js", "sd.config.js", "config.mjs", "sd.config.mjs" or "registerSDFunctions.js".
 > These are reserved filenames for the SD Config / Functions files.
