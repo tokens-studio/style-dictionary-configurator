@@ -119,24 +119,28 @@ class SdState extends EventTarget {
     try {
       const $themes = JSON.parse(await promises.readFile("$themes.json"));
 
-      // 1) adjust config source and platform files names to themed
-      cfg = {
-        ...cfg,
-        platforms: Object.fromEntries(
-          Object.entries(cfg.platforms).map(([key, plat]) => [
-            key,
-            {
-              ...plat,
-              files: plat.files.map((file) => ({
-                ...file,
-                destination: addThemeToFilePath(file.destination),
-              })),
-            },
-          ])
-        ),
-      };
-      delete cfg.source;
-      this.themes = permutateThemes($themes, { separator: "-" });
+      if ($Object.keys(themes).length > 0) {
+        // 1) adjust config source and platform files names to themed
+        cfg = {
+          ...cfg,
+          platforms: Object.fromEntries(
+            Object.entries(cfg.platforms).map(([key, plat]) => [
+              key,
+              {
+                ...plat,
+                files: plat.files.map((file) => ({
+                  ...file,
+                  destination: addThemeToFilePath(file.destination),
+                })),
+              },
+            ])
+          ),
+        };
+        delete cfg.source;
+        this.themes = permutateThemes($themes, { separator: "-" });
+      } else {
+        this.themes = {};
+      }
     } catch (e) {
       this.themes = {};
     }
