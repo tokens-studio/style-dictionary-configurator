@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.6
+
+### Patch Changes
+
+- 028d254: Consider no themes are present when an empty array is the content of a $themes.json.
+
 ## 0.0.5
 
 ### Patch Changes
