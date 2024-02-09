@@ -16,6 +16,16 @@ import "./components/config-switcher/config-switcher.js";
 loadDefaultFeedbackMessages();
 
 export class ConfiguratorElement extends LitElement {
+  static get properties() {
+    return {
+      preventInit: {
+        type: Boolean,
+        reflect: true,
+        attribute: "prevent-init",
+      },
+    };
+  }
+
   static get styles() {
     return [
       css`
@@ -78,8 +88,15 @@ export class ConfiguratorElement extends LitElement {
     ];
   }
 
+  constructor() {
+    super();
+    this.preventInit = false;
+  }
+
   firstUpdated() {
-    this.init();
+    if (!this.preventInit) {
+      this.init();
+    }
   }
 
   render() {

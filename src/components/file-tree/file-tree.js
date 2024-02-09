@@ -246,7 +246,7 @@ class FileTree extends LitElement {
           ></button>
           <button
             title="Clear all files"
-            @click=${clearAll}
+            @click=${() => clearAll()}
             class="codicon codicon-clear-all"
           ></button>
         </div>

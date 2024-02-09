@@ -227,9 +227,9 @@ export function createConfig() {
   );
 }
 
-export async function replaceSource(files, clear = true, run = true) {
+export async function replaceSource(files, { clear = true, run = true } = {}) {
   if (clear) {
-    await clearAll();
+    await clearAll(clear === "all");
   }
   await Promise.all(
     Object.entries(files).map(
@@ -247,9 +247,16 @@ export async function replaceSource(files, clear = true, run = true) {
   );
   window.dispatchEvent(new Event(INPUT_FILES_CREATED_EVENT));
   await encodeContentsToURL();
+  const fileTreeEl = await getFileTreeEl();
+  if (fileTreeEl.outputFiles.length > 0) {
+    await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
+  }
+  await switchToFile(findUsedConfigPath(), editorConfig);
+  resizeMonacoLayout();
   if (run) {
     await sdState.runStyleDictionary({ force: true });
   }
+  await openAllFolders();
 }
 
 export async function createInputFiles() {
@@ -311,17 +318,19 @@ export async function openAllFolders() {
   );
 }
 
-export async function clearAll() {
-  const files = glob
+export async function clearAll(all = false) {
+  let files = glob
     .sync("**/*", { fs, mark: true })
     .map((file) => file.slice(1));
   // Keep config, only remove source tokens and output files
-  const filtered = files.filter(
-    (file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH
-  );
+  if (!all) {
+    files = files.filter(
+      (file) => file !== SD_CONFIG_PATH && file !== SD_FUNCTIONS_PATH
+    );
+  }
 
   await Promise.all(
-    filtered.map((file) => {
+    files.map((file) => {
       return new Promise(async (resolve) => {
         if (file.endsWith("/")) {
           await new Promise((resolve) => {
@@ -341,7 +350,12 @@ export async function clearAll() {
     })
   );
   editorOutput.setValue("");
-  await repopulateFileTree();
+  if (all) {
+    editorConfig.setValue("");
+  }
+  if (!all) {
+    await repopulateFileTree();
+  }
 }
 
 export async function saveFile(ed, { noRun = false } = {}) {
