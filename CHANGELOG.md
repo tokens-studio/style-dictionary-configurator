@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.5
+
+### Patch Changes
+
+- 5d3a13b: Allow prevent-init attribute to not initialize the configurator-element. Users can call .init() themselves e.g. after initializing the source files with the replaceSource utility.
+
 ## 0.0.4
 
 ### Patch Changes
