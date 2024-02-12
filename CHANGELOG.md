@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.7
+
+### Patch Changes
+
+- Fix $themes check issue.
+
 ## 0.0.6
 
 ### Patch Changes
