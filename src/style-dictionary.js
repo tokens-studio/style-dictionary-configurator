@@ -110,7 +110,7 @@ class SdState extends EventTarget {
     const addThemeToFilePath = (file) => {
       const fileParts = file.split(".");
       const index = fileParts.length - 2;
-      if (index >= 0 && !file.match(THEME_STRING)) {
+      if (index >= 0) {
         fileParts[index] = `${fileParts[index]}-${THEME_STRING}`;
       }
       return fileParts.join(".");
@@ -119,7 +119,7 @@ class SdState extends EventTarget {
     try {
       const $themes = JSON.parse(await promises.readFile("$themes.json"));
 
-      if ($Object.keys(themes).length > 0) {
+      if ($themes.length > 0) {
         // 1) adjust config source and platform files names to themed
         cfg = {
           ...cfg,
@@ -216,6 +216,7 @@ class SdState extends EventTarget {
         this.themedConfigs = themeEntries.map(([theme, tokensets]) =>
           this.injectThemeVariables(this.config, theme, tokensets)
         );
+        console.log(this.themedConfigs);
         await this._runStyleDictionary(this.themedConfigs);
       } else {
         await this._runStyleDictionary([this.config]);
