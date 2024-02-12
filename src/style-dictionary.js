@@ -110,7 +110,7 @@ class SdState extends EventTarget {
     const addThemeToFilePath = (file) => {
       const fileParts = file.split(".");
       const index = fileParts.length - 2;
-      if (index >= 0) {
+      if (index >= 0 && !file.match(THEME_STRING)) {
         fileParts[index] = `${fileParts[index]}-${THEME_STRING}`;
       }
       return fileParts.join(".");

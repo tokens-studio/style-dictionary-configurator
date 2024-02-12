@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.8
+
+### Patch Changes
+
+- f92ae69: Fix infinite looping file theme extension in output destination.
+
 ## 0.0.7
 
 ### Patch Changes
