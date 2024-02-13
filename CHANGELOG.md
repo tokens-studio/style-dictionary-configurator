@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.10
+
+### Patch Changes
+
+- Fix clearAll() function to wait for Monaco loaded when setting the editors to ""
+
 ## 0.0.9
 
 ### Patch Changes

@@ -349,10 +349,12 @@ export async function clearAll(all = false) {
       });
     })
   );
+  await ensureMonacoIsLoaded();
   editorOutput.setValue("");
   if (all) {
     editorConfig.setValue("");
   }
+
   if (!all) {
     await repopulateFileTree();
   }
