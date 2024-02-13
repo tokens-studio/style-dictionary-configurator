@@ -91,6 +91,7 @@ export class ConfiguratorElement extends LitElement {
   constructor() {
     super();
     this.preventInit = false;
+    this.hasInitialized = false;
   }
 
   firstUpdated() {
@@ -121,18 +122,21 @@ export class ConfiguratorElement extends LitElement {
   }
 
   async init() {
-    await setupEditorChangeHandlers();
-    await sdState.loadSDFunctions();
-    await sdState.runStyleDictionary();
+    if (!this.hasInitialized) {
+      await setupEditorChangeHandlers();
+      await sdState.loadSDFunctions();
+      await sdState.runStyleDictionary();
 
-    await openAllFolders();
-    const fileTreeEl = await getFileTreeEl();
-    if (fileTreeEl.outputFiles.length > 0) {
-      await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
+      await openAllFolders();
+      const fileTreeEl = await getFileTreeEl();
+      if (fileTreeEl.outputFiles.length > 0) {
+        await fileTreeEl.switchToFile(fileTreeEl.outputFiles[0]);
+      }
+      await switchToFile(findUsedConfigPath(), editorConfig);
+
+      resizeMonacoLayout();
+      this.hasInitialized = true;
     }
-    await switchToFile(findUsedConfigPath(), editorConfig);
-
-    resizeMonacoLayout();
   }
 }
 

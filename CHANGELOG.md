@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.9
+
+### Patch Changes
+
+- Export ensureMonacoIsLoaded util for easier use of replaceSource util, which doesn't work very well if Monaco isn't loaded.
+
 ## 0.0.8
 
 ### Patch Changes

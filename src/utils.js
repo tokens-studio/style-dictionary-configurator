@@ -8,5 +8,5 @@ export {
   replaceSource,
   openAllFolders,
 } from "./utils/file-tree.js";
-export { resizeMonacoLayout } from "./monaco/monaco.js";
+export { resizeMonacoLayout, ensureMonacoIsLoaded } from "./monaco/monaco.js";
 export * from "./constants.js";
