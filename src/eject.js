@@ -1,4 +1,3 @@
-import { TextReader, ZipWriter, BlobWriter } from "@zip.js/zip.js";
 import { fs } from "style-dictionary/fs";
 import { parse } from "acorn";
 import { asyncWalk } from "estree-walker";
@@ -7,7 +6,7 @@ import * as parserBabel from "prettier/plugins/babel";
 import * as prettierPluginEstree from "prettier/plugins/estree";
 import { sdState } from "./style-dictionary.js";
 import { SD_CONFIG_PATH, SD_FUNCTIONS_PATH } from "./constants.js";
-import { getInputFiles } from "./utils/file-tree.js";
+import { downloadZIP, getContents, getInputFiles } from "./utils/file-tree.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
 
 export async function setupEjectBtnHandler() {
@@ -148,14 +147,11 @@ async function ejectHandler(ev) {
   const sdVersion = ev.target.getAttribute("id").split("eject-btn-")[1];
   ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
 
-  const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
   const inputFiles = await getInputFiles();
-  await Promise.all(
-    inputFiles
-      .filter((file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file))
-      .map((file) =>
-        zipWriter.add(file, new TextReader(fs.readFileSync(file, "utf-8")))
-      )
+  let files = await getContents(
+    inputFiles.filter(
+      (file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file)
+    )
   );
 
   const { themes, config } = sdState;
@@ -223,28 +219,23 @@ ${sdVersion === "v4" ? "await " : ""}sd.buildAllPlatforms();
     plugins: [prettierPluginEstree, parserBabel],
     singleQuote: true,
   });
-  await zipWriter.add(
-    `build-tokens.${sdVersion === "v3" ? "c" : "m"}js`,
-    new TextReader(formattedCode)
-  );
 
-  await zipWriter.add(
-    "instructions.md",
-    new TextReader(`# Install Dependencies
+  files[`build-tokens.${sdVersion === "v3" ? "c" : "m"}js`] = formattedCode;
+  files["instructions.md"] = `# Install Dependencies
 
 Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 \`\`\`sh
 npm init -y && npm install ${dependencies
-      .map((dep) => {
-        if (dep.package === "style-dictionary") {
-          return sdVersion === "v3"
-            ? `${dep.package}@latest`
-            : `${dep.package}@prerelease`;
-        }
-        return dep.package;
-      })
-      .join(" ")}
+    .map((dep) => {
+      if (dep.package === "style-dictionary") {
+        return sdVersion === "v3"
+          ? `${dep.package}@latest`
+          : `${dep.package}@prerelease`;
+      }
+      return dep.package;
+    })
+    .join(" ")}
 \`\`\`
 
 Then run
@@ -252,23 +243,9 @@ Then run
 \`\`\`sh
 node build-tokens.${sdVersion === "v3" ? "c" : "m"}js
 \`\`\`
-`)
-  );
+`;
 
-  // Close zip and make into URL
-  const dataURI = await zipWriter.close();
-  const url = URL.createObjectURL(dataURI);
-
-  // Auto-download the ZIP through anchor
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  const today = new Date();
-  anchor.download = `sd-eject-${today.getFullYear()}-${today.getMonth() + 1}-${(
-    "0" + today.getDate()
-  ).slice(-2)}.zip`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
+  await downloadZIP(files);
 
   snackbar.show(
     `You can now extract the .zip that you received, make sure to follow the instructions from the instructions.md file and voila! 🎉`,

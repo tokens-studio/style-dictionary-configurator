@@ -18,6 +18,7 @@ import {
   editFileName,
   getAllFiles,
   saveFile,
+  downloadZIP,
 } from "../../utils/file-tree.js";
 import styles from "./file-tree.css.js";
 
@@ -595,30 +596,8 @@ class FileTree extends LitElement {
   }
 
   async downloadAsZIP() {
-    const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"));
-
-    // Add all files to zip
     const allFiles = await getAllFiles();
-    await Promise.all(
-      Object.entries(allFiles).map(([key, value]) =>
-        zipWriter.add(key, new zip.TextReader(value))
-      )
-    );
-
-    // Close zip and make into URL
-    const dataURI = await zipWriter.close();
-    const url = URL.createObjectURL(dataURI);
-
-    // Auto-download the ZIP through anchor
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    const today = new Date();
-    anchor.download = `sd-export-${today.getFullYear()}-${today.getMonth()}-${(
-      "0" + today.getDate()
-    ).slice(-2)}.zip`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+    await downloadZIP(allFiles);
   }
 }
 customElements.define("file-tree", FileTree);
