@@ -2,6 +2,7 @@ import { fs } from "style-dictionary/fs";
 import { posix as path } from "path-unified";
 import { glob } from "@bundled-es-modules/glob";
 import { isPlainObject } from "is-plain-object";
+import * as zip from "@zip.js/zip.js";
 import { sdState } from "../style-dictionary.js";
 import mkdirRecursive from "./mkdirRecursive.js";
 import { findUsedConfigPath } from "./findUsedConfigPath.js";
@@ -670,4 +671,36 @@ export async function getContents(files) {
     })
   );
   return contents;
+}
+
+// output files by default, but can pass your own files object
+export async function downloadZIP(files) {
+  const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"));
+
+  let outputContents = files;
+  // Add all files to zip
+  if (!files) {
+    const outputFiles = await getOutputFiles();
+    outputContents = await getContents(outputFiles);
+  }
+
+  await Promise.all(
+    Object.entries(outputContents).map(([key, value]) =>
+      zipWriter.add(key, new zip.TextReader(value))
+    )
+  );
+
+  // Close zip and make into URL
+  const dataURI = await zipWriter.close();
+  const url = URL.createObjectURL(dataURI);
+
+  // Auto-download the ZIP through anchor
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  const today = new Date();
+  anchor.download = `sd-output_${today.getFullYear()}-${today.getMonth()}-${(
+    "0" + today.getDate()
+  ).slice(-2)}.zip`;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
