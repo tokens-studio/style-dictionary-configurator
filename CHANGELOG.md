@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.12
+
+### Patch Changes
+
+- a750990: Simplify some of the async filesystem populating utils.
+
 ## 0.0.11
 
 ### Patch Changes
