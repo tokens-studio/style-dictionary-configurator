@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.0.11
+
+### Patch Changes
+
+- 3ac64ba: Expose downloadZIP utility, allows downloading output files by default, or specify a files object in case you want more than that.
+
 ## 0.0.10
 
 ### Patch Changes
