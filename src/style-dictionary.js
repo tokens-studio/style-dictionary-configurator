@@ -216,7 +216,6 @@ class SdState extends EventTarget {
         this.themedConfigs = themeEntries.map(([theme, tokensets]) =>
           this.injectThemeVariables(this.config, theme, tokensets)
         );
-        console.log(this.themedConfigs);
         await this._runStyleDictionary(this.themedConfigs);
       } else {
         await this._runStyleDictionary([this.config]);

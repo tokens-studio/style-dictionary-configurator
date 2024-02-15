@@ -4,7 +4,6 @@ import { glob } from "@bundled-es-modules/glob";
 import { isPlainObject } from "is-plain-object";
 import * as zip from "@zip.js/zip.js";
 import { sdState } from "../style-dictionary.js";
-import mkdirRecursive from "./mkdirRecursive.js";
 import { findUsedConfigPath } from "./findUsedConfigPath.js";
 import {
   ensureMonacoIsLoaded,
@@ -76,16 +75,14 @@ async function createFilesFromURL(project) {
 
   const parsedContents = JSON.parse(flate.deflate_decode(project));
   await Promise.all(
-    Object.entries(parsedContents).map(async ([file, content]) => {
-      return new Promise(async (resolve) => {
-        const dir = path.dirname(file);
-        if (dir !== "/") {
-          await mkdirRecursive(dir);
-        }
-        fs.writeFile(file, content, (err) => {
-          resolve();
-        });
-      });
+    Object.entries(parsedContents).map(([file, content]) => {
+      const dir = path.dirname(file);
+      if (!fs.existsSync(dir)) {
+        return fs.promises
+          .mkdir(dir, { recursive: true })
+          .then(() => fs.promises.writeFile(file, content));
+      }
+      return fs.promises.writeFile(file, content);
     })
   );
 }
@@ -234,18 +231,19 @@ export async function replaceSource(files, { clear = true, run = true } = {}) {
   }
   await Promise.all(
     Object.entries(files).map(
-      ([filename, contents]) =>
-        new Promise(async (resolve) => {
-          const dir = path.dirname(filename);
-          if (dir !== "/") {
-            await mkdirRecursive(dir);
+      ([file, content]) =>
+        new Promise((resolve) => {
+          const dir = path.dirname(file);
+          if (!fs.existsSync(dir)) {
+            fs.promises.mkdir(dir, { recursive: true }).then(() => {
+              fs.writeFile(file, content, resolve);
+            });
           }
-          fs.writeFile(filename, contents, "utf-8", () => {
-            resolve();
-          });
+          fs.writeFile(file, content, resolve);
         })
     )
   );
+
   window.dispatchEvent(new Event(INPUT_FILES_CREATED_EVENT));
   await encodeContentsToURL();
   const fileTreeEl = await getFileTreeEl();
