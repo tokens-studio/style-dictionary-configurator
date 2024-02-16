@@ -147,14 +147,15 @@ async function ejectHandler(ev) {
   const sdVersion = ev.target.getAttribute("id").split("eject-btn-")[1];
   ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
 
-  const inputFiles = await getInputFiles();
-  let files = await getContents(
-    inputFiles.filter(
-      (file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file)
-    )
+  const inputFiles = (await getInputFiles()).filter(
+    (file) => ![SD_CONFIG_PATH, SD_FUNCTIONS_PATH].includes(file)
   );
+  let files = await getContents(inputFiles);
 
   const { themes, config } = sdState;
+  if (JSON.stringify(config.source) === JSON.stringify(["**/*.json"])) {
+    config.source = inputFiles;
+  }
   const hasThemes = Object.keys(themes).length > 0;
   const functionsContent = fs.readFileSync(SD_FUNCTIONS_PATH, "utf-8");
   const dependencies = await analyzeDependencies(functionsContent);
@@ -233,6 +234,13 @@ npm init -y && npm install ${dependencies
           ? `${dep.package}@latest`
           : `${dep.package}@prerelease`;
       }
+      // sd-transforms 0.13.0 is no longer compatible with style-dictionary v3, only v4 onwards
+      if (
+        dep.package === "@tokens-studio/sd-transforms" &&
+        sdVersion === "v3"
+      ) {
+        return `${dep.package}@0.12.2`;
+      }
       return dep.package;
     })
     .join(" ")}
@@ -243,6 +251,10 @@ Then run
 \`\`\`sh
 node build-tokens.${sdVersion === "v3" ? "c" : "m"}js
 \`\`\`
+
+> Note: Make sure to change your "source" property in the config in build-tokens.${
+    sdVersion === "v3" ? "c" : "m"
+  }js to not include your package.json, which is not a token file.
 `;
 
   await downloadZIP(files);
