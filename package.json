@@ -33,7 +33,7 @@
     "estree-walker": "^3.0.3",
     "is-plain-object": "^5.0.0",
     "lit": "^3.1.1",
-    "magic-string": "^0.30.5",
+    "magic-string": "^0.30.6",
     "path-unified": "^0.1.0",
     "prettier": "^3.2.4",
     "style-dictionary": "^4.0.0-prerelease.15",
