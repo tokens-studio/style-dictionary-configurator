@@ -26,7 +26,7 @@
     "@lion/ui": "^0.5.2",
     "@open-wc/dedupe-mixin": "^1.4.0",
     "@rollup/browser": "^4.9.6",
-    "@tokens-studio/sd-transforms": "^0.14.0",
+    "@tokens-studio/sd-transforms": "^0.14.2",
     "@tokens-studio/tokens": "^0.0.24",
     "@zip.js/zip.js": "^2.7.32",
     "acorn": "^8.11.3",
