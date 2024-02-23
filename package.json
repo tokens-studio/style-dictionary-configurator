@@ -28,7 +28,7 @@
     "@rollup/browser": "^4.9.6",
     "@tokens-studio/sd-transforms": "^0.14.0",
     "@tokens-studio/tokens": "^0.0.24",
-    "@zip.js/zip.js": "^2.7.32",
+    "@zip.js/zip.js": "^2.7.34",
     "acorn": "^8.11.3",
     "estree-walker": "^3.0.3",
     "is-plain-object": "^5.0.0",
