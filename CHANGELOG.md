@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.1.0
+
+### Minor Changes
+
+- c222731: Upgrade to latest Style-Dictionary (pre.19) & sd-transforms
+
 ## 0.0.12
 
 ### Patch Changes
