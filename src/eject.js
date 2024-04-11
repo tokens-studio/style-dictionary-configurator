@@ -225,6 +225,7 @@ ${sdVersion === "v4" ? "await " : ""}sd.buildAllPlatforms();
   files["instructions.md"] = `# Install Dependencies
 
 Install your dependencies with [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+Be careful with using yarn as an alternative, we noticed it handles semver/prereleases tags slightly different, and may result in issues.
 
 \`\`\`sh
 npm init -y && npm install ${dependencies
