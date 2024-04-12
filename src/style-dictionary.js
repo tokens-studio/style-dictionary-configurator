@@ -1,20 +1,21 @@
 import { fs } from "style-dictionary/fs";
 import StyleDictionary from "style-dictionary";
+import { permutateThemes } from "@tokens-studio/sd-transforms";
+import { posix } from "path-unified";
 import {
   repopulateFileTree,
   getFileTreeEl,
   currentFileOutput,
 } from "./utils/file-tree.js";
-import { permutateThemes } from "@tokens-studio/sd-transforms";
 import { bundle } from "./utils/rollup-bundle.js";
 import { findUsedConfigPath } from "./utils/findUsedConfigPath.js";
 import {
   THEME_STRING,
   SD_FUNCTIONS_PATH,
   SD_CHANGED_EVENT,
+  SD_CONFIG_PATH,
 } from "./constants.js";
 import { snackbar } from "./components/snackbar/SnackbarManager.js";
-import { html } from "lit";
 
 const { promises } = fs;
 
@@ -41,6 +42,7 @@ class SdState extends EventTarget {
     this._sd = [];
     this._themes = {};
     this.themedConfigs = [];
+    this.rootDir = "/";
     this.hasInitializedConfig = new Promise((resolve) => {
       this.hasInitializedConfigResolve = resolve;
     });
@@ -83,6 +85,30 @@ class SdState extends EventTarget {
     }
   }
 
+  async determineRootFolder() {
+    let rootDir = "/";
+    // the $themes.json and tokens could be in any nested
+    // folder structure. this code recursively goes through them
+    // until it finds more than just 1 nested folder
+    const getDirContents = async () => {
+      const contents = (await promises.readdir(rootDir)).filter(
+        (f) => ![SD_FUNCTIONS_PATH, SD_CONFIG_PATH].includes(f)
+      );
+      if (
+        contents.length === 1 &&
+        (await promises.lstat(posix.join(rootDir, contents[0]))).isDirectory()
+      ) {
+        return contents[0];
+      }
+    };
+
+    let dir;
+    while ((dir = await getDirContents(rootDir))) {
+      rootDir = posix.join(rootDir, dir);
+    }
+    this.rootDir = rootDir;
+  }
+
   async processConfigForThemes(cfg) {
     const addThemeToFilePath = (file) => {
       const fileParts = file.split(".");
@@ -94,7 +120,9 @@ class SdState extends EventTarget {
     };
 
     try {
-      const $themes = JSON.parse(await promises.readFile("$themes.json"));
+      const $themes = JSON.parse(
+        await promises.readFile(posix.join(this.rootDir, "$themes.json"))
+      );
 
       if ($themes.length > 0) {
         // 1) adjust config source and platform files names to themed
@@ -246,7 +274,9 @@ class SdState extends EventTarget {
   injectThemeVariables(cfg, theme, tokensets) {
     const reg = new RegExp(THEME_STRING, "g");
     const newCfg = JSON.parse(JSON.stringify(cfg).replace(reg, theme));
-    newCfg.source = tokensets.map((set) => `${set}.json`);
+    newCfg.source = tokensets.map((set) =>
+      posix.join(this.rootDir, `${set}.json`)
+    );
     return newCfg;
   }
 
