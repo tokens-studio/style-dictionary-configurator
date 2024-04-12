@@ -68,8 +68,7 @@ async function createFilesFromURL(project) {
     snackbar.show(
       "Flate could not be loaded to decode the URL to project files.\nCreating default tokens studio template instead."
     );
-    createConfig();
-    createStudioTokens();
+    await Promise.all([createConfig(), createStudioTokens()]);
     return;
   }
 
@@ -85,6 +84,7 @@ async function createFilesFromURL(project) {
       return fs.promises.writeFile(file, content);
     })
   );
+  await sdState.determineRootFolder();
 }
 
 export async function createStudioTokens() {
@@ -92,104 +92,11 @@ export async function createStudioTokens() {
     await fetch(new URL("./core.json", import.meta.url).href)
   ).json();
 
-  fs.writeFileSync("studio.json", JSON.stringify(tokens, null, 2));
+  fs.promises.writeFile("studio.json", JSON.stringify(tokens, null, 2));
 }
 
-export function createStandardTokens() {
-  fs.mkdirSync(`color`);
-  fs.mkdirSync(`card`);
-  fs.mkdirSync(`radii`);
-  fs.writeFileSync(
-    path.join(`color`, "base.json"),
-    JSON.stringify(
-      {
-        color: {
-          base: {
-            gray: {
-              light: { value: "#CCCCCC" },
-              medium: { value: "#999999" },
-              dark: { value: "#111111" },
-            },
-            red: { value: "#FF0000" },
-            green: { value: "#00FF00" },
-          },
-        },
-      },
-      null,
-      2
-    )
-  );
-
-  fs.writeFileSync(
-    path.join(`color`, "font.json"),
-    JSON.stringify(
-      {
-        color: {
-          font: {
-            base: { value: "{color.base.red}" },
-            secondary: { value: "{color.base.green}" },
-            tertiary: { value: "{color.base.gray.dark}" },
-          },
-        },
-      },
-      null,
-      2
-    )
-  );
-
-  fs.writeFileSync(
-    path.join(`card`, "card.json"),
-    JSON.stringify(
-      {
-        card: {
-          border: {
-            radius: {
-              mobile: {
-                value: "{radii.none}",
-              },
-              desktop: {
-                value: "{radii.sm}",
-              },
-            },
-          },
-          heading: {
-            color: {
-              value: "{color.font.base}",
-            },
-          },
-          text: {
-            color: {
-              value: "{color.font.tertiary}",
-            },
-          },
-        },
-      },
-      null,
-      2
-    )
-  );
-
-  fs.writeFileSync(
-    path.join(`radii`, "base.json"),
-    JSON.stringify(
-      {
-        radii: {
-          none: {
-            value: "0",
-          },
-          sm: {
-            value: "8px",
-          },
-        },
-      },
-      null,
-      2
-    )
-  );
-}
-
-export function createConfig() {
-  fs.writeFileSync(
+export async function createConfig() {
+  fs.promises.writeFile(
     // take the .js by default
     SD_CONFIG_PATH,
     JSON.stringify(
@@ -221,7 +128,8 @@ export function createConfig() {
       },
       null,
       2
-    )
+    ),
+    "utf-8"
   );
 }
 
@@ -253,6 +161,8 @@ export async function replaceSource(files, { clear = true, run = true } = {}) {
   await switchToFile(findUsedConfigPath(), editorConfig);
   resizeMonacoLayout();
   if (run) {
+    // reset rootDir
+    await sdState.determineRootFolder();
     await sdState.runStyleDictionary({ force: true });
   }
   await openAllFolders();
@@ -263,8 +173,7 @@ export async function createInputFiles() {
   if (urlSplit.length > 1 && window.__configurator_standalone__) {
     await createFilesFromURL(urlSplit[1]);
   } else {
-    createConfig();
-    createStudioTokens();
+    await Promise.all([createConfig(), createStudioTokens()]);
   }
 }
 
@@ -282,12 +191,12 @@ export async function createFolder(foldername) {
       resolve();
     });
   });
+  await sdState.determineRootFolder();
 }
 
 export async function editFileName(filePath, newName, isFolder = false) {
   const newPath = path.join(path.dirname(filePath), newName);
   fs.renameSync(filePath, newPath);
-  // await sdState.runStyleDictionary();
 }
 
 export async function removeFile(file) {
