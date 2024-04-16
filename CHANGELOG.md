@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.1.1
+
+### Patch Changes
+
+- c147232: Upgrade to latest style-dictionary@4.0.0-prerelease.26, allow nested folders for tokens/themes, add yarn install instruction.
+
 ## 0.1.0
 
 ### Minor Changes
