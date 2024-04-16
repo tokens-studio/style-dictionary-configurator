@@ -33,6 +33,14 @@ import '@tokens-studio/configurator';
 </configurator-element>
 ```
 
+You'll also need to ensure that WASM bindings are supported in whatever dev server you use. For Vite for example, you will need:
+
+```js
+optimizeDeps: {
+  exclude: ['@rollup/browser'],
+}
+```
+
 ### Attributes
 
 ```html

@@ -36,7 +36,7 @@
     "magic-string": "^0.30.8",
     "path-unified": "^0.1.0",
     "prettier": "^3.2.5",
-    "style-dictionary": "4.0.0-prerelease.25",
+    "style-dictionary": "4.0.0-prerelease.26",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
