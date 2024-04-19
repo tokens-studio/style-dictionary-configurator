@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@bundled-es-modules/glob": "^10.3.13",
-    "@lion/ui": "^0.5.6",
+    "@lion/ui": "^0.6.0",
     "@open-wc/dedupe-mixin": "^1.4.0",
     "@rollup/browser": "^4.13.0",
     "@tokens-studio/sd-transforms": "^0.14.4",
