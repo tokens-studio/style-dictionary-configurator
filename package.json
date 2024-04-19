@@ -27,7 +27,7 @@
     "@open-wc/dedupe-mixin": "^1.4.0",
     "@rollup/browser": "^4.13.0",
     "@tokens-studio/sd-transforms": "^0.14.4",
-    "@tokens-studio/tokens": "^0.0.24",
+    "@tokens-studio/tokens": "^0.1.1",
     "@zip.js/zip.js": "^2.7.40",
     "acorn": "^8.11.3",
     "estree-walker": "^3.0.3",
