@@ -72,28 +72,37 @@ export async function bundle(inputPath, _fs = fs) {
           let matchRes;
           while ((matchRes = reg.exec(rewrittenCode)) !== null) {
             let { id, entrypoint } = matchRes.groups;
-            let namedImport = id;
-            let replacement;
+            let namedImports = [id];
+            let replacements;
 
             if (id.startsWith("{") && id.endsWith("}") && entrypoint) {
-              namedImport = namedImport
+              namedImports = id
                 .replace("{", "")
                 .replace("}", "")
-                .trim();
-              const entry = entrypoint.replace(/^\//, "");
+                .split(",")
+                .map((importSpecifier) => importSpecifier.trim());
 
-              if (entry === "fs") {
-                replacement = `globalThis['${sdFsName}']['${namedImport}']`;
-              } else if (entry === "utils") {
-                replacement = `globalThis['${sdUtilsName}']['${namedImport}']`;
+              const entry = entrypoint.replace(/^\//, "");
+              if (entry === "fs" || entry === "utils") {
+                replacements = namedImports.map((imp) => [
+                  imp,
+                  `globalThis['${
+                    entry === "fs" ? sdFsName : sdUtilsName
+                  }']['${imp}']`,
+                ]);
               }
             } else {
               // Remove the import statement, replace the id wherever used with the global
-              replacement = `globalThis['${sdName}']`;
+              replacements = [[id, `globalThis['${sdName}']`]];
             }
-            rewrittenCode = rewrittenCode
-              .replace(matchRes[0], "")
-              .replace(new RegExp(namedImport, "g"), replacement);
+            rewrittenCode = rewrittenCode.replace(matchRes[0], "");
+
+            replacements.forEach((repl) => {
+              rewrittenCode = rewrittenCode.replace(
+                new RegExp(repl[0], "g"),
+                repl[1]
+              );
+            });
           }
 
           return rewrittenCode;
