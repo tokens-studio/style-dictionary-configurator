@@ -241,9 +241,8 @@ export class SdSelectionDisplay extends LitElement {
     if (ev.key === "Backspace") {
       if (!this._inputNode.value) {
         if (this._removeChipOnNextBackspace && this._selectedElements.length) {
-          this._selectedElements[
-            this._selectedElements.length - 1
-          ].checked = false;
+          this._selectedElements[this._selectedElements.length - 1].checked =
+            false;
         }
         this._removeChipOnNextBackspace = true;
       }

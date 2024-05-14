@@ -33,7 +33,7 @@ class SdCombobox extends LionCombobox {
           color: var(--fgDefault);
           line-height: 1;
           background-color: var(--inputBg);
-          border: 1px solid var(--inputBorderRest);
+          border: 1px solid var(--borderSubtle);
         }
 
         ::slotted([slot="label"]) {
@@ -63,7 +63,7 @@ class SdCombobox extends LionCombobox {
           margin-top: var(--space2);
           background-color: var(--bgDefault);
           box-shadow: var(--shadowsSmall);
-          border: 1px solid var(--borderMuted);
+          border: 1px solid var(--borderSubtle);
           border-radius: var(--radiiMedium);
           padding: var(--space3);
         }

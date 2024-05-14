@@ -46,7 +46,7 @@ export default css`
   }
 
   .platform {
-    border: 1px solid var(--borderMuted);
+    border: 1px solid var(--borderSubtle);
     border-radius: var(--radiiMedium);
     background: var(--bgCanvas);
   }
@@ -55,7 +55,7 @@ export default css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--borderMuted);
+    border-bottom: 1px solid var(--borderSubtle);
     padding: var(--space1) var(--space5);
     padding-right: var(--space1);
   }
