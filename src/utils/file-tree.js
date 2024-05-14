@@ -102,6 +102,7 @@ export async function createConfig() {
     JSON.stringify(
       {
         source: ["**/*.json"],
+        preprocessors: ["tokens-studio"],
         platforms: {
           css: {
             transformGroup: "tokens-studio",

@@ -20,7 +20,7 @@ import { snackbar } from "./components/snackbar/SnackbarManager.js";
 const { promises } = fs;
 
 StyleDictionary.registerParser({
-  name: "js-tokens-parser",
+  name: "tokens-studio/parser-js",
   // matches js, mjs
   pattern: /\.(j|mj)s$/,
   parser: async ({ filePath }) => {
