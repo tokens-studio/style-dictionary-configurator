@@ -1,5 +1,12 @@
 # @tokens-studio/token-configurator
 
+## 0.1.2
+
+### Patch Changes
+
+- e65db5d: Fix for rollup bundle utility to deal with multiple import specifiers from SD on a single import statement.
+- c764610: Upgrade to Style Dictionary 4.0.0-prerelease.27
+
 ## 0.1.1
 
 ### Patch Changes
