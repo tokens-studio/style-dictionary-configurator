@@ -1,5 +1,11 @@
 # @tokens-studio/token-configurator
 
+## 0.1.3
+
+### Patch Changes
+
+- 342189f: Add preprocessors tokens-studio in default config, since SD prerelease 27 this must be explicit in the config.
+
 ## 0.1.2
 
 ### Patch Changes
