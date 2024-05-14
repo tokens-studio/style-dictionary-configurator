@@ -137,7 +137,7 @@ class PlatformsDialog extends LitElement {
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
         ${repeat(
-          Object.keys(StyleDictionary.transformGroup)
+          Object.keys(StyleDictionary.hooks.transformGroups)
             // put tokens-studio transformGroup first
             .sort((a, b) => {
               if (a === "tokens-studio") return -1;
@@ -155,7 +155,7 @@ class PlatformsDialog extends LitElement {
           `
         )}
         ${repeat(
-          Object.keys(StyleDictionary.transform)
+          Object.keys(StyleDictionary.hooks.transforms)
             // put tokens-studio transforms first
             .sort((a, b) => {
               if (a.startsWith("ts/")) return -1;
@@ -189,7 +189,7 @@ class PlatformsDialog extends LitElement {
       >
         <sd-selection-display slot="selection-display"></sd-selection-display>
         ${repeat(
-          Object.keys(StyleDictionary.format),
+          Object.keys(StyleDictionary.hooks.formats),
           (format) => format,
           (format) => html`
             <sd-option .checked=${false} .choiceValue="${format}"

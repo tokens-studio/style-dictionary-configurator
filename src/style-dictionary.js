@@ -20,9 +20,10 @@ import { snackbar } from "./components/snackbar/SnackbarManager.js";
 const { promises } = fs;
 
 StyleDictionary.registerParser({
+  name: "js-tokens-parser",
   // matches js, mjs
   pattern: /\.(j|mj)s$/,
-  parse: async ({ filePath }) => {
+  parser: async ({ filePath }) => {
     const bundled = await bundle(filePath);
     const url = URL.createObjectURL(
       new Blob([bundled], { type: "text/javascript" })

@@ -17,6 +17,7 @@
     "./utils": "./src/utils.js"
   },
   "scripts": {
+    "start": "wds",
     "dev": "wds",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "release": "npm run build && changeset publish"
@@ -36,7 +37,7 @@
     "magic-string": "^0.30.8",
     "path-unified": "^0.1.0",
     "prettier": "^3.2.5",
-    "style-dictionary": "4.0.0-prerelease.26",
+    "style-dictionary": "4.0.0-prerelease.27",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
