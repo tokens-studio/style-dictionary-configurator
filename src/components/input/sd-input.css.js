@@ -26,7 +26,7 @@ export default css`
     color: var(--fgDefault);
     line-height: 1;
     background-color: var(--inputBg);
-    border: 1px solid var(--inputBorderRest);
+    border: 1px solid var(--borderSubtle);
   }
 
   ::slotted([slot="input"]:focus-visible) {

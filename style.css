@@ -46,7 +46,7 @@ main {
 
 header {
   padding: var(--space7);
-  border-bottom: 1px solid var(--borderMuted);
+  border-bottom: 1px solid var(--borderSubtle);
 }
 
 h1 {

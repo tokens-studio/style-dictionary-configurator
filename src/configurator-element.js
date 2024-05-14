@@ -56,7 +56,7 @@ export class ConfiguratorElement extends LitElement {
           display: flex;
           height: 50%;
           border-radius: var(--border-radius-editor);
-          border-left: 1px solid var(--borderMuted);
+          border-left: 1px solid var(--borderSubtle);
           margin: 0 auto;
           position: relative;
         }
