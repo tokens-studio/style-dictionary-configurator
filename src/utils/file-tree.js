@@ -101,7 +101,7 @@ export async function createConfig() {
     SD_CONFIG_PATH,
     JSON.stringify(
       {
-        source: ["**/*.json"],
+        source: ["studio.json"],
         preprocessors: ["tokens-studio"],
         platforms: {
           css: {

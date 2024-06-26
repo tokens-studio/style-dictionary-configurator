@@ -153,7 +153,7 @@ async function ejectHandler(ev) {
   let files = await getContents(inputFiles);
 
   const { themes, config } = sdState;
-  if (JSON.stringify(config.source) === JSON.stringify(["**/*.json"])) {
+  if (JSON.stringify(config.source) === JSON.stringify(["studio.json"])) {
     config.source = inputFiles;
   }
   const hasThemes = Object.keys(themes).length > 0;
