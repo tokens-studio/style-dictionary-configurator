@@ -68,9 +68,9 @@ window.addEventListener('resize', resizeMonacoLayout);
 replaceSource({
   [SD_CONFIG_PATH]: '{}',
   [SD_FUNCTIONS_PATH]: `import StyleDictionary from 'style-dictionary';
-import { registerTransforms } from '@tokens-studio/sd-transforms';
+import { register } from '@tokens-studio/sd-transforms';
 
-registerTransforms(StyleDictionary);`,
+register(StyleDictionary);`,
   'studio.tokens.json': '{}'
 }, {
   run: true,
