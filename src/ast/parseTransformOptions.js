@@ -13,8 +13,8 @@ export async function parseTransformOptions() {
   await asyncWalk(ast, {
     enter: (node) => {
       if (node.type === "CallExpression") {
-        // registerTransforms(arg1, arg2)
-        if (node.callee.name === "registerTransforms") {
+        // register(arg1, arg2)
+        if (node.callee.name === "register") {
           // arg2 which are the options
           if (
             node.arguments.length === 2 &&

@@ -72,11 +72,11 @@ export class ConfigSwitcher extends LitElement {
       fs.writeFileSync(
         SD_FUNCTIONS_PATH,
         `import StyleDictionary from 'style-dictionary';
-import { registerTransforms } from '@tokens-studio/sd-transforms';
+import { register } from '@tokens-studio/sd-transforms';
 
 // sd-transforms, 2nd parameter for options can be added
 // See docs: https://github.com/tokens-studio/sd-transforms
-registerTransforms(StyleDictionary);
+register(StyleDictionary);
 `
       );
     }

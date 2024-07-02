@@ -17,16 +17,13 @@ export async function syncTransformOptionsWithUI(options) {
   await asyncWalk(ast, {
     enter: async (node) => {
       if (node.type === "CallExpression") {
-        // registerTransforms(arg1, arg2)
-        if (
-          node.callee.name === "registerTransforms" &&
-          node.arguments[0]?.name
-        ) {
+        // register(arg1, arg2)
+        if (node.callee.name === "register" && node.arguments[0]?.name) {
           const firstArgLiteral = node.arguments[0].name; // value of first arg string literal, e.g. StyleDictionary
           ms.overwrite(
             node.start,
             node.end,
-            `registerTransforms(${firstArgLiteral}, ${optionsAsCode})`
+            `register(${firstArgLiteral}, ${optionsAsCode})`
           );
         }
       }
