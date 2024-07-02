@@ -1,5 +1,12 @@
 # @tokens-studio/token-configurator
 
+## 0.1.4
+
+### Patch Changes
+
+- 251bbb3: Upgrade to Style Dictionary 4.0.0-prerelease.32
+- 42b977c: Upgrade Style Dictionary to 4.0.0-prerelease.30
+
 ## 0.1.3
 
 ### Patch Changes
