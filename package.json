@@ -27,7 +27,7 @@
     "@lion/ui": "^0.7.2",
     "@open-wc/dedupe-mixin": "^1.4.0",
     "@rollup/browser": "^4.17.2",
-    "@tokens-studio/sd-transforms": "^1.0.1",
+    "@tokens-studio/sd-transforms": "^1.2.3",
     "@tokens-studio/tokens": "^0.1.1",
     "@zip.js/zip.js": "^2.7.40",
     "acorn": "^8.11.3",
@@ -37,7 +37,7 @@
     "magic-string": "^0.30.8",
     "path-unified": "^0.1.0",
     "prettier": "^3.2.5",
-    "style-dictionary": "^4.0.0",
+    "style-dictionary": "^4.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

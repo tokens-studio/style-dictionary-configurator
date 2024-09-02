@@ -102,11 +102,14 @@ export async function createConfig() {
     JSON.stringify(
       {
         source: ["studio.json"],
+        log: {
+          verbosity: "default",
+        },
         preprocessors: ["tokens-studio"],
         platforms: {
           css: {
             transformGroup: "tokens-studio",
-            prefix: "sd",
+            transforms: ["name/kebab"],
             buildPath: "build/css/",
             files: [
               {
