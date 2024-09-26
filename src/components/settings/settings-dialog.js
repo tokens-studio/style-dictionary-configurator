@@ -94,34 +94,6 @@ class SettingsDialog extends LitElement {
               .choiceValue=${"excludeParentKeys"}
               ?checked=${this.settings.excludeParentKeys}
             ></sd-checkbox>
-            <sd-checkbox
-              expand
-              label="Expand Composition Tokens"
-              .choiceValue=${"composition"}
-              ?disabled=${this.settings.expand.composition === "__function__"}
-              ?checked=${this.settings.expand.composition}
-            ></sd-checkbox>
-            <sd-checkbox
-              expand
-              label="Expand Typography Tokens"
-              .choiceValue=${"typography"}
-              ?disabled=${this.settings.expand.typography === "__function__"}
-              ?checked=${this.settings.expand.typography}
-            ></sd-checkbox>
-            <sd-checkbox
-              expand
-              label="Expand Border Tokens"
-              .choiceValue=${"border"}
-              ?disabled=${this.settings.expand.border === "__function__"}
-              ?checked=${this.settings.expand.border}
-            ></sd-checkbox>
-            <sd-checkbox
-              expand
-              label="Expand Shadow Tokens"
-              .choiceValue=${"shadow"}
-              ?disabled=${this.settings.expand.shadow === "__function__"}
-              ?checked=${this.settings.expand.shadow}
-            ></sd-checkbox>
           </sd-checkbox-group>
           <ts-button-submit variant="primary">Save</ts-button-submit>
         </form>
@@ -131,13 +103,6 @@ class SettingsDialog extends LitElement {
 
   async parseSettings() {
     this.settings = (await parseTransformOptions()).currentOptions;
-    if (this.settings.expand === undefined) {
-      this.settings.expand = {};
-    }
-
-    // false by default
-    this.settings.expand.composition =
-      this.settings.expand.composition !== false;
   }
 
   checkIfCanOpen(ev) {
@@ -175,23 +140,16 @@ Please adjust the settings in code instead.`,
     ev.target.dispatchEvent(new Event("close-overlay", { bubbles: true }));
     const formResult = ev.target.modelValue;
     const { settings } = formResult;
-
-    const result = { expand: {} };
-
+    const result = {};
     [
       ...ev.target.querySelectorAll(
         'sd-checkbox-group[name="settings"] > sd-checkbox'
       ),
     ].forEach((checkEl) => {
-      let val = Boolean(
+      const val = Boolean(
         settings.find((setting) => setting === checkEl.choiceValue)
       );
-
-      let prop = result;
-      if (checkEl.hasAttribute("expand")) {
-        prop = result.expand;
-      }
-      prop[checkEl.choiceValue] = val;
+      result[checkEl.choiceValue] = val;
     });
     syncTransformOptionsWithUI(result);
   }
