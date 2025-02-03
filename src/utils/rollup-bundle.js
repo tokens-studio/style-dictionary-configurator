@@ -2,9 +2,11 @@ import { posix as path } from "path-unified";
 import { fs } from "style-dictionary/fs";
 import { v4 as uuidv4 } from "uuid";
 import { rollup } from "@rollup/browser";
+// TODO: use SD package json export map (load it from CDN) to dynamically import these?
 import StyleDictionary from "style-dictionary";
 import * as sdFs from "style-dictionary/fs";
 import * as sdUtils from "style-dictionary/utils";
+import * as sdEnums from "style-dictionary/enums";
 
 /**
  * Somewhat naive bundle step with rollup
@@ -23,12 +25,28 @@ import * as sdUtils from "style-dictionary/utils";
  *  }
  */
 export async function bundle(inputPath, _fs = fs) {
-  const sdName = uuidv4();
-  const sdFsName = uuidv4();
-  const sdUtilsName = uuidv4();
-  globalThis[sdName] = StyleDictionary;
-  globalThis[sdFsName] = sdFs;
-  globalThis[sdUtilsName] = sdUtils;
+  const entrypointMap = {
+    "": {
+      import: StyleDictionary,
+      id: uuidv4(),
+    },
+    fs: {
+      import: sdFs,
+      id: uuidv4(),
+    },
+    utils: {
+      import: sdUtils,
+      id: uuidv4(),
+    },
+    enums: {
+      import: sdEnums,
+      id: uuidv4(),
+    },
+  };
+
+  Object.entries(entrypointMap).forEach(([key, val]) => {
+    globalThis[entrypointMap[key].id] = val.import;
+  });
 
   const rollupCfg = await rollup({
     input: inputPath,
@@ -63,6 +81,8 @@ export async function bundle(inputPath, _fs = fs) {
         },
       },
       {
+        // TODO: Support import { x as y } pattern
+        // TODO: Use proper AST to analyze imports and make replacements, string find & replace is brittle and easy to break
         name: "sd-external",
         // Naive and simplified regex version of rollup externals global plugin just for style-dictionary imports..
         transform(code) {
@@ -83,17 +103,15 @@ export async function bundle(inputPath, _fs = fs) {
                 .map((importSpecifier) => importSpecifier.trim());
 
               const entry = entrypoint.replace(/^\//, "");
-              if (entry === "fs" || entry === "utils") {
+              if (Object.keys(entrypointMap).includes(entry)) {
                 replacements = namedImports.map((imp) => [
                   imp,
-                  `globalThis['${
-                    entry === "fs" ? sdFsName : sdUtilsName
-                  }']['${imp}']`,
+                  `globalThis['${entrypointMap[entry].id}']['${imp}']`,
                 ]);
               }
             } else {
               // Remove the import statement, replace the id wherever used with the global
-              replacements = [[id, `globalThis['${sdName}']`]];
+              replacements = [[id, `globalThis['${entrypointMap[""].id}']`]];
             }
             rewrittenCode = rewrittenCode.replace(matchRes[0], "");
 
@@ -104,7 +122,6 @@ export async function bundle(inputPath, _fs = fs) {
               );
             });
           }
-
           return rewrittenCode;
         },
       },
